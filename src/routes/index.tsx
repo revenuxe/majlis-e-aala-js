@@ -309,12 +309,47 @@ function QuickPlanner() {
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          {[25, 50, 100, 200, 300, 500].map((g) => (
-            <Chip key={g} active={plan.guests === g} onClick={() => update({ guests: g })}>
+          {presets.map((g) => (
+            <Chip
+              key={g}
+              active={!customMode && plan.guests === g}
+              onClick={() => {
+                setCustomMode(false);
+                update({ guests: g });
+              }}
+            >
               {g === 500 ? "500+" : g}
             </Chip>
           ))}
+          <Chip active={customMode} onClick={() => setCustomMode(true)}>
+            Custom
+          </Chip>
         </div>
+
+        {customMode && (
+          <div className="mt-4 max-w-xs duration-300 animate-in fade-in slide-in-from-bottom-2">
+            <label className="eyebrow" htmlFor="custom-guests">
+              Enter exact guest count
+            </label>
+            <input
+              id="custom-guests"
+              type="number"
+              inputMode="numeric"
+              min={10}
+              autoFocus
+              value={Number.isNaN(plan.guests) ? "" : plan.guests}
+              onChange={(e) => {
+                const v = parseInt(e.target.value, 10);
+                update({ guests: Number.isNaN(v) ? 0 : Math.max(0, v) });
+              }}
+              placeholder="e.g. 750"
+              className="mt-2 h-14 w-full rounded-[14px] border border-border bg-card px-4 text-center text-[18px] font-semibold tabular-nums outline-none focus:border-gold"
+            />
+            <p className="mt-2 text-[12px] text-muted-foreground">
+              Minimum 10 guests. We'll bill per Mann (100 guests), rounded up.
+            </p>
+          </div>
+        )}
 
         {step >= 1 && (
           <div className="mt-8 duration-300 animate-in fade-in slide-in-from-bottom-2">
