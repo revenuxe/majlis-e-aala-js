@@ -161,7 +161,7 @@ function PackagesPage() {
                     <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: "var(--gold)" }} />
                     <span className="min-w-0">
                       {s.title}
-                      <span className="text-muted-text"> · {s.items.length} items</span>
+                      <span className="text-muted-text"> · {s.items.length} {s.items.length === 1 ? "item" : "items"}</span>
                     </span>
                   </li>
                 ))}
