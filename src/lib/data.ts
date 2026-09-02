@@ -31,15 +31,34 @@ export interface Occasion {
   image: string;
 }
 
+export interface PackageSection {
+  title: string;
+  items: string[];
+}
+
 export interface CateringPackage {
   id: string;
   name: string;
   tagline: string;
-  pricePerGuest: number;
-  minGuests: number;
-  includes: string[];
+  /** Price for one Mann (one serving unit of 100 guests). */
+  pricePerMann: number;
+  guestsPerMann: number;
+  sections: PackageSection[];
   signature?: boolean;
 }
+
+/** Catering is quoted in "Mann" — one Mann serves 100 guests. */
+export const GUESTS_PER_MANN = 100;
+
+export const mannsFor = (guests: number) =>
+  Math.max(1, Math.ceil(guests / GUESTS_PER_MANN));
+
+export const packageTotalFor = (pkg: CateringPackage, guests: number) =>
+  pkg.pricePerMann * mannsFor(guests);
+
+export const perGuestFor = (pkg: CateringPackage, guests: number) =>
+  Math.round(packageTotalFor(pkg, guests) / Math.max(1, guests));
+
 
 export const categories: Category[] = [
   { id: "biryani", name: "Signature Biryani", image: biryaniImg, items: 8 },
