@@ -25,11 +25,11 @@ import {
   testimonials,
 } from "@/lib/data";
 import { usePlan } from "@/lib/plan-store";
-import { FoodCard } from "@/components/FoodCard";
 import {
   Button,
   ChoiceCard,
   Chip,
+  DietMark,
   HalalBadge,
   QuantitySelector,
   SectionHeader,
@@ -247,7 +247,7 @@ function OccasionSelector() {
         title="What's the occasion?"
         subtitle="Pick one and we'll shape the menu around it."
       />
-      <div className="no-scrollbar -mx-5 mt-6 flex gap-3 overflow-x-auto px-5 pb-2 sm:mx-0 sm:px-0">
+      <div className="no-scrollbar -mx-5 mt-6 flex gap-4 overflow-x-auto px-5 pb-2 sm:mx-0 sm:px-0">
         {occasions.map((o) => {
           const selected = plan.occasion === o.id;
           return (
@@ -255,13 +255,13 @@ function OccasionSelector() {
               key={o.id}
               onClick={() => update({ occasion: o.id })}
               className={cx(
-                "press relative w-[148px] shrink-0 overflow-hidden rounded-[16px] border text-left",
+                "press relative w-[200px] shrink-0 overflow-hidden rounded-[20px] border text-left sm:w-[240px]",
                 selected ? "border-primary" : "border-border",
               )}
             >
-              <img src={o.image} alt="" loading="lazy" className="h-[110px] w-full object-cover" />
-              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[rgba(17,17,17,0.85)] to-transparent" />
-              <span className="absolute bottom-3 left-3 text-[14px] font-semibold text-white">
+              <img src={o.image} alt="" loading="lazy" className="h-[150px] w-full object-cover sm:h-[170px]" />
+              <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[rgba(17,17,17,0.85)] to-transparent" />
+              <span className="absolute bottom-3.5 left-4 text-[16px] font-semibold text-white">
                 {o.name}
               </span>
               {selected && (
@@ -283,6 +283,8 @@ function OccasionSelector() {
 function QuickPlanner() {
   const { plan, update } = usePlan();
   const [step, setStep] = useState(0);
+  const [customMode, setCustomMode] = useState(false);
+  const presets = [25, 50, 100, 200, 300, 500];
 
   return (
     <Section className="py-6 sm:py-8">
@@ -307,12 +309,47 @@ function QuickPlanner() {
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
-          {[25, 50, 100, 200, 300, 500].map((g) => (
-            <Chip key={g} active={plan.guests === g} onClick={() => update({ guests: g })}>
+          {presets.map((g) => (
+            <Chip
+              key={g}
+              active={!customMode && plan.guests === g}
+              onClick={() => {
+                setCustomMode(false);
+                update({ guests: g });
+              }}
+            >
               {g === 500 ? "500+" : g}
             </Chip>
           ))}
+          <Chip active={customMode} onClick={() => setCustomMode(true)}>
+            Custom
+          </Chip>
         </div>
+
+        {customMode && (
+          <div className="mt-4 max-w-xs duration-300 animate-in fade-in slide-in-from-bottom-2">
+            <label className="eyebrow" htmlFor="custom-guests">
+              Enter exact guest count
+            </label>
+            <input
+              id="custom-guests"
+              type="number"
+              inputMode="numeric"
+              min={10}
+              autoFocus
+              value={Number.isNaN(plan.guests) ? "" : plan.guests}
+              onChange={(e) => {
+                const v = parseInt(e.target.value, 10);
+                update({ guests: Number.isNaN(v) ? 0 : Math.max(0, v) });
+              }}
+              placeholder="e.g. 750"
+              className="mt-2 h-14 w-full rounded-[14px] border border-border bg-card px-4 text-center text-[18px] font-semibold tabular-nums outline-none focus:border-gold"
+            />
+            <p className="mt-2 text-[12px] text-muted-foreground">
+              Minimum 10 guests. We'll bill per Mann (100 guests), rounded up.
+            </p>
+          </div>
+        )}
 
         {step >= 1 && (
           <div className="mt-8 duration-300 animate-in fade-in slide-in-from-bottom-2">
@@ -404,10 +441,45 @@ function MenuPreview() {
 function MostLoved({ dishes: list }: { dishes: typeof dishes }) {
   return (
     <Section>
-      <SectionHeader eyebrow="Chosen again and again" title="Most Loved Dishes" />
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <SectionHeader
+        eyebrow="Chosen again and again"
+        title="Most Loved Dishes"
+        subtitle="Signatures from our packages — served buffet-style, priced per tray."
+      />
+      <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {list.map((d) => (
-          <FoodCard key={d.id} dish={d} />
+          <Link
+            key={d.id}
+            to="/packages"
+            className="press group overflow-hidden rounded-[20px] border border-border bg-card shadow-[var(--shadow-card)]"
+          >
+            <div className="relative aspect-[4/3] w-full overflow-hidden">
+              <img
+                src={d.image}
+                alt={d.name}
+                loading="lazy"
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              {d.tags && d.tags.length > 0 && (
+                <span
+                  className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-[0.12em]"
+                  style={{ background: "var(--champagne)", color: "var(--foreground)" }}
+                >
+                  {d.tags[0] === "bestseller" ? "BESTSELLER" : d.tags[0] === "premium" ? "PREMIUM" : "MOST LOVED"}
+                </span>
+              )}
+            </div>
+            <div className="p-4">
+              <div className="flex items-center gap-2">
+                <DietMark diet={d.diet} />
+                <h3 className="min-w-0 truncate text-[16px] font-semibold">{d.name}</h3>
+              </div>
+              <div className="mt-3 flex items-baseline justify-between gap-2">
+                <span className="text-[17px] font-bold">{inr(d.price)}</span>
+                <span className="text-[12px] font-medium text-muted-foreground">per tray</span>
+              </div>
+            </div>
+          </Link>
         ))}
       </div>
     </Section>
