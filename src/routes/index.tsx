@@ -307,19 +307,20 @@ function MostLoved({ dishes: list }: { dishes: typeof dishes }) {
 }
 
 function Packages() {
+  const { plan } = usePlan();
   return (
     <Section>
       <SectionHeader
         eyebrow="Easiest way to plan"
-        title="Curated Catering Packages"
-        subtitle="We've already balanced the menu for you."
+        title="Catering Packages"
+        subtitle="Quoted per Mann — one Mann serves 100 guests, crockery and service included."
       />
-      <div className="mt-6 grid gap-4 lg:grid-cols-4">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {packages.map((p) => (
           <div
             key={p.id}
             className={cx(
-              "flex flex-col rounded-[20px] border p-6",
+              "flex flex-col rounded-[20px] border p-5",
               p.signature
                 ? "border-gold bg-champagne/40"
                 : "border-border bg-card shadow-[var(--shadow-card)]",
@@ -330,21 +331,26 @@ function Packages() {
                 Flagship
               </span>
             )}
-            <h3 className="font-display text-[26px]">{p.name}</h3>
-            <p className="mt-1.5 text-[14px] text-muted-foreground">{p.tagline}</p>
-            <p className="mt-4 text-[24px] font-bold">
-              {inr(p.pricePerGuest)}
-              <span className="text-[14px] font-medium text-muted-foreground"> / person</span>
+            <h3 className="font-display text-[26px] leading-tight">{p.name}</h3>
+            <p className="mt-1.5 text-[13px] text-muted-foreground">{p.tagline}</p>
+            <p className="mt-4 text-[24px] font-bold leading-none">
+              {inr(p.pricePerMann)}
+              <span className="text-[13px] font-medium text-muted-foreground"> / Mann</span>
             </p>
-            <ul className="mt-4 grid flex-1 gap-2 text-[14px]">
-              {p.includes.map((i) => (
-                <li key={i} className="flex items-center gap-2 text-muted-foreground">
-                  <Check className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--gold)" }} />
-                  {i}
+            <p className="mt-1 text-[12px] text-muted-text">
+              {inr(packageTotalFor(p, plan.guests))} for {plan.guests} guests
+            </p>
+            <ul className="mt-4 flex-1 space-y-1.5 text-[13px] text-muted-foreground">
+              {p.sections.map((s) => (
+                <li key={s.title} className="flex items-start gap-2">
+                  <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: "var(--gold)" }} />
+                  <span className="min-w-0">
+                    {s.title}
+                    <span className="text-muted-text"> · {s.items.length} items</span>
+                  </span>
                 </li>
               ))}
             </ul>
-            <p className="mt-4 text-[12px] text-muted-text">Minimum {p.minGuests} guests</p>
             <Link to="/packages" className="mt-5">
               <Button full variant={p.signature ? "primary" : "outline"}>
                 View Package
