@@ -100,9 +100,11 @@ function MyMenu() {
             Selected package
           </p>
           <h3 className="mt-2 font-display text-[26px]">{pkg.name}</h3>
-          <p className="mt-1 text-[14px] text-muted-foreground">{pkg.includes.join(" • ")}</p>
+          <p className="mt-1 text-[14px] text-muted-foreground">
+            {pkg.sections.map((s) => s.title).join(" • ")}
+          </p>
           <p className="mt-3 text-[16px] font-semibold">
-            {inr(pkg.pricePerGuest)} / guest × {plan.guests}
+            {inr(pkg.pricePerMann)} / Mann × {mannsFor(plan.guests)} ({plan.guests} guests)
           </p>
         </div>
       ) : (
