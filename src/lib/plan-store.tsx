@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { dishes, packages, type Dish } from "./data";
+import { dishes, packageTotalFor, packages, type Dish } from "./data";
 
 export interface PlanItem {
   dishId: string;
