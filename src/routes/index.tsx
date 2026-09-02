@@ -25,11 +25,11 @@ import {
   testimonials,
 } from "@/lib/data";
 import { usePlan } from "@/lib/plan-store";
-import { FoodCard } from "@/components/FoodCard";
 import {
   Button,
   ChoiceCard,
   Chip,
+  DietMark,
   HalalBadge,
   QuantitySelector,
   SectionHeader,
