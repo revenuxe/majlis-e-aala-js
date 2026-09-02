@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Check, X } from "lucide-react";
 import { useState } from "react";
-import { dishes, inr, occasions, packages } from "@/lib/data";
+import { dishes, inr, occasions, packageTotalFor, packages } from "@/lib/data";
 import { recommendedTrays, usePlan } from "@/lib/plan-store";
 import { BrandMark } from "@/components/Brand";
 import { Button, ChoiceCard, DietMark, QuantitySelector, cx } from "@/components/ui-kit";
@@ -294,8 +294,10 @@ function StepFood() {
           {packages.map((p) => (
             <ChoiceCard
               key={p.id}
-              title={`${p.name} — ${inr(p.pricePerGuest)} / guest`}
-              note={`${p.includes.join(" • ")} · Estimated ${inr(p.pricePerGuest * plan.guests)}`}
+              title={`${p.name} — ${inr(p.pricePerMann)} / Mann`}
+              note={`${p.sections.map((s) => s.title).join(" • ")} · Estimated ${inr(
+                packageTotalFor(p, plan.guests),
+              )} for ${plan.guests} guests`}
               selected={plan.packageId === p.id}
               onClick={() => update({ packageId: p.id })}
             />

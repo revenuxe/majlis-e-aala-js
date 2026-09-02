@@ -1,13 +1,24 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, Check, Star } from "lucide-react";
-import { useState } from "react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Star,
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import heroImg from "@/assets/hero-banquet.jpg";
+import biryaniImg from "@/assets/cat-biryani.jpg";
+import kebabImg from "@/assets/cat-kebabs.jpg";
+import weddingImg from "@/assets/editorial-wedding.jpg";
 import {
   categories,
   dishes,
   editorialImage,
   inr,
   occasions,
+  packageTotalFor,
   packages,
   serviceAreas,
   standards,
@@ -79,52 +90,149 @@ function Section({
   );
 }
 
+const heroSlides = [
+  {
+    image: heroImg,
+    eyebrow: "Weddings & Walima",
+    title: "A Feast Worth Remembering.",
+    text: "Exceptional Halal catering crafted for weddings, celebrations and gatherings of every size.",
+  },
+  {
+    image: biryaniImg,
+    eyebrow: "Signature Dum Biryani",
+    title: "Slow-Cooked. Never Rushed.",
+    text: "Long-grain basmati, whole spices and sealed dum cooking on your event day itself.",
+  },
+  {
+    image: kebabImg,
+    eyebrow: "Live Grills & Kebabs",
+    title: "Straight Off The Coal.",
+    text: "Manned grill counters serving kebabs hot to your guests, all evening long.",
+  },
+  {
+    image: weddingImg,
+    eyebrow: "Packages from ₹1,00,000 / Mann",
+    title: "Classic To Royal.",
+    text: "Complete menus with refreshment stations, grand table, crockery and service staff.",
+  },
+];
+
 function Hero() {
+  const [index, setIndex] = useState(0);
+  const count = heroSlides.length;
+
+  const go = useCallback((dir: number) => setIndex((i) => (i + dir + count) % count), [count]);
+
+  useEffect(() => {
+    const id = window.setInterval(() => setIndex((i) => (i + 1) % count), 6000);
+    return () => window.clearInterval(id);
+  }, [count]);
+
   return (
-    <section className="mx-auto max-w-[1280px] px-5 pb-4 pt-6 sm:px-8 lg:grid lg:grid-cols-2 lg:items-center lg:gap-16 lg:pt-10">
-      <div className="lg:order-2">
-        <div className="relative overflow-hidden rounded-[20px]">
-          <img
-            src={heroImg}
-            alt="Halal catering banquet with dum biryani and kebabs"
-            width={1200}
-            height={1504}
-            className="h-[300px] w-full object-cover sm:h-[420px] lg:h-[540px]"
-          />
+    <section className="mx-auto max-w-[1280px] px-4 pt-4 sm:px-8 sm:pt-6">
+      <div className="relative overflow-hidden rounded-[22px] bg-soft-black sm:rounded-[28px]">
+        {/* Slides */}
+        <div className="relative h-[440px] sm:h-[520px] lg:h-[600px]">
+          {heroSlides.map((s, i) => (
+            <div
+              key={s.title}
+              aria-hidden={i !== index}
+              className={cx(
+                "absolute inset-0 transition-opacity duration-700",
+                i === index ? "opacity-100" : "pointer-events-none opacity-0",
+              )}
+            >
+              <img
+                src={s.image}
+                alt={s.eyebrow}
+                loading={i === 0 ? "eager" : "lazy"}
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(12,12,11,0.92)] via-[rgba(12,12,11,0.45)] to-[rgba(12,12,11,0.15)]" />
+            </div>
+          ))}
+
+          {/* Copy */}
+          <div className="absolute inset-x-0 bottom-0 p-5 sm:p-9 lg:p-12">
+            <div className="max-w-xl">
+              <span
+                className="eyebrow block"
+                style={{ color: "var(--gold)" }}
+                key={heroSlides[index]!.eyebrow}
+              >
+                {heroSlides[index]!.eyebrow}
+              </span>
+              <h1 className="mt-3 font-display text-[38px] leading-[1.04] text-white sm:text-[54px] lg:text-[64px]">
+                {heroSlides[index]!.title}
+              </h1>
+              <p className="mt-3 max-w-md text-[14px] leading-relaxed text-white/75 sm:text-[16px]">
+                {heroSlides[index]!.text}
+              </p>
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                <Link to="/plan" className="sm:w-auto">
+                  <Button size="lg" full className="sm:w-auto sm:px-8">
+                    Plan Your Catering
+                  </Button>
+                </Link>
+                <Link to="/packages" className="sm:w-auto">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    full
+                    className="border-white/35 bg-white/10 text-white sm:w-auto sm:px-8"
+                  >
+                    View Packages
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop arrows */}
+          <button
+            aria-label="Previous slide"
+            onClick={() => go(-1)}
+            className="press absolute left-4 top-1/2 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/30 bg-black/30 text-white backdrop-blur lg:grid"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <button
+            aria-label="Next slide"
+            onClick={() => go(1)}
+            className="press absolute right-4 top-1/2 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/30 bg-black/30 text-white backdrop-blur lg:grid"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+
+          {/* Dots */}
+          <div className="absolute right-5 top-5 flex gap-1.5 sm:right-9 sm:top-8">
+            {heroSlides.map((s, i) => (
+              <button
+                key={s.title}
+                aria-label={`Go to slide ${i + 1}`}
+                onClick={() => setIndex(i)}
+                className={cx(
+                  "h-1.5 rounded-full transition-all",
+                  i === index ? "w-7 bg-white" : "w-1.5 bg-white/45",
+                )}
+              />
+            ))}
+          </div>
+
+          <div className="absolute left-5 top-5 sm:left-9 sm:top-8">
+            <HalalBadge />
+          </div>
         </div>
       </div>
 
-      <div className="pt-7 lg:order-1 lg:pt-0">
-        <HalalBadge />
-        <h1 className="mt-5 font-display text-[42px] leading-[1.03] sm:text-[50px] lg:text-[72px]">
-          A Feast Worth
-          <br />
-          Remembering.
-        </h1>
-        <p className="mt-4 max-w-md text-[15px] leading-relaxed text-muted-foreground sm:text-[16px]">
-          Exceptional Halal catering crafted for weddings, celebrations and gatherings of
-          every size.
-        </p>
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <Link to="/plan" className="sm:w-auto">
-            <Button size="lg" full className="sm:w-auto sm:px-8">
-              Plan Your Catering
-            </Button>
-          </Link>
-          <Link to="/menu" className="sm:w-auto">
-            <Button size="lg" variant="outline" full className="sm:w-auto sm:px-8">
-              Explore Menu
-            </Button>
-          </Link>
-        </div>
-        <div className="mt-8 grid grid-cols-2 gap-y-3 border-t border-border pt-6 sm:grid-cols-4">
-          {["100% Halal", "Freshly Prepared", "Custom Menus", "Event Catering"].map((t) => (
-            <div key={t} className="flex items-center gap-2 text-[13px] text-muted-foreground">
-              <Check className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--gold)" }} />
-              {t}
-            </div>
-          ))}
-        </div>
+      {/* Trust strip */}
+      <div className="mt-4 grid grid-cols-2 gap-3 rounded-[18px] border border-border bg-card p-4 sm:grid-cols-4 sm:p-5">
+        {["100% Halal", "Freshly Prepared", "Custom Menus", "Event Catering"].map((t) => (
+          <div key={t} className="flex items-center gap-2 text-[13px] text-muted-foreground">
+            <Check className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--gold)" }} />
+            {t}
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -307,19 +415,20 @@ function MostLoved({ dishes: list }: { dishes: typeof dishes }) {
 }
 
 function Packages() {
+  const { plan } = usePlan();
   return (
     <Section>
       <SectionHeader
         eyebrow="Easiest way to plan"
-        title="Curated Catering Packages"
-        subtitle="We've already balanced the menu for you."
+        title="Catering Packages"
+        subtitle="Quoted per Mann — one Mann serves 100 guests, crockery and service included."
       />
-      <div className="mt-6 grid gap-4 lg:grid-cols-4">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {packages.map((p) => (
           <div
             key={p.id}
             className={cx(
-              "flex flex-col rounded-[20px] border p-6",
+              "flex flex-col rounded-[20px] border p-5",
               p.signature
                 ? "border-gold bg-champagne/40"
                 : "border-border bg-card shadow-[var(--shadow-card)]",
@@ -330,21 +439,26 @@ function Packages() {
                 Flagship
               </span>
             )}
-            <h3 className="font-display text-[26px]">{p.name}</h3>
-            <p className="mt-1.5 text-[14px] text-muted-foreground">{p.tagline}</p>
-            <p className="mt-4 text-[24px] font-bold">
-              {inr(p.pricePerGuest)}
-              <span className="text-[14px] font-medium text-muted-foreground"> / person</span>
+            <h3 className="font-display text-[26px] leading-tight">{p.name}</h3>
+            <p className="mt-1.5 text-[13px] text-muted-foreground">{p.tagline}</p>
+            <p className="mt-4 text-[24px] font-bold leading-none">
+              {inr(p.pricePerMann)}
+              <span className="text-[13px] font-medium text-muted-foreground"> / Mann</span>
             </p>
-            <ul className="mt-4 grid flex-1 gap-2 text-[14px]">
-              {p.includes.map((i) => (
-                <li key={i} className="flex items-center gap-2 text-muted-foreground">
-                  <Check className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--gold)" }} />
-                  {i}
+            <p className="mt-1 text-[12px] text-muted-text">
+              {inr(packageTotalFor(p, plan.guests))} for {plan.guests} guests
+            </p>
+            <ul className="mt-4 flex-1 space-y-1.5 text-[13px] text-muted-foreground">
+              {p.sections.map((s) => (
+                <li key={s.title} className="flex items-start gap-2">
+                  <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: "var(--gold)" }} />
+                  <span className="min-w-0">
+                    {s.title}
+                    <span className="text-muted-text"> · {s.items.length} {s.items.length === 1 ? "item" : "items"}</span>
+                  </span>
                 </li>
               ))}
             </ul>
-            <p className="mt-4 text-[12px] text-muted-text">Minimum {p.minGuests} guests</p>
             <Link to="/packages" className="mt-5">
               <Button full variant={p.signature ? "primary" : "outline"}>
                 View Package
