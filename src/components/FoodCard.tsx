@@ -39,9 +39,9 @@ export function FoodCard({ dish }: { dish: Dish }) {
               loading="lazy"
               className="h-full w-full object-cover"
             />
-            {dish.tags?.[0] && (
+            {dish.tags && dish.tags.length > 0 && (
               <span className="absolute left-3 top-3">
-                <TagLabel tag={dish.tags[0]} />
+                <TagLabel tag={String(dish.tags[0])} />
               </span>
             )}
           </div>
@@ -189,7 +189,7 @@ function DishSheet({
           <ChoiceCard
             key={a}
             title={a}
-            note={`+ ${inr(addonPrices[a])}`}
+            note={`+ ${inr(addonPrices[a] ?? 0)}`}
             selected={addons.includes(a)}
             onClick={() => toggleAddon(a)}
           />
