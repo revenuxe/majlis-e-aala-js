@@ -283,6 +283,8 @@ function OccasionSelector() {
 function QuickPlanner() {
   const { plan, update } = usePlan();
   const [step, setStep] = useState(0);
+  const [customMode, setCustomMode] = useState(false);
+  const presets = [25, 50, 100, 200, 300, 500];
 
   return (
     <Section className="py-6 sm:py-8">
