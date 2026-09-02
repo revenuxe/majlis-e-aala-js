@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MessageCircle, Trash2 } from "lucide-react";
-import { inr, packages } from "@/lib/data";
+import { inr, mannsFor, packages } from "@/lib/data";
 import { dishById, usePlan } from "@/lib/plan-store";
 import {
   Button,
