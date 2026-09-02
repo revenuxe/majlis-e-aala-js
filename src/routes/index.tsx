@@ -247,7 +247,7 @@ function OccasionSelector() {
         title="What's the occasion?"
         subtitle="Pick one and we'll shape the menu around it."
       />
-      <div className="no-scrollbar -mx-5 mt-6 flex gap-3 overflow-x-auto px-5 pb-2 sm:mx-0 sm:px-0">
+      <div className="no-scrollbar -mx-5 mt-6 flex gap-4 overflow-x-auto px-5 pb-2 sm:mx-0 sm:px-0">
         {occasions.map((o) => {
           const selected = plan.occasion === o.id;
           return (
@@ -255,13 +255,13 @@ function OccasionSelector() {
               key={o.id}
               onClick={() => update({ occasion: o.id })}
               className={cx(
-                "press relative w-[148px] shrink-0 overflow-hidden rounded-[16px] border text-left",
+                "press relative w-[200px] shrink-0 overflow-hidden rounded-[20px] border text-left sm:w-[240px]",
                 selected ? "border-primary" : "border-border",
               )}
             >
-              <img src={o.image} alt="" loading="lazy" className="h-[110px] w-full object-cover" />
-              <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[rgba(17,17,17,0.85)] to-transparent" />
-              <span className="absolute bottom-3 left-3 text-[14px] font-semibold text-white">
+              <img src={o.image} alt="" loading="lazy" className="h-[150px] w-full object-cover sm:h-[170px]" />
+              <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[rgba(17,17,17,0.85)] to-transparent" />
+              <span className="absolute bottom-3.5 left-4 text-[16px] font-semibold text-white">
                 {o.name}
               </span>
               {selected && (
