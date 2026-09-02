@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Check, X } from "lucide-react";
 import { useState } from "react";
-import { dishes, inr, occasions, packages } from "@/lib/data";
+import { dishes, inr, occasions, packageTotalFor, packages } from "@/lib/data";
 import { recommendedTrays, usePlan } from "@/lib/plan-store";
 import { BrandMark } from "@/components/Brand";
 import { Button, ChoiceCard, DietMark, QuantitySelector, cx } from "@/components/ui-kit";
