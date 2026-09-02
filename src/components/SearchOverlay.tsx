@@ -118,7 +118,7 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
                       onClick={onClose}
                       className="press rounded-[14px] border border-border bg-card p-4 text-[15px] font-semibold"
                     >
-                      {p.name} — {inr(p.pricePerGuest)} / guest
+                      {p.name} — {inr(p.pricePerMann)} / Mann
                     </Link>
                   ))}
                 </div>
