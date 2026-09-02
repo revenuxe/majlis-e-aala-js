@@ -38,9 +38,9 @@ export const Route = createFileRoute("/packages")({
 function PackagesPage() {
   const { plan, update } = usePlan();
   const navigate = useNavigate();
-  const [active, setActive] = useState(packages[0].id);
+  const [active, setActive] = useState(packages[0]!.id);
   const manns = mannsFor(plan.guests);
-  const current = packages.find((p) => p.id === active) ?? packages[0];
+  const current = packages.find((p) => p.id === active) ?? packages[0]!;
 
   const choose = (p: CateringPackage) => {
     update({ packageId: p.id, mode: "package" });
