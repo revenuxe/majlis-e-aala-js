@@ -105,7 +105,7 @@ export function PlanProvider({ children }: { children: ReactNode }) {
     }, 0);
 
     const pkg = packages.find((p) => p.id === plan.packageId);
-    const packageTotal = pkg ? pkg.pricePerGuest * plan.guests : 0;
+    const packageTotal = pkg ? packageTotalFor(pkg, plan.guests) : 0;
 
     return {
       plan,
