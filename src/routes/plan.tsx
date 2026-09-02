@@ -294,8 +294,10 @@ function StepFood() {
           {packages.map((p) => (
             <ChoiceCard
               key={p.id}
-              title={`${p.name} — ${inr(p.pricePerGuest)} / guest`}
-              note={`${p.includes.join(" • ")} · Estimated ${inr(p.pricePerGuest * plan.guests)}`}
+              title={`${p.name} — ${inr(p.pricePerMann)} / Mann`}
+              note={`${p.sections.map((s) => s.title).join(" • ")} · Estimated ${inr(
+                packageTotalFor(p, plan.guests),
+              )} for ${plan.guests} guests`}
               selected={plan.packageId === p.id}
               onClick={() => update({ packageId: p.id })}
             />
