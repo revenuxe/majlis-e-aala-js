@@ -441,10 +441,45 @@ function MenuPreview() {
 function MostLoved({ dishes: list }: { dishes: typeof dishes }) {
   return (
     <Section>
-      <SectionHeader eyebrow="Chosen again and again" title="Most Loved Dishes" />
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <SectionHeader
+        eyebrow="Chosen again and again"
+        title="Most Loved Dishes"
+        subtitle="Signatures from our packages — served buffet-style, priced per tray."
+      />
+      <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {list.map((d) => (
-          <FoodCard key={d.id} dish={d} />
+          <Link
+            key={d.id}
+            to="/packages"
+            className="press group overflow-hidden rounded-[20px] border border-border bg-card shadow-[var(--shadow-card)]"
+          >
+            <div className="relative aspect-[4/3] w-full overflow-hidden">
+              <img
+                src={d.image}
+                alt={d.name}
+                loading="lazy"
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              {d.tags && d.tags.length > 0 && (
+                <span
+                  className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-[0.12em]"
+                  style={{ background: "var(--champagne)", color: "var(--foreground)" }}
+                >
+                  {d.tags[0] === "bestseller" ? "BESTSELLER" : d.tags[0] === "premium" ? "PREMIUM" : "MOST LOVED"}
+                </span>
+              )}
+            </div>
+            <div className="p-4">
+              <div className="flex items-center gap-2">
+                <DietMark diet={d.diet} />
+                <h3 className="min-w-0 truncate text-[16px] font-semibold">{d.name}</h3>
+              </div>
+              <div className="mt-3 flex items-baseline justify-between gap-2">
+                <span className="text-[17px] font-bold">{inr(d.price)}</span>
+                <span className="text-[12px] font-medium text-muted-foreground">per tray</span>
+              </div>
+            </div>
+          </Link>
         ))}
       </div>
     </Section>
