@@ -27,7 +27,6 @@ import {
 import { usePlan } from "@/lib/plan-store";
 import {
   Button,
-  ChoiceCard,
   Chip,
   DietMark,
   HalalBadge,
@@ -282,7 +281,6 @@ function OccasionSelector() {
 
 function QuickPlanner() {
   const { plan, update } = usePlan();
-  const [step, setStep] = useState(0);
   const [customMode, setCustomMode] = useState(false);
   const presets = [25, 50, 100, 200, 300, 500];
 
@@ -351,46 +349,12 @@ function QuickPlanner() {
           </div>
         )}
 
-        {step >= 1 && (
-          <div className="mt-8 duration-300 animate-in fade-in slide-in-from-bottom-2">
-            <p className="eyebrow">Food preference</p>
-            <div className="mt-3 grid gap-2 sm:grid-cols-3">
-              {(["nonveg", "veg", "mixed"] as const).map((f) => (
-                <ChoiceCard
-                  key={f}
-                  title={f === "nonveg" ? "Non-Veg" : f === "veg" ? "Veg" : "Mixed"}
-                  selected={plan.foodPreference === f}
-                  onClick={() => update({ foodPreference: f })}
-                />
-              ))}
-            </div>
-
-            <p className="eyebrow mt-6">Serving style</p>
-            <div className="mt-3 grid gap-2 sm:grid-cols-2">
-              {["Buffet", "Packed Meals", "Live Counter", "Traditional Service"].map((s) => (
-                <ChoiceCard
-                  key={s}
-                  title={s}
-                  selected={plan.servingStyle === s}
-                  onClick={() => update({ servingStyle: s })}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
         <div className="mt-7">
-          {step === 0 ? (
-            <Button size="lg" full className="sm:w-auto sm:px-10" onClick={() => setStep(1)}>
-              Continue
+          <Link to="/plan">
+            <Button size="lg" full className="sm:w-auto sm:px-10">
+              Start Planning
             </Button>
-          ) : (
-            <Link to="/plan">
-              <Button size="lg" full className="sm:w-auto sm:px-10">
-                Find My Menu
-              </Button>
-            </Link>
-          )}
+          </Link>
         </div>
       </div>
     </Section>
