@@ -1,13 +1,24 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, Check, Star } from "lucide-react";
-import { useState } from "react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Star,
+} from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import heroImg from "@/assets/hero-banquet.jpg";
+import biryaniImg from "@/assets/cat-biryani.jpg";
+import kebabImg from "@/assets/cat-kebabs.jpg";
+import weddingImg from "@/assets/editorial-wedding.jpg";
 import {
   categories,
   dishes,
   editorialImage,
   inr,
   occasions,
+  packageTotalFor,
   packages,
   serviceAreas,
   standards,
