@@ -1,5 +1,6 @@
+"use client";
 import { useState } from "react";
-import { Minus, Plus } from "lucide-react";
+import { ArrowUpRight, Minus, Plus } from "lucide-react";
 import type { Dish } from "@/lib/data";
 import { inr } from "@/lib/data";
 import { usePlan, recommendedTrays } from "@/lib/plan-store";
@@ -21,23 +22,23 @@ export function FoodCard({ dish }: { dish: Dish }) {
   const { addItem, setQuantity, quantityOf, plan } = usePlan();
   const [open, setOpen] = useState(false);
   const qty = quantityOf(dish.id);
-  const recommended = recommendedTrays(plan.guests);
+  const recommended = recommendedTrays(plan.guests, dish.serves);
 
   return (
     <>
-      <article className="overflow-hidden rounded-[16px] border border-border bg-card shadow-[var(--shadow-card)]">
+      <article className="group overflow-hidden rounded-[22px] border border-border bg-card shadow-[0_10px_24px_rgba(45,34,21,0.08)] transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_18px_32px_rgba(45,34,21,0.14)]">
         <button
           type="button"
           onClick={() => setOpen(true)}
           className="block w-full text-left"
           aria-label={`View ${dish.name}`}
         >
-          <div className="relative aspect-[4/3] w-full overflow-hidden">
+          <div className="relative aspect-square w-full overflow-hidden bg-surface sm:aspect-[4/3]">
             <img
               src={dish.image}
               alt={dish.name}
               loading="lazy"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
             {dish.tags && dish.tags.length > 0 && (
               <span className="absolute left-3 top-3">
@@ -46,17 +47,24 @@ export function FoodCard({ dish }: { dish: Dish }) {
             )}
           </div>
         </button>
-        <div className="p-4">
+        <div className="p-3 sm:p-4">
           <div className="flex items-center gap-2">
             <DietMark diet={dish.diet} />
-            <h3 className="min-w-0 truncate text-[16px] font-semibold">{dish.name}</h3>
+            <h3 className="min-w-0 truncate text-[14px] font-semibold sm:text-[16px]">
+              {dish.name}
+            </h3>
           </div>
-          <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-muted-foreground">
+          <p className="mt-1.5 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground sm:text-[13px]">
             {dish.description}
           </p>
-          <p className="mt-2 text-[12px] text-muted-text">{dish.serves}</p>
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <p className="text-[10px] text-muted-text sm:text-[12px]">{dish.serves}</p>
+            <span className="hidden rounded-full bg-champagne px-2 py-1 text-[10px] font-bold uppercase tracking-[0.1em] text-foreground sm:inline">
+              Made fresh
+            </span>
+          </div>
           <div className="mt-3 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
-            <span className="min-w-0 text-[16px] font-bold">{inr(dish.price)}</span>
+            <span className="min-w-0 text-[15px] font-bold sm:text-[17px]">{inr(dish.price)}</span>
             {qty > 0 ? (
               <span className="inline-flex h-10 items-center rounded-[12px] bg-primary text-primary-foreground">
                 <button
@@ -78,15 +86,25 @@ export function FoodCard({ dish }: { dish: Dish }) {
                 </button>
               </span>
             ) : (
-              <Button size="sm" onClick={() => setOpen(true)}>
-                ADD
+              <Button
+                size="sm"
+                onClick={() => setOpen(true)}
+                className="h-8 px-2 text-[11px] sm:h-9 sm:px-3 sm:text-sm"
+              >
+                Add <ArrowUpRight className="h-3.5 w-3.5" />
               </Button>
             )}
           </div>
         </div>
       </article>
 
-      <DishSheet dish={dish} open={open} onClose={() => setOpen(false)} recommended={recommended} />
+      <DishSheet
+        dish={dish}
+        open={open}
+        onClose={() => setOpen(false)}
+        recommended={recommended}
+        guests={plan.guests}
+      />
     </>
   );
 }
@@ -96,15 +114,16 @@ function DishSheet({
   open,
   onClose,
   recommended,
+  guests,
 }: {
   dish: Dish;
   open: boolean;
   onClose: () => void;
   recommended: number;
+  guests: number;
 }) {
   const { addItem, setQuantity, quantityOf } = usePlan();
   const existing = quantityOf(dish.id);
-  const [size, setSize] = useState("Serves 5");
   const [spice, setSpice] = useState("Medium");
   const [addons, setAddons] = useState<string[]>([]);
   const [qty, setQty] = useState(existing || recommended);
@@ -116,10 +135,7 @@ function DishSheet({
     Raita: 60,
     Salan: 60,
   };
-  const sizeMultiplier = size === "Serves 10" ? 1.9 : size === "Serves 20" ? 3.6 : size === "Party Tray" ? 5.2 : 1;
-  const unit =
-    Math.round(dish.price * sizeMultiplier) +
-    addons.reduce((s, a) => s + (addonPrices[a] ?? 0), 0);
+  const unit = dish.price + addons.reduce((s, a) => s + (addonPrices[a] ?? 0), 0);
   const total = unit * qty;
 
   const toggleAddon = (a: string) =>
@@ -160,11 +176,9 @@ function DishSheet({
       </div>
       <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">{dish.description}</p>
 
-      <p className="eyebrow mt-6">Choose size</p>
+      <p className="eyebrow mt-6">Serving size</p>
       <div className="mt-3 grid gap-2">
-        {["Serves 5", "Serves 10", "Serves 20", "Party Tray"].map((s) => (
-          <ChoiceCard key={s} title={s} selected={size === s} onClick={() => setSize(s)} />
-        ))}
+        <ChoiceCard title={dish.serves} selected />
       </div>
 
       <p className="eyebrow mt-6">Spice level</p>
@@ -208,7 +222,9 @@ function DishSheet({
       <div className="mt-6 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
         <div className="min-w-0">
           <p className="text-[14px] font-semibold">Quantity</p>
-          <p className="text-[13px] text-muted-foreground">Recommended {recommended} for your guests</p>
+          <p className="text-[13px] text-muted-foreground">
+            Recommended {recommended} for {guests} guests
+          </p>
         </div>
         <QuantitySelector value={qty} onChange={(v) => setQty(Math.max(1, v))} min={1} />
       </div>

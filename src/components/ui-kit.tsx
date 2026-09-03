@@ -1,3 +1,4 @@
+"use client";
 import { Check, Minus, Plus, X } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 
@@ -192,9 +193,7 @@ export function ChoiceCard({
     >
       <span className="min-w-0">
         <span className="block text-[15px] font-semibold">{title}</span>
-        {note && (
-          <span className="mt-0.5 block text-[13px] text-muted-foreground">{note}</span>
-        )}
+        {note && <span className="mt-0.5 block text-[13px] text-muted-foreground">{note}</span>}
       </span>
       {right ?? (
         <span

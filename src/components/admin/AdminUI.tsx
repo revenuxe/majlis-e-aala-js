@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ImagePlus, Loader2, X } from "lucide-react";
 import { cx } from "@/components/ui-kit";
@@ -75,13 +76,7 @@ export function Toggle({
 }
 
 /** Image URL field with optional upload to storage. */
-export function ImageField({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-}) {
+export function ImageField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
 

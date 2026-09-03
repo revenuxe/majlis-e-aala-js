@@ -1,14 +1,13 @@
-import logoAsset from "@/assets/logo.webp.asset.json";
-
-/** Full official horizontal MAJLISE AALA logo. */
+/** Full official horizontal desktop logo. */
 export function BrandLogo({ className = "h-8" }: { className?: string }) {
   return (
     <img
-      src={logoAsset.url}
+      src="/brand-logo.webp"
       alt="Majlise Aala"
-      className={`w-auto ${className}`}
-      width={1920}
-      height={356}
+      className={`w-auto object-contain ${className}`}
+      width={2048}
+      height={512}
+      decoding="async"
     />
   );
 }
@@ -19,19 +18,14 @@ export function BrandLogo({ className = "h-8" }: { className?: string }) {
  */
 export function BrandMark({ size = 36 }: { size?: number }) {
   return (
-    <span
-      className="relative inline-block shrink-0 overflow-hidden"
+    <img
+      src="/brand-mark.webp"
+      alt="Majlise Aala"
+      className="inline-block shrink-0 object-contain"
+      width={960}
+      height={960}
       style={{ width: size, height: size }}
-      aria-label="Majlise Aala"
-      role="img"
-    >
-      <img
-        src={logoAsset.url}
-        alt=""
-        aria-hidden="true"
-        className="absolute left-0 top-0 max-w-none"
-        style={{ height: size, width: (1920 / 356) * size }}
-      />
-    </span>
+      decoding="async"
+    />
   );
 }

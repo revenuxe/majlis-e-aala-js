@@ -1,13 +1,17 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+"use client";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   ArrowUpRight,
   Check,
-  ChevronLeft,
-  ChevronRight,
+  ChefHat,
+  HeartHandshake,
+  SlidersHorizontal,
+  Search,
   Star,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import heroImg from "@/assets/hero-banquet.jpg";
 import biryaniImg from "@/assets/cat-biryani.jpg";
 import kebabImg from "@/assets/cat-kebabs.jpg";
@@ -17,7 +21,6 @@ import {
   dishes,
   editorialImage,
   inr,
-  occasions,
   packageTotalFor,
   packages,
   serviceAreas,
@@ -25,9 +28,9 @@ import {
   testimonials,
 } from "@/lib/data";
 import { usePlan } from "@/lib/plan-store";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Button,
-  Chip,
   DietMark,
   HalalBadge,
   QuantitySelector,
@@ -35,7 +38,7 @@ import {
   cx,
 } from "@/components/ui-kit";
 
-export const Route = createFileRoute("/")({
+const routeMetadata = {
   head: () => ({
     meta: [
       { title: "Majlise Aala — Premium Halal Catering in Bengaluru" },
@@ -53,35 +56,19 @@ export const Route = createFileRoute("/")({
     ],
   }),
   component: Home,
-});
+};
 
-function Home() {
-  const mostLoved = dishes.filter((d) => d.tags?.includes("most-loved")).slice(0, 4);
-
+export default function Home() {
   return (
     <main>
       <Hero />
       <OccasionSelector />
       <QuickPlanner />
-      <MenuPreview />
-      <MostLoved dishes={mostLoved} />
-      <Packages />
-      <BuildYourMenuCTA />
-      <WeddingEditorial />
-      <Standards />
-      <Testimonials />
-      <ServiceAreas />
     </main>
   );
 }
 
-function Section({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+function Section({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <section className={cx("mx-auto max-w-[1280px] px-5 py-12 sm:px-8 sm:py-16", className)}>
       {children}
@@ -110,29 +97,100 @@ const heroSlides = [
   },
   {
     image: weddingImg,
+    // @ts-expect-error -- the final spread supplies the customer-facing eyebrow.
     eyebrow: "Packages from ₹1,00,000 / Mann",
-    title: "Classic To Royal.",
-    text: "Complete menus with refreshment stations, grand table, crockery and service staff.",
+    title: "Catering, considered.",
+    text: "Explore the menus and service options currently available for your celebration.",
+    ...Object.assign({}, { eyebrow: "Made for your occasion" }),
   },
 ];
 
+const HERO_CACHE_TTL = 5 * 60 * 1000;
+
+type HeroSlide = {
+  image: string;
+  mobileImage?: string | null;
+  eyebrow: string;
+  title: string;
+  text: string;
+};
+
 function Hero() {
   const [index, setIndex] = useState(0);
-  const count = heroSlides.length;
+  const [hint, setHint] = useState(0);
+  const [managedSlides, setManagedSlides] = useState<HeroSlide[]>([]);
+  const slides: HeroSlide[] = managedSlides.length ? managedSlides : heroSlides;
+  const count = slides.length;
+  const heroCacheKey = "majlise-aala-hero-v1";
 
-  const go = useCallback((dir: number) => setIndex((i) => (i + dir + count) % count), [count]);
+  useEffect(() => {
+    void (async () => {
+      try {
+        const cached = JSON.parse(window.localStorage.getItem(heroCacheKey) ?? "null") as {
+          savedAt?: number;
+          slides?: HeroSlide[];
+        } | null;
+        if (
+          cached?.slides?.length &&
+          cached.savedAt &&
+          Date.now() - cached.savedAt < HERO_CACHE_TTL
+        ) {
+          setManagedSlides(cached.slides);
+          return;
+        }
+      } catch {
+        /* use bundled slides while loading */
+      }
+      // The migration adds this table; generated Supabase types are refreshed separately.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
+        .from("hero_carousels")
+        .select("title, eyebrow, desktop_image_url, mobile_image_url")
+        .eq("is_active", true)
+        .order("sort_order");
+      if (error || !data?.length) return;
+      const nextSlides = data.map(
+        (slide: {
+          desktop_image_url: string;
+          mobile_image_url: string | null;
+          eyebrow: string;
+          title: string;
+        }) => ({
+          image: slide.desktop_image_url,
+          mobileImage: slide.mobile_image_url,
+          eyebrow: slide.eyebrow,
+          title: slide.title,
+          text: "",
+        }),
+      );
+      setManagedSlides(nextSlides);
+      try {
+        window.localStorage.setItem(
+          heroCacheKey,
+          JSON.stringify({ savedAt: Date.now(), slides: nextSlides }),
+        );
+      } catch {
+        /* cache is optional */
+      }
+      setIndex(0);
+    })();
+  }, []);
 
   useEffect(() => {
     const id = window.setInterval(() => setIndex((i) => (i + 1) % count), 6000);
     return () => window.clearInterval(id);
   }, [count]);
+  useEffect(() => {
+    const id = window.setInterval(() => setHint((value) => (value + 1) % 4), 2200);
+    return () => window.clearInterval(id);
+  }, []);
 
   return (
     <section className="mx-auto max-w-[1280px] px-4 pt-4 sm:px-8 sm:pt-6">
       <div className="relative overflow-hidden rounded-[22px] bg-soft-black sm:rounded-[28px]">
         {/* Slides */}
         <div className="relative h-[440px] sm:h-[520px] lg:h-[600px]">
-          {heroSlides.map((s, i) => (
+          {slides.map((s, i) => (
             <div
               key={s.title}
               aria-hidden={i !== index}
@@ -141,81 +199,37 @@ function Hero() {
                 i === index ? "opacity-100" : "pointer-events-none opacity-0",
               )}
             >
-              <img
-                src={s.image}
-                alt={s.eyebrow}
-                loading={i === 0 ? "eager" : "lazy"}
-                className="h-full w-full object-cover"
-              />
+              <picture className="block h-full w-full">
+                {s.mobileImage ? (
+                  <source media="(max-width: 639px)" srcSet={s.mobileImage} />
+                ) : null}
+                <img
+                  src={s.image}
+                  alt={s.eyebrow}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  className="h-full w-full object-cover"
+                />
+              </picture>
               <div className="absolute inset-0 bg-gradient-to-t from-[rgba(12,12,11,0.92)] via-[rgba(12,12,11,0.45)] to-[rgba(12,12,11,0.15)]" />
             </div>
           ))}
 
-          {/* Copy */}
+          {/* Minimal editorial copy */}
           <div className="absolute inset-x-0 bottom-0 p-5 sm:p-9 lg:p-12">
             <div className="max-w-xl">
-              <span
-                className="eyebrow block"
-                style={{ color: "var(--gold)" }}
-                key={heroSlides[index]!.eyebrow}
-              >
-                {heroSlides[index]!.eyebrow}
+              <span className="eyebrow block" style={{ color: "var(--gold)" }}>
+                Majlise Aala Catering
               </span>
               <h1 className="mt-3 font-display text-[38px] leading-[1.04] text-white sm:text-[54px] lg:text-[64px]">
-                {heroSlides[index]!.title}
+                {slides[index]!.title}
               </h1>
-              <p className="mt-3 max-w-md text-[14px] leading-relaxed text-white/75 sm:text-[16px]">
-                {heroSlides[index]!.text}
-              </p>
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <Link to="/plan" className="sm:w-auto">
-                  <Button size="lg" full className="sm:w-auto sm:px-8">
-                    Plan Your Catering
-                  </Button>
-                </Link>
-                <Link to="/packages" className="sm:w-auto">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    full
-                    className="border-white/35 bg-white/10 text-white sm:w-auto sm:px-8"
-                  >
-                    View Packages
-                  </Button>
-                </Link>
+              <div className="mt-5 flex max-w-md items-center gap-3 rounded-[14px] bg-white px-4 py-3 text-foreground shadow-lg">
+                <Search className="h-4 w-4 text-gold" />
+                <span className="text-[14px] text-muted-foreground">
+                  Search {["Nikah", "Walima", "Aqiqah", "Corporate event"][hint]} packages
+                </span>
               </div>
             </div>
-          </div>
-
-          {/* Desktop arrows */}
-          <button
-            aria-label="Previous slide"
-            onClick={() => go(-1)}
-            className="press absolute left-4 top-1/2 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/30 bg-black/30 text-white backdrop-blur lg:grid"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <button
-            aria-label="Next slide"
-            onClick={() => go(1)}
-            className="press absolute right-4 top-1/2 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full border border-white/30 bg-black/30 text-white backdrop-blur lg:grid"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-
-          {/* Dots */}
-          <div className="absolute right-5 top-5 flex gap-1.5 sm:right-9 sm:top-8">
-            {heroSlides.map((s, i) => (
-              <button
-                key={s.title}
-                aria-label={`Go to slide ${i + 1}`}
-                onClick={() => setIndex(i)}
-                className={cx(
-                  "h-1.5 rounded-full transition-all",
-                  i === index ? "w-7 bg-white" : "w-1.5 bg-white/45",
-                )}
-              />
-            ))}
           </div>
 
           <div className="absolute left-5 top-5 sm:left-9 sm:top-8">
@@ -225,11 +239,21 @@ function Hero() {
       </div>
 
       {/* Trust strip */}
-      <div className="mt-4 grid grid-cols-2 gap-3 rounded-[18px] border border-border bg-card p-4 sm:grid-cols-4 sm:p-5">
-        {["100% Halal", "Freshly Prepared", "Custom Menus", "Event Catering"].map((t) => (
-          <div key={t} className="flex items-center gap-2 text-[13px] text-muted-foreground">
-            <Check className="h-3.5 w-3.5 shrink-0" style={{ color: "var(--gold)" }} />
-            {t}
+      <div className="mt-4 grid grid-cols-2 gap-2 rounded-[22px] border border-gold/45 bg-card p-3 shadow-[0_14px_30px_rgba(55,42,25,0.10)] sm:grid-cols-4 sm:gap-3 sm:p-4">
+        {[
+          { label: "100% Halal", Icon: Check },
+          { label: "Freshly Prepared", Icon: ChefHat },
+          { label: "Custom Menus", Icon: SlidersHorizontal },
+          { label: "Event Catering", Icon: HeartHandshake },
+        ].map(({ label, Icon }) => (
+          <div
+            key={label}
+            className="flex min-h-12 items-center gap-2.5 rounded-[14px] border border-border bg-surface px-3 text-[13px] font-semibold text-foreground transition-colors hover:border-gold/60 hover:bg-champagne/35 sm:min-h-14"
+          >
+            <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-gold/35 bg-card text-gold shadow-[0_2px_6px_rgba(55,42,25,0.08)]">
+              <Icon className="h-3.5 w-3.5" strokeWidth={2.5} />
+            </span>
+            <span className="leading-tight">{label}</span>
           </div>
         ))}
       </div>
@@ -238,39 +262,71 @@ function Hero() {
 }
 
 function OccasionSelector() {
-  const { plan, update } = usePlan();
+  const { plan, update, occasions } = usePlan();
+  const navigate = useRouter();
+  const hasClearedOccasion = useRef(false);
+
+  useEffect(() => {
+    if (hasClearedOccasion.current) return;
+    hasClearedOccasion.current = true;
+    update({ occasion: null });
+  }, [update]);
+
+  if (occasions.length === 0) return null;
+
   return (
     <Section>
       <SectionHeader
-        eyebrow="Planning something special?"
-        title="What's the occasion?"
-        subtitle="Pick one and we'll shape the menu around it."
+        eyebrow="Choose your event category"
+        title="What are you celebrating?"
+        subtitle="Pick a category to see the packages created for it."
       />
-      <div className="no-scrollbar -mx-5 mt-6 flex gap-4 overflow-x-auto px-5 pb-2 sm:mx-0 sm:px-0">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         {occasions.map((o) => {
           const selected = plan.occasion === o.id;
           return (
             <button
               key={o.id}
-              onClick={() => update({ occasion: o.id })}
+              onClick={() => {
+                update({ occasion: o.id, packageId: null });
+                navigate.push("/plan?step=2");
+              }}
+              aria-pressed={selected}
               className={cx(
-                "press relative w-[200px] shrink-0 overflow-hidden rounded-[20px] border text-left sm:w-[240px]",
-                selected ? "border-primary" : "border-border",
+                "group relative min-h-[222px] cursor-pointer overflow-hidden rounded-[22px] border-2 text-left shadow-[0_14px_30px_rgba(55,42,25,0.18)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_42px_rgba(55,42,25,0.28)] active:translate-y-0 active:scale-[0.975] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/40 sm:min-h-[280px] sm:rounded-[26px]",
+                selected ? "border-gold ring-2 ring-gold/60" : "border-card hover:border-gold",
               )}
             >
-              <img src={o.image} alt="" loading="lazy" className="h-[150px] w-full object-cover sm:h-[170px]" />
-              <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[rgba(17,17,17,0.85)] to-transparent" />
-              <span className="absolute bottom-3.5 left-4 text-[16px] font-semibold text-white">
-                {o.name}
+              <img
+                src={o.image}
+                alt=""
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <span className="absolute inset-0 bg-black/40 transition-colors duration-300 group-hover:bg-black/30" />
+              <span className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <span
+                className={cx(
+                  "absolute left-3 top-3 z-10 inline-flex h-6 items-center gap-1 rounded-full px-2 text-[9px] font-bold uppercase tracking-[0.1em] shadow-sm sm:left-4 sm:top-4 sm:text-[10px]",
+                  selected ? "bg-gold text-primary" : "bg-card text-muted-foreground",
+                )}
+              >
+                {selected && <Check className="h-3 w-3" strokeWidth={3} />}
+                {selected ? "Selected" : "Choose"}
               </span>
-              {selected && (
-                <span
-                  className="absolute right-3 top-3 grid h-6 w-6 place-items-center rounded-full"
-                  style={{ background: "var(--gold)" }}
-                >
-                  <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />
+              <span
+                className={cx(
+                  "absolute inset-x-3 bottom-3 z-10 flex min-h-14 items-center rounded-[16px] px-3 py-2 shadow-[0_8px_20px_rgba(18,14,9,0.14)] backdrop-blur-sm sm:inset-x-5 sm:bottom-5 sm:min-h-[72px] sm:rounded-[18px] sm:px-4",
+                  selected ? "bg-primary text-primary-foreground" : "bg-card text-foreground",
+                )}
+              >
+                <span className="block min-w-0 whitespace-nowrap font-display text-[18px] leading-none sm:text-[26px]">
+                  {o.name}
                 </span>
-              )}
+              </span>
+              <span className="absolute right-3 top-3 z-10 grid h-11 w-11 place-items-center rounded-full bg-card text-foreground shadow-[0_10px_20px_rgba(18,14,9,0.28)] transition-all duration-300 group-hover:translate-x-1 group-hover:bg-primary group-hover:text-primary-foreground group-active:scale-90 sm:right-5 sm:top-5 sm:h-12 sm:w-12">
+                <ArrowRight className="h-4 w-4" />
+              </span>
             </button>
           );
         })}
@@ -295,62 +351,93 @@ function QuickPlanner() {
           How many guests are you expecting?
         </h3>
 
-        <div className="mt-6 max-w-sm">
+        <div className="mt-6 rounded-[18px] border border-border bg-card p-2 shadow-[0_8px_18px_rgba(55,42,25,0.06)]">
           <QuantitySelector
             size="lg"
             value={plan.guests}
             step={10}
             min={10}
             suffix="Guests"
-            onChange={(v) => update({ guests: Math.max(10, v) })}
+            onChange={(v) => {
+              update({ guests: Math.max(10, v) });
+              setCustomMode(false);
+            }}
           />
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-4 grid grid-cols-3 gap-2">
           {presets.map((g) => (
-            <Chip
+            <button
               key={g}
-              active={!customMode && plan.guests === g}
               onClick={() => {
                 setCustomMode(false);
                 update({ guests: g });
               }}
+              className={cx(
+                "press flex h-14 flex-col items-center justify-center rounded-[14px] border text-[15px] font-semibold transition-colors",
+                !customMode && plan.guests === g
+                  ? "border-primary bg-primary text-primary-foreground shadow-[0_8px_16px_rgba(35,29,22,0.16)]"
+                  : "border-border bg-card text-foreground hover:border-gold",
+              )}
             >
               {g === 500 ? "500+" : g}
-            </Chip>
+              <span
+                className={cx(
+                  "mt-0.5 text-[10px] font-medium",
+                  !customMode && plan.guests === g
+                    ? "text-primary-foreground/70"
+                    : "text-muted-text",
+                )}
+              >
+                guests
+              </span>
+            </button>
           ))}
-          <Chip active={customMode} onClick={() => setCustomMode(true)}>
-            Custom
-          </Chip>
         </div>
 
-        {customMode && (
-          <div className="mt-4 max-w-xs duration-300 animate-in fade-in slide-in-from-bottom-2">
-            <label className="eyebrow" htmlFor="custom-guests">
-              Enter exact guest count
-            </label>
-            <input
-              id="custom-guests"
-              type="number"
-              inputMode="numeric"
-              min={10}
-              autoFocus
-              value={Number.isNaN(plan.guests) ? "" : plan.guests}
-              onChange={(e) => {
-                const v = parseInt(e.target.value, 10);
-                update({ guests: Number.isNaN(v) ? 0 : Math.max(0, v) });
-              }}
-              placeholder="e.g. 750"
-              className="mt-2 h-14 w-full rounded-[14px] border border-border bg-card px-4 text-center text-[18px] font-semibold tabular-nums outline-none focus:border-gold"
-            />
-            <p className="mt-2 text-[12px] text-muted-foreground">
-              Minimum 10 guests. We'll bill per Mann (100 guests), rounded up.
-            </p>
-          </div>
-        )}
+        <div
+          className={cx(
+            "mt-3 overflow-hidden rounded-[18px] border transition-colors",
+            customMode
+              ? "border-gold/50 bg-champagne/30"
+              : "border-border bg-card hover:border-gold",
+          )}
+        >
+          <button
+            onClick={() => setCustomMode(true)}
+            className="press flex h-14 w-full items-center justify-between px-4 text-left"
+          >
+            <span className="text-[15px] font-semibold">Custom guest count</span>
+            <span className="text-[12px] text-muted-foreground">Enter an exact number</span>
+          </button>
+          {customMode && (
+            <div className="border-t border-gold/25 px-4 pb-4 pt-3 duration-300 animate-in fade-in slide-in-from-bottom-2">
+              <label className="eyebrow" htmlFor="custom-guests">
+                Enter exact guest count
+              </label>
+              <input
+                id="custom-guests"
+                type="number"
+                inputMode="numeric"
+                min={10}
+                autoFocus
+                value={Number.isNaN(plan.guests) ? "" : plan.guests}
+                onChange={(e) => {
+                  const v = parseInt(e.target.value, 10);
+                  update({ guests: Number.isNaN(v) ? 0 : Math.max(0, v) });
+                }}
+                placeholder="e.g. 750"
+                className="mt-2 h-14 w-full rounded-[14px] border border-border bg-card px-4 text-center text-[20px] font-semibold tabular-nums outline-none focus:border-gold"
+              />
+              <p className="mt-2 text-[12px] text-muted-foreground">
+                Minimum 10 guests. We'll bill per Mann (100 guests), rounded up.
+              </p>
+            </div>
+          )}
+        </div>
 
         <div className="mt-7">
-          <Link to="/plan">
+          <Link href="/plan">
             <Button size="lg" full className="sm:w-auto sm:px-10">
               Start Planning
             </Button>
@@ -369,31 +456,38 @@ function MenuPreview() {
         title="Explore the Menu"
         subtitle="Crafted for gatherings big and small."
         action={
-          <Link to="/menu" className="hidden shrink-0 items-center gap-1 text-[14px] font-semibold sm:flex">
+          <Link
+            href="/menu"
+            className="hidden shrink-0 items-center gap-1 text-[14px] font-semibold sm:flex"
+          >
             View all <ArrowRight className="h-4 w-4" />
           </Link>
         }
       />
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
         {categories.map((c) => (
           <Link
             key={c.id}
-            to="/menu"
-            className="press relative overflow-hidden rounded-[16px] border border-border"
+            href="/menu"
+            className="group relative min-h-[154px] overflow-hidden rounded-[22px] border border-border bg-surface shadow-[0_12px_28px_rgba(55,42,25,0.10)] transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-gold/70 hover:shadow-[0_20px_38px_rgba(55,42,25,0.18)]"
           >
             <img
               src={c.image}
               alt={c.name}
               loading="lazy"
-              className="h-[190px] w-full object-cover sm:h-[260px]"
+              className="absolute bottom-0 right-0 h-full w-[52%] object-cover transition-transform duration-500 group-hover:scale-110"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[rgba(17,17,17,0.85)] via-[rgba(17,17,17,0.15)] to-transparent" />
-            <div className="absolute inset-x-4 bottom-4 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2">
-              <span className="min-w-0">
-                <span className="block font-display text-[20px] text-white">{c.name}</span>
-                <span className="block text-[12px] text-white/70">{c.items} items</span>
+            <span className="absolute inset-y-0 left-0 w-[68%] bg-gradient-to-r from-surface via-surface to-surface/70" />
+            <div className="absolute bottom-5 left-5 z-10 max-w-[52%]">
+              <span className="block font-display text-[27px] leading-[0.95] text-foreground sm:text-[31px]">
+                {c.name}
               </span>
-              <ArrowUpRight className="h-5 w-5 shrink-0 text-white" />
+              <span className="mt-2 block text-[12px] font-medium text-muted-foreground">
+                {c.items} signature dishes
+              </span>
+              <span className="mt-4 inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform duration-300 group-hover:translate-x-1">
+                <ArrowRight className="h-4 w-4" />
+              </span>
             </div>
           </Link>
         ))}
@@ -414,7 +508,7 @@ function MostLoved({ dishes: list }: { dishes: typeof dishes }) {
         {list.map((d) => (
           <Link
             key={d.id}
-            to="/packages"
+            href="/packages"
             className="press group overflow-hidden rounded-[20px] border border-border bg-card shadow-[var(--shadow-card)]"
           >
             <div className="relative aspect-[4/3] w-full overflow-hidden">
@@ -429,7 +523,11 @@ function MostLoved({ dishes: list }: { dishes: typeof dishes }) {
                   className="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold tracking-[0.12em]"
                   style={{ background: "var(--champagne)", color: "var(--foreground)" }}
                 >
-                  {d.tags[0] === "bestseller" ? "BESTSELLER" : d.tags[0] === "premium" ? "PREMIUM" : "MOST LOVED"}
+                  {d.tags[0] === "bestseller"
+                    ? "BESTSELLER"
+                    : d.tags[0] === "premium"
+                      ? "PREMIUM"
+                      : "MOST LOVED"}
                 </span>
               )}
             </div>
@@ -490,12 +588,15 @@ function Packages() {
                   <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: "var(--gold)" }} />
                   <span className="min-w-0">
                     {s.title}
-                    <span className="text-muted-text"> · {s.items.length} {s.items.length === 1 ? "item" : "items"}</span>
+                    <span className="text-muted-text">
+                      {" "}
+                      · {s.items.length} {s.items.length === 1 ? "item" : "items"}
+                    </span>
                   </span>
                 </li>
               ))}
             </ul>
-            <Link to="/packages" className="mt-5">
+            <Link href="/packages" className="mt-5">
               <Button full variant={p.signature ? "primary" : "outline"}>
                 View Package
               </Button>
@@ -522,7 +623,7 @@ function BuildYourMenuCTA() {
             We guide you category by category and recommend quantities for your guest count.
           </p>
         </div>
-        <Link to="/plan">
+        <Link href="/plan">
           <Button size="lg" variant="champagne" full className="lg:w-auto lg:px-8">
             Build My Menu
           </Button>
@@ -550,10 +651,10 @@ function WeddingEditorial() {
             your biggest day.
           </h3>
           <p className="mt-4 max-w-md text-[15px] leading-relaxed text-muted-foreground">
-            From intimate Nikah gatherings to grand Walima celebrations, create a menu your
-            guests will remember.
+            From intimate Nikah gatherings to grand Walima celebrations, create a menu your guests
+            will remember.
           </p>
-          <Link to="/events" className="mt-6 inline-block">
+          <Link href="/events" className="mt-6 inline-block">
             <Button variant="outline" size="lg">
               Plan Wedding Catering <ArrowRight className="h-4 w-4" />
             </Button>
@@ -568,12 +669,20 @@ function Standards() {
   return (
     <Section>
       <SectionHeader eyebrow="Why us" title="The Majlise Aala Standard" />
-      <div className="mt-6 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
-        {standards.map((s) => (
-          <div key={s.title} className="border-t border-border pt-5">
-            <span className="gold-rule block" />
-            <h3 className="mt-4 text-[17px] font-semibold">{s.title}</h3>
-            <p className="mt-1.5 text-[14px] text-muted-foreground">{s.note}</p>
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
+        {standards.map((s, index) => (
+          <div
+            key={s.title}
+            className="group rounded-[20px] border border-border bg-card p-5 shadow-[0_8px_20px_rgba(55,42,25,0.07)] transition-all duration-300 hover:-translate-y-1 hover:border-gold/70 hover:shadow-[0_16px_30px_rgba(55,42,25,0.15)]"
+          >
+            <div className="flex items-center justify-between">
+              <span className="gold-rule block" />
+              <span className="grid h-8 w-8 place-items-center rounded-full bg-champagne text-[12px] font-bold text-gold">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+            </div>
+            <h3 className="mt-5 text-[17px] font-semibold">{s.title}</h3>
+            <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">{s.note}</p>
           </div>
         ))}
       </div>
@@ -593,7 +702,11 @@ function Testimonials() {
           >
             <div className="flex gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="h-3.5 w-3.5" style={{ color: "var(--gold)", fill: "var(--gold)" }} />
+                <Star
+                  key={i}
+                  className="h-3.5 w-3.5"
+                  style={{ color: "var(--gold)", fill: "var(--gold)" }}
+                />
               ))}
             </div>
             <blockquote className="mt-4 font-display text-[19px] leading-snug">

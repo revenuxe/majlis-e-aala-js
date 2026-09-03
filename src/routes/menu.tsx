@@ -1,19 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { SlidersHorizontal } from "lucide-react";
+"use client";
+import Link from "next/link";
+import { Search, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
-import { dishes, menuFilters } from "@/lib/data";
+import { menuFilters } from "@/lib/data";
 import { usePlan } from "@/lib/plan-store";
 import { FoodCard } from "@/components/FoodCard";
-import {
-  BottomSheet,
-  Button,
-  ChoiceCard,
-  Chip,
-  EmptyState,
-  SectionHeader,
-} from "@/components/ui-kit";
+import { BottomSheet, Button, ChoiceCard, Chip, EmptyState } from "@/components/ui-kit";
 
-export const Route = createFileRoute("/menu")({
+const routeMetadata = {
   head: () => ({
     meta: [
       { title: "Catering Menu — Biryani, Kebabs & More | Majlise Aala" },
@@ -30,14 +24,15 @@ export const Route = createFileRoute("/menu")({
     ],
   }),
   component: MenuPage,
-});
+};
 
-function MenuPage() {
+export default function MenuPage() {
   const [category, setCategory] = useState<string>("All");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const [diet, setDiet] = useState<string[]>([]);
   const [onlyBestsellers, setOnlyBestsellers] = useState(false);
-  const { itemCount } = usePlan();
+  const { itemCount, dishes } = usePlan();
 
   const list = useMemo(
     () =>
@@ -46,23 +41,56 @@ function MenuPage() {
         if (diet.includes("Veg") && d.diet !== "veg") return false;
         if (diet.includes("Non-Veg") && d.diet !== "nonveg") return false;
         if (onlyBestsellers && !d.tags?.includes("bestseller")) return false;
+        if (
+          search.trim() &&
+          !`${d.name} ${d.description}`.toLowerCase().includes(search.trim().toLowerCase())
+        )
+          return false;
         return true;
       }),
-    [category, diet, onlyBestsellers],
+    [category, diet, dishes, onlyBestsellers, search],
   );
 
   const toggleDiet = (v: string) =>
-    setDiet((p) => (p.includes(v) ? p.filter((x) => x !== v) : [...p.filter((x) => x !== (v === "Veg" ? "Non-Veg" : "Veg")), v]));
+    setDiet((p) =>
+      p.includes(v)
+        ? p.filter((x) => x !== v)
+        : [...p.filter((x) => x !== (v === "Veg" ? "Non-Veg" : "Veg")), v],
+    );
 
   return (
     <main className="mx-auto max-w-[1280px] px-5 py-8 sm:px-8">
-      <SectionHeader
-        eyebrow="Our kitchen"
-        title="Explore the Menu"
-        subtitle="Crafted for gatherings big and small."
-      />
+      <section className="relative overflow-hidden rounded-[30px] bg-primary px-5 pb-20 pt-6 text-primary-foreground shadow-[0_18px_36px_rgba(41,32,20,0.18)] sm:px-7 sm:pb-24 sm:pt-8">
+        <span className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full border-[28px] border-gold/15" />
+        <span className="pointer-events-none absolute -bottom-32 -left-16 h-56 w-72 rounded-[50%] border-[26px] border-primary-foreground/10" />
+        <p className="relative text-[11px] font-bold uppercase tracking-[0.18em] text-gold">
+          The Majlise Aala kitchen
+        </p>
+        <div className="relative mt-3 flex items-end justify-between gap-4">
+          <div>
+            <h1 className="font-display text-[34px] leading-[0.95] sm:text-[42px]">
+              Build your event menu
+            </h1>
+            <p className="mt-2 max-w-md text-[14px] text-primary-foreground/75">
+              Browse dishes, then shape a menu that suits your guests and occasion.
+            </p>
+          </div>
+          <span className="hidden rounded-2xl border border-primary-foreground/20 bg-primary-foreground/10 px-3 py-2 text-[12px] font-semibold sm:block">
+            Catering made simple
+          </span>
+        </div>
+        <label className="relative mt-6 flex h-12 items-center gap-3 rounded-[16px] border border-primary-foreground/20 bg-primary-foreground/10 px-4 text-primary-foreground backdrop-blur-sm">
+          <Search className="h-4 w-4 text-muted-foreground" />
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search dishes for your event..."
+            className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-primary-foreground/60"
+          />
+        </label>
+      </section>
 
-      <div className="sticky top-16 z-40 -mx-5 mt-6 bg-background/90 px-5 py-3 backdrop-blur-md sm:mx-0 sm:px-0 lg:top-[84px]">
+      <div className="sticky top-16 z-40 -mx-1 -mt-12 rounded-[24px] border border-border bg-card px-4 py-3 shadow-[0_12px_28px_rgba(55,42,25,0.12)] backdrop-blur-md sm:mx-0 sm:px-5 lg:top-[84px]">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
           <div className="no-scrollbar flex min-w-0 gap-2 overflow-x-auto">
             {menuFilters.map((c) => (
@@ -101,7 +129,7 @@ function MenuPage() {
           />
         </div>
       ) : (
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
           {list.map((d) => (
             <FoodCard key={d.id} dish={d} />
           ))}
@@ -111,7 +139,7 @@ function MenuPage() {
       {itemCount > 0 && (
         <div className="fixed inset-x-0 bottom-[104px] z-50 px-5 lg:bottom-6">
           <div className="mx-auto max-w-md">
-            <Link to="/my-menu">
+            <Link href="/my-menu">
               <Button size="lg" full>
                 {itemCount} {itemCount === 1 ? "dish" : "dishes"} selected • Review My Catering
               </Button>

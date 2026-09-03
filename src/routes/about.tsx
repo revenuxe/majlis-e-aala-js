@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import Link from "next/link";
 import { standards } from "@/lib/data";
 import { BrandLogo } from "@/components/Brand";
 import { Button, HalalBadge, SectionHeader } from "@/components/ui-kit";
 
-export const Route = createFileRoute("/about")({
+const routeMetadata = {
   head: () => ({
     meta: [
       { title: "About & Our Halal Commitment | Majlise Aala" },
@@ -20,9 +20,9 @@ export const Route = createFileRoute("/about")({
     ],
   }),
   component: AboutPage,
-});
+};
 
-function AboutPage() {
+export default function AboutPage() {
   return (
     <main className="mx-auto max-w-[860px] px-5 py-10 sm:px-8">
       <BrandLogo className="h-6" />
@@ -30,10 +30,10 @@ function AboutPage() {
         Hospitality, prepared with care.
       </h1>
       <p className="mt-5 text-[16px] leading-relaxed text-muted-foreground">
-        Majlise Aala is a premium Halal catering house serving weddings, Walima, Aqiqah,
-        corporate functions and private gatherings across Bengaluru. Every menu is cooked in
-        small batches on the day of your event, by a team that has served celebrations from
-        thirty guests to well over a thousand.
+        Majlise Aala is a premium Halal catering house serving weddings, Walima, Aqiqah, corporate
+        functions and private gatherings across Bengaluru. Every menu is cooked in small batches on
+        the day of your event, by a team that has served celebrations from thirty guests to well
+        over a thousand.
       </p>
 
       <div className="mt-10 rounded-[20px] border border-border bg-card p-6 sm:p-8">
@@ -41,9 +41,9 @@ function AboutPage() {
         <h2 className="mt-5 font-display text-[28px]">Our Halal Commitment</h2>
         <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
           All meat is sourced from certified Halal suppliers we have worked with for years.
-          Preparation, storage and service are kept fully separate from any non-Halal product,
-          and our kitchen team is trained on these standards as part of onboarding. If you would
-          like certification details for your event, our catering team will share them on request.
+          Preparation, storage and service are kept fully separate from any non-Halal product, and
+          our kitchen team is trained on these standards as part of onboarding. If you would like
+          certification details for your event, our catering team will share them on request.
         </p>
       </div>
 
@@ -61,12 +61,12 @@ function AboutPage() {
       </div>
 
       <div className="mt-12 flex flex-col gap-3 sm:flex-row">
-        <Link to="/plan">
+        <Link href="/plan">
           <Button size="lg" full className="sm:w-auto sm:px-8">
             Plan Your Catering
           </Button>
         </Link>
-        <a href="https://wa.me/919000000000" target="_blank" rel="noreferrer">
+        <a href="https://wa.me/919886285028" target="_blank" rel="noreferrer">
           <Button size="lg" variant="outline" full className="sm:w-auto sm:px-8">
             Chat with Catering Team
           </Button>

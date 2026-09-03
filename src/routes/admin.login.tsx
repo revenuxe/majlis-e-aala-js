@@ -1,4 +1,5 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+"use client";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2, Lock, Mail, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,12 +8,15 @@ import { Button } from "@/components/ui-kit";
 import { Field, TextInput } from "@/components/admin/AdminUI";
 import { BrandMark } from "@/components/Brand";
 
-export const Route = createFileRoute("/admin/login")({
+const routeMetadata = {
   ssr: false,
   head: () => ({
     meta: [
       { title: "Admin Sign In — Majlise Aala" },
-      { name: "description", content: "Secure sign in for the Majlise Aala catering admin console." },
+      {
+        name: "description",
+        content: "Secure sign in for the Majlise Aala catering admin console.",
+      },
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Admin Sign In — Majlise Aala" },
       {
@@ -22,10 +26,10 @@ export const Route = createFileRoute("/admin/login")({
     ],
   }),
   component: AdminLogin,
-});
+};
 
-function AdminLogin() {
-  const navigate = useNavigate();
+export default function AdminLogin() {
+  const navigate = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -33,7 +37,7 @@ function AdminLogin() {
 
   useEffect(() => {
     void (async () => {
-      if (await isCurrentUserAdmin()) navigate({ to: "/admin/dashboard", replace: true });
+      if (await isCurrentUserAdmin()) navigate.replace("/admin/dashboard");
     })();
   }, [navigate]);
 
@@ -56,7 +60,7 @@ function AdminLogin() {
       setBusy(false);
       return;
     }
-    navigate({ to: "/admin/dashboard", replace: true });
+    navigate.replace("/admin/dashboard");
   }
 
   return (
@@ -64,7 +68,7 @@ function AdminLogin() {
       <section className="relative hidden overflow-hidden bg-primary lg:block">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(184,154,98,0.35),transparent_60%)]" />
         <div className="relative flex h-full flex-col justify-between p-12">
-          <BrandMark className="h-14 w-14" />
+          <BrandMark size={56} />
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-champagne">
               Admin Console
@@ -84,7 +88,7 @@ function AdminLogin() {
       <section className="flex items-center justify-center px-5 py-12 sm:px-10">
         <form onSubmit={onSubmit} className="w-full max-w-[400px]">
           <div className="lg:hidden">
-            <BrandMark className="h-12 w-12" />
+            <BrandMark size={48} />
           </div>
           <p className="eyebrow mt-6">Restricted Access</p>
           <h2 className="mt-2 font-display text-[32px] leading-tight">Admin sign in</h2>
@@ -130,7 +134,11 @@ function AdminLogin() {
           )}
 
           <Button type="submit" full size="lg" className="mt-6" disabled={busy}>
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
+            {busy ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <ShieldCheck className="h-4 w-4" />
+            )}
             {busy ? "Signing in…" : "Sign in"}
           </Button>
 

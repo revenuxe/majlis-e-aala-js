@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import Link from "next/link";
 import { BrandLogo } from "./Brand";
 
 export function SiteFooter() {
@@ -9,8 +9,8 @@ export function SiteFooter() {
           <BrandLogo className="h-6" />
         </div>
         <p className="mt-5 max-w-sm text-[14px] leading-relaxed opacity-70">
-          Premium Halal catering for weddings, Walima, Aqiqah, corporate and private
-          gatherings across Bengaluru.
+          Premium Halal catering for weddings, Walima, Aqiqah, corporate and private gatherings
+          across Bengaluru.
         </p>
 
         <div className="mt-10 grid gap-8 sm:grid-cols-3">
@@ -19,10 +19,9 @@ export function SiteFooter() {
               Catering
             </p>
             <div className="mt-4 grid gap-2.5 text-[14px] opacity-85">
-              <Link to="/menu">Explore Menu</Link>
-              <Link to="/packages">Catering Packages</Link>
-              <Link to="/plan">Plan Your Catering</Link>
-              <Link to="/my-menu">Your Catering Plan</Link>
+              <Link href="/packages">Catering Packages</Link>
+              <Link href="/plan">Plan Your Catering</Link>
+              <Link href="/my-menu">Your Catering Plan</Link>
             </div>
           </div>
           <div>
@@ -30,10 +29,10 @@ export function SiteFooter() {
               Occasions
             </p>
             <div className="mt-4 grid gap-2.5 text-[14px] opacity-85">
-              <Link to="/events">Weddings & Walima</Link>
-              <Link to="/events">Nikah & Aqiqah</Link>
-              <Link to="/events">Corporate Events</Link>
-              <Link to="/events">Ramadan & Iftar</Link>
+              <Link href="/nikah">Nikah</Link>
+              <Link href="/walima">Walima</Link>
+              <Link href="/aqiqah">Aqiqah</Link>
+              <Link href="/corporate-events">Corporate Events</Link>
             </div>
           </div>
           <div>
@@ -41,11 +40,12 @@ export function SiteFooter() {
               Contact
             </p>
             <div className="mt-4 grid gap-2.5 text-[14px] opacity-85">
-              <a href="tel:+919000000000">+91 90000 00000</a>
-              <a href="https://wa.me/919000000000" target="_blank" rel="noreferrer">
-                Chat with Catering Team
-              </a>
-              <Link to="/about">Our Halal Commitment</Link>
+              <a href="tel:+919886285028">+91 98862 85028</a>
+              <a href="mailto:majliseaala@gmail.com">majliseaala@gmail.com</a>
+              <Link href="/about">About us</Link>
+              <Link href="/contact">Contact us</Link>
+              <Link href="/privacy">Privacy policy</Link>
+              <Link href="/terms">Terms & conditions</Link>
             </div>
           </div>
         </div>

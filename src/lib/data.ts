@@ -40,9 +40,16 @@ export interface CateringPackage {
   id: string;
   name: string;
   tagline: string;
-  /** Price for one Mann (one serving unit of 100 guests). */
+  /** Base package price; the range indicates the included guest capacity. */
   pricePerMann: number;
   guestsPerMann: number;
+  guestCountFrom?: number;
+  guestCountTo?: number;
+  eventCategoryId?: string | null;
+  foodPreference?: "veg" | "nonveg" | "mixed";
+  includedServices?: string[];
+  excludedServices?: string[];
+  serviceOptions?: string[];
   sections: PackageSection[];
   signature?: boolean;
 }
@@ -50,15 +57,39 @@ export interface CateringPackage {
 /** Catering is quoted in "Mann" — one Mann serves 100 guests. */
 export const GUESTS_PER_MANN = 100;
 
-export const mannsFor = (guests: number) =>
-  Math.max(1, Math.ceil(guests / GUESTS_PER_MANN));
+export const mannsFor = (guests: number, guestsPerMann = GUESTS_PER_MANN) =>
+  Math.max(1, Math.ceil(guests / guestsPerMann));
 
 export const packageTotalFor = (pkg: CateringPackage, guests: number) =>
-  pkg.pricePerMann * mannsFor(guests);
+  Math.round(pkg.pricePerMann * packagePriceMultiplier(pkg, guests));
+
+export const packagePriceMultiplier = (pkg: CateringPackage, guests: number) => {
+  const from = pkg.guestCountFrom ?? pkg.guestsPerMann;
+  const to = pkg.guestCountTo ?? pkg.guestsPerMann;
+  const selectedGuests = Math.max(1, guests);
+  // The listed package price covers its stated range. Below the range, the
+  // estimate scales from the lower included count; above it, from the upper.
+  if (selectedGuests < from) return selectedGuests / from;
+  if (selectedGuests > to) return selectedGuests / to;
+  return 1;
+};
+
+export const packageGuestRange = (pkg: CateringPackage) => {
+  const from = pkg.guestCountFrom ?? pkg.guestsPerMann;
+  const to = pkg.guestCountTo ?? pkg.guestsPerMann;
+  return from === to ? `${to} guests` : `${from}–${to} guests`;
+};
+
+export const packageGuestFit = (pkg: CateringPackage, guests: number) => {
+  const from = pkg.guestCountFrom ?? pkg.guestsPerMann;
+  const to = pkg.guestCountTo ?? pkg.guestsPerMann;
+  if (guests < from) return "below" as const;
+  if (guests > to) return "above" as const;
+  return "within" as const;
+};
 
 export const perGuestFor = (pkg: CateringPackage, guests: number) =>
   Math.round(packageTotalFor(pkg, guests) / Math.max(1, guests));
-
 
 export const categories: Category[] = [
   { id: "biryani", name: "Signature Biryani", image: biryaniImg, items: 8 },
@@ -98,8 +129,7 @@ export const dishes: Dish[] = [
     id: "chicken-dum-biryani",
     name: "Chicken Dum Biryani",
     categoryId: "Biryani",
-    description:
-      "Slow-cooked chicken layered with aromatic basmati rice and house spices.",
+    description: "Slow-cooked chicken layered with aromatic basmati rice and house spices.",
     price: 1499,
     serves: "Serves 5–6",
     diet: "nonveg",
@@ -505,9 +535,7 @@ export const packages: CateringPackage[] = [
   },
 ];
 
-export const packageHighlights = (p: CateringPackage) =>
-  p.sections.map((s) => s.title);
-
+export const packageHighlights = (p: CateringPackage) => p.sections.map((s) => s.title);
 
 export const serviceAreas = [
   "Frazer Town",
@@ -532,14 +560,12 @@ export const testimonials = [
     event: "Walima • 250 Guests",
   },
   {
-    quote:
-      "They handled 400 guests without a single delay. The buffet presentation was beautiful.",
+    quote: "They handled 400 guests without a single delay. The buffet presentation was beautiful.",
     name: "Fatima Rizvi",
     event: "Wedding • 400 Guests",
   },
   {
-    quote:
-      "We asked for a simple Aqiqah lunch and still received the attention of a large event.",
+    quote: "We asked for a simple Aqiqah lunch and still received the attention of a large event.",
     name: "Imran Khan",
     event: "Aqiqah • 80 Guests",
   },

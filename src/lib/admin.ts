@@ -7,8 +7,34 @@ export type PackageRow = {
   tagline: string;
   price_per_mann: number;
   guests_per_mann: number;
+  guest_count_from: number;
+  guest_count_to: number;
+  event_category_id: string | null;
+  food_preference: "veg" | "nonveg" | "mixed";
+  included_services: string[];
+  excluded_services: string[];
+  service_options: string[];
   image_url: string | null;
   signature: boolean;
+  is_active: boolean;
+  sort_order: number;
+};
+
+export type EventCategoryRow = {
+  id: string;
+  slug: string;
+  name: string;
+  image_url: string | null;
+  sort_order: number;
+  is_active: boolean;
+};
+
+export type HeroCarouselRow = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  desktop_image_url: string;
+  mobile_image_url: string | null;
   is_active: boolean;
   sort_order: number;
 };
@@ -52,6 +78,7 @@ export type MenuItemRow = {
 
 export type OrderRow = {
   id: string;
+  booking_reference?: string | null;
   customer_name: string;
   phone: string;
   email: string | null;

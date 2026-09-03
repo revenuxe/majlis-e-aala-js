@@ -1,16 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { MessageCircle, Trash2 } from "lucide-react";
-import { inr, mannsFor, packages } from "@/lib/data";
-import { dishById, usePlan } from "@/lib/plan-store";
-import {
-  Button,
-  EmptyState,
-  QuantitySelector,
-  SectionHeader,
-  DietMark,
-} from "@/components/ui-kit";
+"use client";
+import Link from "next/link";
+import { Trash2 } from "lucide-react";
+import { inr, packageTotalFor } from "@/lib/data";
+import { usePlan } from "@/lib/plan-store";
+import { Button, EmptyState, QuantitySelector, SectionHeader, DietMark } from "@/components/ui-kit";
 
-export const Route = createFileRoute("/my-menu")({
+const routeMetadata = {
   head: () => ({
     meta: [
       { title: "Your Catering Plan | Majlise Aala" },
@@ -27,12 +22,14 @@ export const Route = createFileRoute("/my-menu")({
     ],
   }),
   component: MyMenu,
-});
+};
 
-function MyMenu() {
-  const { plan, foodTotal, setQuantity, removeItem } = usePlan();
+export default function MyMenu() {
+  const { plan, foodTotal, setQuantity, removeItem, dishes, packages, occasions } = usePlan();
+  const dishById = (id: string) => dishes.find((dish) => dish.id === id);
   const pkg = packages.find((p) => p.id === plan.packageId);
-  const hasPlan = plan.mode === "package" ? !!pkg : plan.items.length > 0;
+  const occasionName = occasions.find((occasion) => occasion.id === plan.occasion)?.name;
+  const hasPlan = !!pkg;
 
   const buffet = plan.services.includes("Buffet Setup") ? 5000 : 0;
   const staff = plan.services.includes("Serving Staff") ? 6000 : 0;
@@ -42,15 +39,13 @@ function MyMenu() {
   const whatsappText = encodeURIComponent(
     [
       "MAJLISE AALA Catering Enquiry",
-      `Event: ${plan.occasion ?? "—"}`,
+      `Event: ${occasionName ?? "—"}`,
       `Guests: ${plan.guests}`,
       `Date: ${plan.date || "To be confirmed"}`,
       `Menu: ${
         pkg
           ? `${pkg.name} package`
-          : plan.items
-              .map((i) => `${dishById(i.dishId)?.name} x${i.quantity}`)
-              .join(", ") || "—"
+          : plan.items.map((i) => `${dishById(i.dishId)?.name} x${i.quantity}`).join(", ") || "—"
       }`,
       `Estimated Total: ${inr(total)}`,
     ].join("\n"),
@@ -60,11 +55,11 @@ function MyMenu() {
     return (
       <main className="mx-auto max-w-[720px] px-5 py-10 sm:px-8">
         <EmptyState
-          title="Your menu is waiting."
-          note="Start creating a feast for your celebration."
+          title="Your catering plan is waiting."
+          note="Choose a catering package to get started."
           action={
-            <Link to="/menu">
-              <Button size="lg">Explore Menu</Button>
+            <Link href="/packages">
+              <Button size="lg">View Packages</Button>
             </Link>
           }
         />
@@ -84,7 +79,7 @@ function MyMenu() {
 
       <div className="mt-6 rounded-[16px] border border-border bg-card p-5">
         <p className="text-[11px] uppercase tracking-[0.18em] text-muted-text">
-          {plan.occasion ?? "Celebration"}
+          {occasionName ?? "Celebration"}
         </p>
         <p className="mt-1 font-display text-[26px]">
           {plan.date ? new Date(plan.date).toDateString() : "Date to be confirmed"}
@@ -104,7 +99,7 @@ function MyMenu() {
             {pkg.sections.map((s) => s.title).join(" • ")}
           </p>
           <p className="mt-3 text-[16px] font-semibold">
-            {inr(pkg.pricePerMann)} / Mann × {mannsFor(plan.guests)} ({plan.guests} guests)
+            {inr(packageTotalFor(pkg, plan.guests))} for {plan.guests} guests
           </p>
         </div>
       ) : (
@@ -166,20 +161,31 @@ function MyMenu() {
           <span className="text-[15px] font-semibold">Estimated Total</span>
           <span className="text-[22px] font-bold">{inr(total)}</span>
         </div>
-        <p className="mt-2 text-[12px] text-muted-text">
-          Final pricing will be confirmed after reviewing your event requirements.
-        </p>
+        <div className="mt-4 rounded-[12px] border border-gold/30 bg-champagne/25 p-3.5">
+          <p className="text-[12px] font-semibold text-foreground">
+            This is an estimated amount, not a final quote.
+          </p>
+          <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+            Your final price is confirmed after our catering team reviews your guest count, menu
+            changes, add-ons, food preferences, serving requirements and venue or delivery details.
+            We will discuss every change with you before confirming the order.
+          </p>
+        </div>
       </div>
 
       <div className="mt-6 grid gap-3">
-        <Link to="/plan">
+        <Link href="/plan?step=3">
           <Button size="lg" full>
             Continue to Event Details
           </Button>
         </Link>
-        <a href={`https://wa.me/919000000000?text=${whatsappText}`} target="_blank" rel="noreferrer">
+        <a
+          href={`https://wa.me/919886285028?text=${whatsappText}`}
+          target="_blank"
+          rel="noreferrer"
+        >
           <Button size="lg" variant="outline" full>
-            <MessageCircle className="h-4 w-4" /> Send My Menu on WhatsApp
+            <img src="/whatsapp.svg" alt="" className="h-4 w-4" /> Send My Menu on WhatsApp
           </Button>
         </a>
       </div>

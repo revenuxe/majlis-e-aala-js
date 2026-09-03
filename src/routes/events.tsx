@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { editorialImage, occasions } from "@/lib/data";
+import { editorialImage } from "@/lib/data";
 import { Button, SectionHeader } from "@/components/ui-kit";
 
-export const Route = createFileRoute("/events")({
+const routeMetadata = {
   head: () => ({
     meta: [
       { title: "Event Catering — Weddings, Walima, Aqiqah | Majlise Aala" },
@@ -20,11 +20,11 @@ export const Route = createFileRoute("/events")({
     ],
   }),
   component: EventsPage,
-});
+};
 
 const editorials = [
   {
-    eyebrow: "Weddings",
+    eyebrow: "Nikah & Walima",
     title: "A feast worthy of your biggest day.",
     copy: "From intimate Nikah gatherings to grand Walima celebrations, create a menu your guests will remember.",
   },
@@ -38,14 +38,9 @@ const editorials = [
     title: "Hospitality your team will notice.",
     copy: "Packed meals, buffets and live counters for offices, conferences and team celebrations.",
   },
-  {
-    eyebrow: "Ramadan & Iftar",
-    title: "Iftar spreads for every gathering.",
-    copy: "Dates, starters, biryani and desserts served on time, every evening of Ramadan.",
-  },
 ];
 
-function EventsPage() {
+export default function EventsPage() {
   return (
     <main className="mx-auto max-w-[1280px] px-5 py-8 sm:px-8">
       <SectionHeader
@@ -76,7 +71,7 @@ function EventsPage() {
               <p className="mt-4 max-w-md text-[15px] leading-relaxed text-muted-foreground">
                 {e.copy}
               </p>
-              <Link to="/plan" className="mt-6 inline-block">
+              <Link href="/plan" className="mt-6 inline-block">
                 <Button variant="outline" size="lg">
                   Plan This Catering <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -84,20 +79,6 @@ function EventsPage() {
             </div>
           </div>
         ))}
-      </div>
-
-      <div className="mt-12">
-        <p className="eyebrow">Also catering for</p>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {occasions.map((o) => (
-            <span
-              key={o.id}
-              className="rounded-full border border-border bg-card px-4 py-2 text-[13px] text-muted-foreground"
-            >
-              {o.name}
-            </span>
-          ))}
-        </div>
       </div>
     </main>
   );
