@@ -302,117 +302,138 @@ export default function PackagesPage() {
                 </span>
               )}
             </div>
-            <div className="mt-5 rounded-[14px] bg-surface px-4 py-3">
-              <p className="text-[22px] font-bold leading-none">
-                {inr(packageTotalFor(p, plan.guests))}
-              </p>
-              <p className="mt-1 text-[12px] text-muted-foreground">
-                Package price · serves {packageGuestRange(p)}
-              </p>
-              <p className="hidden mt-1 text-[12px] text-muted-foreground">
-                {inr(p.pricePerMann)} per Mann · serves {p.guestsPerMann} guests
-              </p>
-            </div>
-            <GuestCountNotice pkg={p} guests={plan.guests} />
-            <div className="mt-4 flex-1 text-[13px] text-muted-foreground">
-              {p.sections.map((section) => section.title).join(" · ") ||
-                "Complete catering package"}
-            </div>
             <button
               type="button"
               onClick={() => setExpandedPackageId((current) => (current === p.id ? null : p.id))}
               aria-expanded={expandedPackageId === p.id}
-              className="hidden"
+              aria-label={expandedPackageId === p.id ? "Hide included menu" : "Show included menu"}
+              className="press mt-5 grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[14px] bg-surface px-4 py-3 text-left"
             >
               <span>
-                {expandedPackageId === p.id ? "Hide menu inclusions" : "View menu inclusions"}
+                <span className="block text-[22px] font-bold leading-none">
+                  {inr(packageTotalFor(p, plan.guests))}
+                </span>
+                <span className="mt-1 block text-[12px] text-muted-foreground">
+                  Package price · serves {packageGuestRange(p)}
+                </span>
               </span>
-              <ChevronDown
+              <span
                 className={cx(
-                  "h-4 w-4 shrink-0 transition-transform",
-                  expandedPackageId === p.id && "rotate-180",
+                  "grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border bg-card text-foreground transition-transform",
+                  expandedPackageId === p.id && "rotate-180 border-gold/60 text-gold",
                 )}
-              />
+              >
+                <ChevronDown className="h-5 w-5" strokeWidth={2.5} />
+              </span>
             </button>
-            {expandedPackageId === "__legacy__" && expandedPackageId === p.id && (
-              <div className="mt-2 space-y-2 rounded-[12px] border border-border bg-surface/60 p-3 animate-in fade-in slide-in-from-top-1">
-                {p.sections.length > 0 ? (
-                  p.sections.map((section) => (
-                    <div key={section.title}>
-                      <p className="text-[12px] font-semibold text-foreground">{section.title}</p>
-                      <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
-                        {section.items.length > 0
-                          ? section.items.join(" · ")
-                          : "Included in this package"}
+            <GuestCountNotice pkg={p} guests={plan.guests} />
+            {expandedPackageId === p.id && (
+              <>
+                <div className="mt-4 flex-1 text-[13px] text-muted-foreground">
+                  {p.sections.map((section) => section.title).join(" · ") ||
+                    "Complete catering package"}
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setExpandedPackageId((current) => (current === p.id ? null : p.id))
+                  }
+                  aria-expanded={expandedPackageId === p.id}
+                  className="hidden"
+                >
+                  <span>
+                    {expandedPackageId === p.id ? "Hide menu inclusions" : "View menu inclusions"}
+                  </span>
+                  <ChevronDown
+                    className={cx(
+                      "h-4 w-4 shrink-0 transition-transform",
+                      expandedPackageId === p.id && "rotate-180",
+                    )}
+                  />
+                </button>
+                {expandedPackageId === "__legacy__" && expandedPackageId === p.id && (
+                  <div className="mt-2 space-y-2 rounded-[12px] border border-border bg-surface/60 p-3 animate-in fade-in slide-in-from-top-1">
+                    {p.sections.length > 0 ? (
+                      p.sections.map((section) => (
+                        <div key={section.title}>
+                          <p className="text-[12px] font-semibold text-foreground">
+                            {section.title}
+                          </p>
+                          <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+                            {section.items.length > 0
+                              ? section.items.join(" · ")
+                              : "Included in this package"}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-[12px] text-muted-foreground">
+                        Menu inclusions will be confirmed by our catering team.
+                      </p>
+                    )}
+                  </div>
+                )}
+                {p.sections.length > 0 && (
+                  <div className="mt-5 overflow-hidden rounded-[16px] border border-gold/25 bg-card shadow-[0_8px_18px_rgba(55,42,25,0.06)]">
+                    <div className="border-b border-border bg-champagne/30 px-4 py-2.5">
+                      <p className="text-[10px] font-bold uppercase tracking-[.14em] text-gold">
+                        What’s included
                       </p>
                     </div>
-                  ))
-                ) : (
-                  <p className="text-[12px] text-muted-foreground">
-                    Menu inclusions will be confirmed by our catering team.
-                  </p>
-                )}
-              </div>
-            )}
-            {p.sections.length > 0 && (
-              <div className="mt-5 overflow-hidden rounded-[16px] border border-gold/25 bg-card shadow-[0_8px_18px_rgba(55,42,25,0.06)]">
-                <div className="border-b border-border bg-champagne/30 px-4 py-2.5">
-                  <p className="text-[10px] font-bold uppercase tracking-[.14em] text-gold">
-                    What’s included
-                  </p>
-                </div>
-                {p.sections.map((section, index) => {
-                  const key = `${p.id}:${section.title}`;
-                  const expanded = expandedSectionKey === key;
-                  return (
-                    <div key={key} className="border-b border-border last:border-b-0">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setExpandedSectionKey((current) => (current === key ? null : key))
-                        }
-                        aria-expanded={expanded}
-                        className={cx(
-                          "press flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors",
-                          expanded ? "bg-surface" : "bg-card hover:bg-surface/60",
-                        )}
-                      >
-                        <span className="flex min-w-0 items-center gap-3">
-                          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-champagne text-[10px] font-bold text-gold">
-                            {index + 1}
-                          </span>
-                          <span className="truncate text-[14px] font-semibold">
-                            {section.title}
-                          </span>
-                        </span>
-                        <span
-                          className={cx(
-                            "grid h-7 w-7 shrink-0 place-items-center rounded-full border border-border bg-card text-muted-foreground transition-transform",
-                            expanded && "rotate-180 border-gold/50 text-gold",
-                          )}
-                        >
-                          <ChevronDown className="h-4 w-4" />
-                        </span>
-                      </button>
-                      {expanded && (
-                        <div className="border-t border-border bg-surface/50 px-4 py-3.5 animate-in fade-in slide-in-from-top-1">
-                          {section.items.length > 0 ? (
-                            <ul className="space-y-1.5 text-[13px] leading-relaxed text-muted-foreground">
-                              {section.items.map((item) => (
-                                <li key={item}>• {item}</li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <p className="text-[12px] text-muted-foreground">
-                              Included in this package
-                            </p>
+                    {p.sections.map((section, index) => {
+                      const key = `${p.id}:${section.title}`;
+                      const expanded = expandedSectionKey === key;
+                      return (
+                        <div key={key} className="border-b border-border last:border-b-0">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setExpandedSectionKey((current) => (current === key ? null : key))
+                            }
+                            aria-expanded={expanded}
+                            className={cx(
+                              "press flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition-colors",
+                              expanded ? "bg-surface" : "bg-card hover:bg-surface/60",
+                            )}
+                          >
+                            <span className="flex min-w-0 items-center gap-3">
+                              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-champagne text-[10px] font-bold text-gold">
+                                {index + 1}
+                              </span>
+                              <span className="truncate text-[14px] font-semibold">
+                                {section.title}
+                              </span>
+                            </span>
+                            <span
+                              className={cx(
+                                "grid h-7 w-7 shrink-0 place-items-center rounded-full border border-border bg-card text-muted-foreground transition-transform",
+                                expanded && "rotate-180 border-gold/50 text-gold",
+                              )}
+                            >
+                              <ChevronDown className="h-4 w-4" />
+                            </span>
+                          </button>
+                          {expanded && (
+                            <div className="border-t border-border bg-surface/50 px-4 py-3.5 animate-in fade-in slide-in-from-top-1">
+                              {section.items.length > 0 ? (
+                                <ul className="space-y-1.5 text-[13px] leading-relaxed text-muted-foreground">
+                                  {section.items.map((item) => (
+                                    <li key={item}>• {item}</li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p className="text-[12px] text-muted-foreground">
+                                  Included in this package
+                                </p>
+                              )}
+                            </div>
                           )}
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
             )}
             <Button full className="mt-6" onClick={() => choose(p)}>
               Select package
