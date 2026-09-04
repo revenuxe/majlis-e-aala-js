@@ -168,6 +168,17 @@ type HeroSlide = {
 
 const heroSlideKey = (slide: HeroSlide) => `${slide.image}|${slide.mobileImage ?? ""}`;
 
+function HeroTitle({ title }: { title: string }) {
+  const protectedPhrase = "Caterers in Bangalore";
+  if (!title.endsWith(protectedPhrase)) return title;
+  return (
+    <>
+      {title.slice(0, -protectedPhrase.length)}
+      <span className="lg:whitespace-nowrap">{protectedPhrase}</span>
+    </>
+  );
+}
+
 function Hero() {
   const router = useRouter();
   const [index, setIndex] = useState(0);
@@ -299,7 +310,7 @@ function Hero() {
                 Majlise Aala Catering
               </span>
               <h1 className="mt-3 max-w-[360px] text-balance font-display text-[32px] leading-[1.06] text-white sm:max-w-xl sm:text-[54px] lg:max-w-[840px] lg:text-[64px] lg:[text-wrap:wrap]">
-                {slides[index]!.title}
+                <HeroTitle title={slides[index]!.title} />
               </h1>
               <form
                 onSubmit={(event) => {
