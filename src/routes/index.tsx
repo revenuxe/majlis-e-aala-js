@@ -20,7 +20,6 @@ import weddingImg from "@/assets/editorial-wedding.jpg";
 import {
   categories,
   dishes,
-  editorialImage,
   inr,
   packageTotalFor,
   packages,
@@ -69,7 +68,6 @@ export default function Home() {
       <Standards />
       <Packages />
       <BuildYourMenuCTA />
-      <WeddingEditorial />
       <Testimonials />
       <ServiceAreas />
       <HomeFAQs />
@@ -706,38 +704,6 @@ function BuildYourMenuCTA() {
             Build My Menu
           </Button>
         </Link>
-      </div>
-    </Section>
-  );
-}
-
-function WeddingEditorial() {
-  return (
-    <Section>
-      <div className="overflow-hidden rounded-[24px] border border-border bg-card lg:grid lg:grid-cols-2">
-        <img
-          src={editorialImage}
-          alt="Wedding banquet hall set for a Walima reception"
-          loading="lazy"
-          className="h-[240px] w-full object-cover sm:h-[320px] lg:h-full"
-        />
-        <div className="p-7 sm:p-10">
-          <span className="eyebrow">Weddings</span>
-          <h3 className="mt-3 font-display text-[32px] leading-[1.08] sm:text-[42px]">
-            A feast worthy of
-            <br />
-            your biggest day.
-          </h3>
-          <p className="mt-4 max-w-md text-[15px] leading-relaxed text-muted-foreground">
-            From intimate Nikah gatherings to grand Walima celebrations, create a menu your guests
-            will remember.
-          </p>
-          <Link href="/events" className="mt-6 inline-block">
-            <Button variant="outline" size="lg">
-              Plan Wedding Catering <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        </div>
       </div>
     </Section>
   );

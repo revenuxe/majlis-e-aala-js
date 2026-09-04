@@ -8,7 +8,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/aqiqah",
     "/corporate-events",
     "/packages",
-    "/events",
     "/about",
     "/contact",
     "/privacy",
