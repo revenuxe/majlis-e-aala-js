@@ -298,7 +298,7 @@ function Hero() {
               <span className="eyebrow block" style={{ color: "var(--gold)" }}>
                 Majlise Aala Catering
               </span>
-              <h1 className="mt-3 max-w-[360px] text-balance font-display text-[32px] leading-[1.06] text-white sm:max-w-xl sm:text-[54px] lg:text-[64px]">
+              <h1 className="mt-3 max-w-[360px] text-balance font-display text-[32px] leading-[1.06] text-white sm:max-w-xl sm:text-[54px] lg:max-w-[840px] lg:text-[64px]">
                 {slides[index]!.title}
               </h1>
               <form
