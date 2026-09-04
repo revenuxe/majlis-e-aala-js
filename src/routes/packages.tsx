@@ -326,13 +326,13 @@ export default function PackagesPage() {
             Packages tailored for your celebration.
           </p>
           <div className="mt-5 rounded-[18px] border border-gold/40 bg-card p-4 text-foreground shadow-[0_8px_20px_rgba(0,0,0,0.16)] sm:px-5">
-            <div className="flex items-center justify-between gap-4">
-              <div>
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
                 <p className="eyebrow">Your guest count</p>
                 <p className="mt-1 text-[15px] font-semibold">
                   {plan.guests.toLocaleString("en-IN")} guests
                 </p>
-                <p className="mt-0.5 whitespace-nowrap text-[11px] text-muted-foreground">
+                <p className="mt-0.5 whitespace-nowrap text-[10px] text-muted-foreground sm:text-[11px]">
                   All package estimates update instantly.
                 </p>
               </div>
@@ -340,7 +340,7 @@ export default function PackagesPage() {
                 type="button"
                 onClick={() => setEditingGuests((current) => !current)}
                 aria-expanded={editingGuests}
-                className="press shrink-0 rounded-full border border-gold/60 bg-champagne/45 px-4 py-2 text-[13px] font-bold text-foreground hover:border-gold"
+                className="press shrink-0 rounded-full border border-gold/60 bg-champagne/45 px-3 py-2 text-[13px] font-bold text-foreground hover:border-gold sm:px-4"
               >
                 {editingGuests ? "Done" : "Change"}
               </button>
