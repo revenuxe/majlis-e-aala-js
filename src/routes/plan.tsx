@@ -1069,6 +1069,20 @@ function StepAuth({
     if (result.data.user) onAuthenticated(result.data.user);
   };
 
+  const signInWithGoogle = async () => {
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/plan?step=6` },
+    });
+    if (oauthError) {
+      setError(oauthError.message);
+      setBusy(false);
+    }
+  };
+
   if (customer) {
     return (
       <>
@@ -1154,6 +1168,24 @@ function StepAuth({
           </label>
           {error && <p className="text-[13px] text-destructive">{error}</p>}
           {notice && <p className="text-[13px] text-muted-foreground">{notice}</p>}
+          <Button
+            type="button"
+            size="lg"
+            full
+            variant="outline"
+            disabled={busy}
+            onClick={() => void signInWithGoogle()}
+          >
+            <span className="grid h-5 w-5 place-items-center rounded-full bg-card text-[13px] font-bold text-primary">
+              G
+            </span>
+            Continue with Google
+          </Button>
+          <div className="flex items-center gap-3 text-[11px] uppercase tracking-[.12em] text-muted-text">
+            <span className="h-px flex-1 bg-border" />
+            or
+            <span className="h-px flex-1 bg-border" />
+          </div>
           <Button type="submit" size="lg" full disabled={busy}>
             {busy ? (
               <Loader2 className="h-4 w-4 animate-spin" />

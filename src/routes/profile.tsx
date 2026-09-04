@@ -90,6 +90,19 @@ export default function ProfilePage() {
     setUser(null);
     setShowAuth(false);
   };
+  const signInWithGoogle = async () => {
+    if (authBusy) return;
+    setAuthBusy(true);
+    setAuthMessage(null);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/profile` },
+    });
+    if (error) {
+      setAuthMessage(error.message);
+      setAuthBusy(false);
+    }
+  };
   const customerBookings = user ? bookings : [];
   const upcoming = customerBookings
     .filter((booking) => !["completed", "cancelled"].includes(booking.status))
@@ -205,6 +218,24 @@ export default function ProfilePage() {
                 className="h-13 rounded-[12px] border border-border bg-background px-4 text-[15px] outline-none focus:border-gold"
               />
               {authMessage && <p className="text-[13px] text-muted-foreground">{authMessage}</p>}
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                full
+                disabled={authBusy}
+                onClick={() => void signInWithGoogle()}
+              >
+                <span className="grid h-5 w-5 place-items-center rounded-full bg-card text-[13px] font-bold text-primary">
+                  G
+                </span>
+                Continue with Google
+              </Button>
+              <div className="flex items-center gap-3 text-[11px] uppercase tracking-[.12em] text-muted-text">
+                <span className="h-px flex-1 bg-border" />
+                or
+                <span className="h-px flex-1 bg-border" />
+              </div>
               <Button type="submit" size="lg" full disabled={authBusy} className="mt-1">
                 {authBusy ? "Please wait..." : authMode === "signin" ? "Sign in" : "Create account"}
               </Button>

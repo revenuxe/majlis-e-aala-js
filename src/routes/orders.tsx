@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { CalendarDays, ChevronRight, Loader2, MapPin, PackageX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,25 +25,17 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [authenticated, setAuthenticated] = useState<boolean | null>(null);
 
   const load = async () => {
     setLoading(true);
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) {
-      const localOrders: CustomerOrder[] = bookings.map((booking) => ({
-        booking_reference: booking.reference,
-        occasion: booking.occasion,
-        event_date: booking.eventDate || null,
-        guests: booking.guests,
-        estimated_total: 0,
-        status: booking.status,
-        venue: null,
-      }));
-      setOrders(localOrders);
-      setSelectedReference((current) => current ?? localOrders[0]?.booking_reference ?? null);
+      setAuthenticated(false);
       setLoading(false);
       return;
     }
+    setAuthenticated(true);
     const { data, error: loadError } = await supabase
       .from("orders")
       .select("booking_reference, occasion, event_date, guests, estimated_total, status, venue")
@@ -103,7 +96,17 @@ export default function OrdersPage() {
         title="Orders"
         subtitle="Select a booking to view its current status and details."
       />
-      {loading ? (
+      {authenticated === false ? (
+        <div className="mt-6 rounded-[18px] border border-border bg-card p-6 text-center shadow-card">
+          <h2 className="font-display text-[26px]">Sign in to view your orders</h2>
+          <p className="mt-2 text-[14px] text-muted-foreground">
+            Your booking history is available securely in your account.
+          </p>
+          <Link href="/profile" className="mt-5 inline-block">
+            <Button size="lg">Sign in or create account</Button>
+          </Link>
+        </div>
+      ) : loading ? (
         <div className="grid place-items-center py-20">
           <Loader2 className="h-6 w-6 animate-spin text-gold" />
         </div>

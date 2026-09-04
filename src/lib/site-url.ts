@@ -1,4 +1,4 @@
-const fallbackSiteUrl = "https://majliseaala.com";
+const fallbackSiteUrl = "https://www.majliseaala.com";
 
 /**
  * The Vercel environment can contain an empty string, which `??` does not
