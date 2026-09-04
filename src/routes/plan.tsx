@@ -98,6 +98,7 @@ export default function PlanFlow() {
     foodTotal,
     occasions,
     packages,
+    catalogLoading,
     recordBooking,
     items: _u,
   } = usePlan() as never as ReturnType<typeof usePlan> & {
@@ -217,7 +218,7 @@ export default function PlanFlow() {
   const canContinue = (() => {
     if (step === 0) return !!plan.occasion;
     if (step === 1) return plan.guests > 0;
-    if (step === 2) return !!plan.packageId;
+    if (step === 2) return !catalogLoading && (plan.mode === "custom" || !!plan.packageId);
     if (step === 6) return !!customer;
     if (step === 7) return plan.contact.name.trim() !== "" && plan.contact.phone.trim().length >= 8;
     return true;
@@ -225,7 +226,9 @@ export default function PlanFlow() {
 
   const helperText = (() => {
     if (step === 0 && !plan.occasion) return "Please choose the occasion you're planning for.";
-    if (step === 2 && !plan.packageId) return "Please select a catering package to continue.";
+    if (step === 2 && catalogLoading) return "Loading the latest menu and packages…";
+    if (step === 2 && plan.mode === "package" && !plan.packageId)
+      return "Please select a catering package to continue.";
     if (step === 6 && !canContinue) return "Please sign in or create an account to continue.";
     if (step === 7 && !canContinue) return "Please share your name and mobile number.";
     return null;
@@ -650,13 +653,15 @@ function StepChoice({ onPick }: { onPick: () => void }) {
 }
 
 function StepFood() {
-  const { plan, update, addItem, setQuantity, quantityOf, dishes, packages } = usePlan();
+  const { plan, update, addItem, setQuantity, quantityOf, dishes, packages, catalogLoading } =
+    usePlan();
 
   if (plan.mode === "package") {
     return (
       <>
         <StepHeading title="Pick your package" note={`Prices shown for ${plan.guests} guests.`} />
         <div className="grid gap-3">
+          {catalogLoading && packages.length === 0 && <CatalogueLoading label="packages" />}
           {packages
             .filter((p) => !p.eventCategoryId || p.eventCategoryId === plan.occasion)
             .map((p) => (
@@ -698,6 +703,7 @@ function StepFood() {
         note={`For ${plan.guests} guests we suggest 2 starters, 2 mains, 1 biryani, 1 bread and 1 dessert.`}
       />
       <div className="space-y-8">
+        {catalogLoading && dishes.length === 0 && <CatalogueLoading label="dishes" />}
         {groups.map((g) => {
           const list = dishes.filter((d) => d.categoryId === g);
           if (list.length === 0) return null;
@@ -762,6 +768,15 @@ function StepFood() {
         })}
       </div>
     </>
+  );
+}
+
+function CatalogueLoading({ label }: { label: string }) {
+  return (
+    <div className="flex min-h-40 items-center justify-center gap-3 rounded-[16px] border border-border bg-surface/50 p-4 text-sm text-muted-foreground">
+      <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+      Loading available {label}…
+    </div>
   );
 }
 

@@ -80,7 +80,6 @@ const BOOKINGS_STORAGE_KEY = "majlise-aala-bookings";
 // Bump this whenever the catalogue structure or seeded package data changes,
 // so customers never keep a retired package in local storage.
 const CATALOG_CACHE_KEY = "majlise-aala-catalog-v2";
-const CATALOG_CACHE_TTL = 5 * 60 * 1000;
 
 export function servingsPerUnit(serves: string) {
   const values = [...serves.matchAll(/\d+/g)].map((match) => Number(match[0]));
@@ -170,106 +169,114 @@ export function PlanProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     void (async () => {
       try {
-        const cached = JSON.parse(window.localStorage.getItem(CATALOG_CACHE_KEY) ?? "null") as {
-          savedAt?: number;
-        } | null;
-        if (cached?.savedAt && Date.now() - cached.savedAt < CATALOG_CACHE_TTL) return;
-      } catch {
-        /* refresh from the network */
-      }
-      try {
-        const [
-          categoriesResult,
-          itemsResult,
-          packagesResult,
-          sectionsResult,
-          sectionItemsResult,
-          eventCategoriesResult,
-          addOnsResult,
-        ] = await Promise.all([
-          supabase.from("menu_categories").select("id, name").order("sort_order"),
-          supabase.from("menu_items").select("*").order("sort_order"),
-          supabase.from("packages").select("*").order("sort_order"),
-          supabase.from("package_sections").select("*").order("sort_order"),
-          supabase.from("package_section_items").select("*").order("sort_order"),
-          supabase.from("event_categories").select("*").order("sort_order"),
-          (supabase as any).from("add_ons").select("*").eq("is_active", true).order("sort_order"),
-        ]);
+        // Do not make the booking flow wait for unrelated catalogue requests.
+        // Cached data renders first; live data below replaces it as each group arrives.
+        const categoriesRequest = supabase
+          .from("menu_categories")
+          .select("id, name")
+          .order("sort_order");
+        const itemsRequest = supabase.from("menu_items").select("*").order("sort_order");
+        const packagesRequest = supabase.from("packages").select("*").order("sort_order");
+        const sectionsRequest = supabase.from("package_sections").select("*").order("sort_order");
+        const sectionItemsRequest = supabase
+          .from("package_section_items")
+          .select("*")
+          .order("sort_order");
+        const occasionsRequest = supabase.from("event_categories").select("*").order("sort_order");
+        const addOnsRequest = (supabase as any)
+          .from("add_ons")
+          .select("*")
+          .eq("is_active", true)
+          .order("sort_order");
 
-        if (
-          categoriesResult.error ||
-          itemsResult.error ||
-          packagesResult.error ||
-          sectionsResult.error ||
-          sectionItemsResult.error ||
-          eventCategoriesResult.error
-        ) {
-          return;
-        }
+        const occasionsLoad = occasionsRequest.then((result) => {
+          if (!result.error) {
+            setCatalogOccasions(
+              result.data.map((category) => ({
+                id: category.id,
+                name: category.name,
+                image: category.image_url || "",
+              })),
+            );
+          }
+        });
 
-        const categoryNames = new Map(
-        categoriesResult.data.map((category) => [category.id, category.name]),
-      );
-        setCatalogOccasions(
-        eventCategoriesResult.data.map((category) => ({
-          id: category.id,
-          name: category.name,
-          image: category.image_url || "",
-        })),
-      );
-        if (!addOnsResult.error)
-        setAddOns(
-          (addOnsResult.data ?? []).map((item: any) => ({
-            id: item.id,
-            name: item.name,
-            description: item.description,
-            eventCategoryIds: item.event_category_ids ?? [],
-            packageIds: item.package_ids ?? [],
-          })),
+        const dishesLoad = Promise.all([categoriesRequest, itemsRequest]).then(
+          ([categoriesResult, itemsResult]) => {
+            if (categoriesResult.error || itemsResult.error) return;
+            const categoryNames = new Map(
+              categoriesResult.data.map((category) => [category.id, category.name]),
+            );
+            setCatalogDishes(
+              itemsResult.data.map((item) => ({
+                id: item.id,
+                name: item.name,
+                categoryId: item.category_id
+                  ? (categoryNames.get(item.category_id) ?? "Other")
+                  : "Other",
+                description: item.description,
+                price: item.price,
+                serves: item.serves,
+                diet: item.diet === "veg" ? "veg" : "nonveg",
+                image: item.image_url || "",
+                tags: item.tags.filter((tag): tag is NonNullable<Dish["tags"]>[number] =>
+                  ["bestseller", "premium", "most-loved"].includes(tag),
+                ),
+              })),
+            );
+          },
         );
-        setCatalogDishes(
-        itemsResult.data.map((item) => ({
-          id: item.id,
-          name: item.name,
-          categoryId: item.category_id ? (categoryNames.get(item.category_id) ?? "Other") : "Other",
-          description: item.description,
-          price: item.price,
-          serves: item.serves,
-          diet: item.diet === "veg" ? "veg" : "nonveg",
-          image: item.image_url || "",
-          tags: item.tags.filter((tag): tag is NonNullable<Dish["tags"]>[number] =>
-            ["bestseller", "premium", "most-loved"].includes(tag),
-          ),
-        })),
-      );
-        setCatalogPackages(
-        packagesResult.data.map((pkg) => ({
-          id: pkg.id,
-          name: pkg.name,
-          tagline: pkg.tagline,
-          pricePerMann: pkg.price_per_mann,
-          guestsPerMann: pkg.guests_per_mann,
-          guestCountFrom: pkg.guest_count_from ?? pkg.guests_per_mann,
-          guestCountTo: pkg.guest_count_to ?? pkg.guests_per_mann,
-          eventCategoryId: pkg.event_category_id,
-          foodPreference:
-            pkg.food_preference === "veg" || pkg.food_preference === "nonveg"
-              ? pkg.food_preference
-              : "mixed",
-          includedServices: pkg.included_services,
-          excludedServices: pkg.excluded_services,
-          serviceOptions: pkg.service_options,
-          signature: pkg.signature,
-          sections: sectionsResult.data
-            .filter((section) => section.package_id === pkg.id)
-            .map((section) => ({
-              title: section.title,
-              items: sectionItemsResult.data
-                .filter((item) => item.section_id === section.id)
-                .map((item) => item.label),
+
+        const packagesLoad = Promise.all([
+          packagesRequest,
+          sectionsRequest,
+          sectionItemsRequest,
+        ]).then(([packagesResult, sectionsResult, sectionItemsResult]) => {
+          if (packagesResult.error || sectionsResult.error || sectionItemsResult.error) return;
+          setCatalogPackages(
+            packagesResult.data.map((pkg) => ({
+              id: pkg.id,
+              name: pkg.name,
+              tagline: pkg.tagline,
+              pricePerMann: pkg.price_per_mann,
+              guestsPerMann: pkg.guests_per_mann,
+              guestCountFrom: pkg.guest_count_from ?? pkg.guests_per_mann,
+              guestCountTo: pkg.guest_count_to ?? pkg.guests_per_mann,
+              eventCategoryId: pkg.event_category_id,
+              foodPreference:
+                pkg.food_preference === "veg" || pkg.food_preference === "nonveg"
+                  ? pkg.food_preference
+                  : "mixed",
+              includedServices: pkg.included_services,
+              excludedServices: pkg.excluded_services,
+              serviceOptions: pkg.service_options,
+              signature: pkg.signature,
+              sections: sectionsResult.data
+                .filter((section) => section.package_id === pkg.id)
+                .map((section) => ({
+                  title: section.title,
+                  items: sectionItemsResult.data
+                    .filter((item) => item.section_id === section.id)
+                    .map((item) => item.label),
+                })),
             })),
-        })),
-        );
+          );
+        });
+
+        void addOnsRequest.then((result: any) => {
+          if (!result.error)
+            setAddOns(
+              (result.data ?? []).map((item: any) => ({
+                id: item.id,
+                name: item.name,
+                description: item.description,
+                eventCategoryIds: item.event_category_ids ?? [],
+                packageIds: item.package_ids ?? [],
+              })),
+            );
+        });
+
+        await Promise.all([occasionsLoad, dishesLoad, packagesLoad]);
       } finally {
         setCatalogLoading(false);
       }
