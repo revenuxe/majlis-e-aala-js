@@ -331,7 +331,7 @@ export default function PackagesPage() {
                 <p className="mt-1 text-[15px] font-semibold">
                   {plan.guests.toLocaleString("en-IN")} guests
                 </p>
-                <p className="mt-0.5 text-[12px] text-muted-foreground">
+                <p className="mt-0.5 whitespace-nowrap text-[11px] text-muted-foreground">
                   All package estimates update instantly.
                 </p>
               </div>
