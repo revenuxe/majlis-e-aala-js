@@ -126,9 +126,22 @@ export default function ProfilePage() {
             : "Sign in to view bookings and save your details."}
         </p>
         {!user && !showAuth && (
-          <Button size="lg" className="mt-5" onClick={() => setShowAuth(true)}>
-            <User className="h-4 w-4" /> Sign in
-          </Button>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Button size="lg" onClick={() => setShowAuth(true)}>
+              <User className="h-4 w-4" /> Sign in
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              disabled={authBusy}
+              onClick={() => void signInWithGoogle()}
+            >
+              <span className="grid h-5 w-5 place-items-center rounded-full bg-card text-[13px] font-bold text-primary">
+                G
+              </span>
+              Continue with Google
+            </Button>
+          </div>
         )}
         {user && (
           <Button
