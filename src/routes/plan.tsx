@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
+  ChevronDown,
   Loader2,
   LockKeyhole,
   Package,
@@ -655,6 +656,7 @@ function StepChoice({ onPick }: { onPick: () => void }) {
 function StepFood() {
   const { plan, update, addItem, setQuantity, quantityOf, dishes, packages, catalogLoading } =
     usePlan();
+  const [expandedSectionKey, setExpandedSectionKey] = useState<string | null>(null);
 
   if (plan.mode === "package") {
     return (
@@ -682,6 +684,73 @@ function StepFood() {
                 }
               />
             ))}
+          {packages
+            .filter((p) => !p.eventCategoryId || p.eventCategoryId === plan.occasion)
+            .map((p) =>
+              p.sections.length > 0 ? (
+                <div
+                  key={`${p.id}:menu`}
+                  className="overflow-hidden rounded-[16px] border border-border bg-card"
+                >
+                  <div className="border-b border-border bg-champagne/30 px-4 py-2.5">
+                    <p className="text-[10px] font-bold uppercase tracking-[.14em] text-gold">
+                      {p.name} â€” whatâ€™s included
+                    </p>
+                  </div>
+                  {p.sections.map((section, index) => {
+                    const key = `${p.id}:${section.title}`;
+                    const expanded = expandedSectionKey === key;
+                    return (
+                      <div key={key} className="border-b border-border last:border-b-0">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setExpandedSectionKey((current) => (current === key ? null : key))
+                          }
+                          aria-expanded={expanded}
+                          className={cx(
+                            "press flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left",
+                            expanded ? "bg-surface" : "bg-card hover:bg-surface/60",
+                          )}
+                        >
+                          <span className="flex min-w-0 items-center gap-3">
+                            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-champagne text-[10px] font-bold text-gold">
+                              {index + 1}
+                            </span>
+                            <span className="truncate text-[14px] font-semibold">
+                              {section.title}
+                            </span>
+                          </span>
+                          <span
+                            className={cx(
+                              "grid h-7 w-7 shrink-0 place-items-center rounded-full border border-border bg-card text-muted-foreground transition-transform",
+                              expanded && "rotate-180 border-gold/50 text-gold",
+                            )}
+                          >
+                            <ChevronDown className="h-4 w-4" />
+                          </span>
+                        </button>
+                        {expanded && (
+                          <div className="border-t border-border bg-surface/50 px-4 py-3.5 animate-in fade-in slide-in-from-top-1">
+                            {section.items.length > 0 ? (
+                              <ul className="space-y-1.5 text-[13px] leading-relaxed text-muted-foreground">
+                                {section.items.map((item) => (
+                                  <li key={item}>â€¢ {item}</li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="text-[12px] text-muted-foreground">
+                                Included in this package
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : null,
+            )}
           {!catalogLoading &&
             packages.filter((p) => !p.eventCategoryId || p.eventCategoryId === plan.occasion)
               .length === 0 && (
