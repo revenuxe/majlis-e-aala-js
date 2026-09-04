@@ -59,6 +59,7 @@ interface PlanContextValue {
   dishes: Dish[];
   packages: CateringPackage[];
   occasions: Occasion[];
+  catalogLoading: boolean;
   update: (patch: Partial<PlanState>) => void;
   addItem: (dishId: string, quantity?: number) => void;
   setQuantity: (dishId: string, quantity: number) => void;
@@ -95,6 +96,7 @@ export function PlanProvider({ children }: { children: ReactNode }) {
   const [catalogDishes, setCatalogDishes] = useState<Dish[]>([]);
   const [catalogPackages, setCatalogPackages] = useState<CateringPackage[]>([]);
   const [catalogOccasions, setCatalogOccasions] = useState<Occasion[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
   const [bookings, setBookings] = useState<BookingSummary[]>([]);
   const [addOns, setAddOns] = useState<CateringAddOn[]>([]);
 
@@ -175,46 +177,47 @@ export function PlanProvider({ children }: { children: ReactNode }) {
       } catch {
         /* refresh from the network */
       }
-      const [
-        categoriesResult,
-        itemsResult,
-        packagesResult,
-        sectionsResult,
-        sectionItemsResult,
-        eventCategoriesResult,
-        addOnsResult,
-      ] = await Promise.all([
-        supabase.from("menu_categories").select("id, name").order("sort_order"),
-        supabase.from("menu_items").select("*").order("sort_order"),
-        supabase.from("packages").select("*").order("sort_order"),
-        supabase.from("package_sections").select("*").order("sort_order"),
-        supabase.from("package_section_items").select("*").order("sort_order"),
-        supabase.from("event_categories").select("*").order("sort_order"),
-        (supabase as any).from("add_ons").select("*").eq("is_active", true).order("sort_order"),
-      ]);
+      try {
+        const [
+          categoriesResult,
+          itemsResult,
+          packagesResult,
+          sectionsResult,
+          sectionItemsResult,
+          eventCategoriesResult,
+          addOnsResult,
+        ] = await Promise.all([
+          supabase.from("menu_categories").select("id, name").order("sort_order"),
+          supabase.from("menu_items").select("*").order("sort_order"),
+          supabase.from("packages").select("*").order("sort_order"),
+          supabase.from("package_sections").select("*").order("sort_order"),
+          supabase.from("package_section_items").select("*").order("sort_order"),
+          supabase.from("event_categories").select("*").order("sort_order"),
+          (supabase as any).from("add_ons").select("*").eq("is_active", true).order("sort_order"),
+        ]);
 
-      if (
-        categoriesResult.error ||
-        itemsResult.error ||
-        packagesResult.error ||
-        sectionsResult.error ||
-        sectionItemsResult.error ||
-        eventCategoriesResult.error
-      ) {
-        return;
-      }
+        if (
+          categoriesResult.error ||
+          itemsResult.error ||
+          packagesResult.error ||
+          sectionsResult.error ||
+          sectionItemsResult.error ||
+          eventCategoriesResult.error
+        ) {
+          return;
+        }
 
-      const categoryNames = new Map(
+        const categoryNames = new Map(
         categoriesResult.data.map((category) => [category.id, category.name]),
       );
-      setCatalogOccasions(
+        setCatalogOccasions(
         eventCategoriesResult.data.map((category) => ({
           id: category.id,
           name: category.name,
           image: category.image_url || "",
         })),
       );
-      if (!addOnsResult.error)
+        if (!addOnsResult.error)
         setAddOns(
           (addOnsResult.data ?? []).map((item: any) => ({
             id: item.id,
@@ -224,7 +227,7 @@ export function PlanProvider({ children }: { children: ReactNode }) {
             packageIds: item.package_ids ?? [],
           })),
         );
-      setCatalogDishes(
+        setCatalogDishes(
         itemsResult.data.map((item) => ({
           id: item.id,
           name: item.name,
@@ -239,7 +242,7 @@ export function PlanProvider({ children }: { children: ReactNode }) {
           ),
         })),
       );
-      setCatalogPackages(
+        setCatalogPackages(
         packagesResult.data.map((pkg) => ({
           id: pkg.id,
           name: pkg.name,
@@ -266,7 +269,10 @@ export function PlanProvider({ children }: { children: ReactNode }) {
                 .map((item) => item.label),
             })),
         })),
-      );
+        );
+      } finally {
+        setCatalogLoading(false);
+      }
     })();
   }, []);
 
@@ -353,6 +359,7 @@ export function PlanProvider({ children }: { children: ReactNode }) {
       dishes: catalogDishes,
       packages: catalogPackages,
       occasions: catalogOccasions,
+      catalogLoading,
       update,
       addItem,
       setQuantity,
@@ -369,7 +376,7 @@ export function PlanProvider({ children }: { children: ReactNode }) {
         ]),
       reset: () => setPlan(initialState),
     };
-  }, [addOns, bookings, catalogDishes, catalogOccasions, catalogPackages, plan]);
+  }, [addOns, bookings, catalogDishes, catalogLoading, catalogOccasions, catalogPackages, plan]);
 
   return <PlanContext.Provider value={value}>{children}</PlanContext.Provider>;
 }

@@ -38,7 +38,7 @@ const routeMetadata = {
 };
 
 export default function PackagesPage() {
-  const { plan, update, packages, occasions } = usePlan();
+  const { plan, update, packages, occasions, catalogLoading } = usePlan();
   const navigate = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -51,6 +51,10 @@ export default function PackagesPage() {
       setActive(packages[0]!.id);
     }
   }, [active, packages]);
+
+  if (catalogLoading && packages.length === 0) {
+    return <PackagesLoading />;
+  }
 
   if (packages.length === 0) {
     return (
@@ -647,6 +651,21 @@ export default function PackagesPage() {
             </button>
           ))}
         </div>
+      </div>
+    </main>
+  );
+}
+
+function PackagesLoading() {
+  return (
+    <main className="mx-auto max-w-[1280px] px-5 py-8 sm:px-8" aria-busy="true">
+      <div className="h-4 w-28 animate-pulse rounded bg-surface" />
+      <div className="mt-4 h-10 w-72 max-w-full animate-pulse rounded bg-surface" />
+      <div className="mt-3 h-5 w-96 max-w-full animate-pulse rounded bg-surface" />
+      <div className="mt-8 grid gap-4 lg:grid-cols-3">
+        {Array.from({ length: 3 }, (_, index) => (
+          <div key={index} className="h-80 animate-pulse rounded-[24px] bg-surface" />
+        ))}
       </div>
     </main>
   );

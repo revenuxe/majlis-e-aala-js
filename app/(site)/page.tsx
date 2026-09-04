@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Home from "@/routes/index";
+import { siteUrl } from "@/lib/site-url";
 
 export const metadata: Metadata = {
   title: "Best Muslim Food Caterers in Bangalore | Majlis E Aala",
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  const base = process.env["NEXT_PUBLIC_SITE_URL"] ?? "https://majliseaala.com";
+  const base = siteUrl;
   const schema = {
     "@context": "https://schema.org",
     "@graph": [

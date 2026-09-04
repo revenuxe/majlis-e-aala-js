@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Providers } from "./providers";
+import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env["NEXT_PUBLIC_SITE_URL"] ?? "https://majliseaala.com"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Best Muslim Food Caterers in Bangalore | Majlis E Aala",
     template: "%s | Majlis E Aala",

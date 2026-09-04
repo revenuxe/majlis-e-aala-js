@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
+import { siteUrl } from "@/lib/site-url";
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env["NEXT_PUBLIC_SITE_URL"] ?? "https://majliseaala.com";
   return [
     "",
     "/nikah",
@@ -14,7 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/privacy",
     "/terms",
   ].map((path) => ({
-    url: `${base}${path}`,
+    url: `${siteUrl}${path}`,
     lastModified: new Date(),
     changeFrequency: "weekly",
     priority: path ? 0.8 : 1,

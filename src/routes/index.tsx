@@ -262,7 +262,7 @@ function Hero() {
 }
 
 function OccasionSelector() {
-  const { plan, update, occasions } = usePlan();
+  const { plan, update, occasions, catalogLoading } = usePlan();
   const navigate = useRouter();
   const hasClearedOccasion = useRef(false);
 
@@ -272,8 +272,6 @@ function OccasionSelector() {
     update({ occasion: null });
   }, [update]);
 
-  if (occasions.length === 0) return null;
-
   return (
     <Section>
       <SectionHeader
@@ -281,7 +279,15 @@ function OccasionSelector() {
         title="What are you celebrating?"
         subtitle="Pick a category to see the packages created for it."
       />
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-busy={catalogLoading}>
+        {catalogLoading && occasions.length === 0
+          ? Array.from({ length: 4 }, (_, index) => (
+              <div
+                key={index}
+                className="min-h-[222px] animate-pulse rounded-[22px] bg-surface sm:min-h-[280px] sm:rounded-[26px]"
+              />
+            ))
+          : null}
         {occasions.map((o) => {
           const selected = plan.occasion === o.id;
           return (
