@@ -58,7 +58,7 @@ export function BottomNav() {
             href="https://wa.me/919886285028"
             target="_blank"
             rel="noreferrer"
-            className="press absolute -top-6 flex h-[60px] w-[60px] flex-col items-center justify-center rounded-[21px] border-2 border-gold/80 bg-card text-primary shadow-[0_14px_28px_rgba(18,14,9,0.28),0_0_0_4px_var(--primary)] transition-[transform,box-shadow] hover:-translate-y-0.5 hover:border-gold hover:shadow-[0_18px_32px_rgba(18,14,9,0.34),0_0_0_4px_var(--primary)]"
+            className="press absolute -top-6 flex h-[60px] w-[60px] flex-col items-center justify-center rounded-[21px] border border-gold/70 bg-card text-primary shadow-[0_10px_20px_rgba(18,14,9,0.22)] transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-gold hover:shadow-[0_14px_24px_rgba(18,14,9,0.28)]"
             aria-label="Chat with us on WhatsApp"
           >
             <img src="/whatsapp.svg" alt="" className="h-[23px] w-[23px]" />
