@@ -44,6 +44,7 @@ export default function PackagesPage() {
   const searchParams = useSearchParams();
   const [active, setActive] = useState("");
   const [search, setSearch] = useState("");
+  const [editingGuests, setEditingGuests] = useState(false);
   const [expandedPackageId, setExpandedPackageId] = useState<string | null>(null);
   const [expandedSectionKey, setExpandedSectionKey] = useState<string | null>(null);
   useEffect(() => {
@@ -325,6 +326,56 @@ export default function PackagesPage() {
           </p>
         </div>
       </section>
+      <div className="mt-5 rounded-[18px] border border-gold/40 bg-card p-4 shadow-[0_8px_20px_rgba(55,42,25,0.08)] sm:px-5">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="eyebrow">Your guest count</p>
+            <p className="mt-1 text-[15px] font-semibold">
+              {plan.guests.toLocaleString("en-IN")} guests
+            </p>
+            <p className="mt-0.5 text-[12px] text-muted-foreground">
+              All package estimates update instantly.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setEditingGuests((current) => !current)}
+            aria-expanded={editingGuests}
+            className="press shrink-0 rounded-full border border-gold/60 bg-champagne/45 px-4 py-2 text-[13px] font-bold text-foreground hover:border-gold"
+          >
+            {editingGuests ? "Done" : "Change"}
+          </button>
+        </div>
+        {editingGuests && (
+          <div className="mt-4 border-t border-gold/25 pt-4 animate-in fade-in slide-in-from-top-1">
+            <QuantitySelector
+              size="lg"
+              value={plan.guests}
+              step={25}
+              min={25}
+              suffix="Guests"
+              onChange={(guests) => update({ guests: Math.max(25, guests) })}
+            />
+            <div className="mt-3 flex flex-wrap gap-2">
+              {[50, 100, 200, 300, 500].map((guests) => (
+                <button
+                  key={guests}
+                  type="button"
+                  onClick={() => update({ guests })}
+                  className={cx(
+                    "press rounded-full border px-3 py-1.5 text-[12px] font-semibold",
+                    plan.guests === guests
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-surface hover:border-gold",
+                  )}
+                >
+                  {guests === 500 ? "500+" : guests}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
       <div className="hidden">
         <p className="eyebrow">Your selection</p>
         <p className="mt-1 text-[15px] font-semibold">
