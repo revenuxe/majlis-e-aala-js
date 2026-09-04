@@ -10,7 +10,13 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
   const { packages } = usePlan();
   const results = useMemo(() => {
     const term = q.trim().toLowerCase();
-    return term ? packages.filter((p) => p.name.toLowerCase().includes(term)) : null;
+    return term
+      ? packages.filter((p) =>
+          `${p.name} ${p.tagline} ${p.sections.flatMap((section) => [section.title, ...section.items]).join(" ")}`
+            .toLowerCase()
+            .includes(term),
+        )
+      : null;
   }, [q, packages]);
 
   if (!open) return null;
@@ -60,7 +66,7 @@ export function SearchOverlay({ open, onClose }: { open: boolean; onClose: () =>
                 results.map((p) => (
                   <Link
                     key={p.id}
-                    href="/packages"
+                    href={`/packages?q=${encodeURIComponent(q.trim())}`}
                     onClick={onClose}
                     className="press rounded-[14px] border border-border bg-card p-4 text-[15px] font-semibold"
                   >

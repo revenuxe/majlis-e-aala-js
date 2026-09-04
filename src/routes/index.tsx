@@ -162,13 +162,16 @@ type HeroSlide = {
 };
 
 function Hero() {
+  const router = useRouter();
   const [index, setIndex] = useState(0);
   const [hint, setHint] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
   const [managedSlides, setManagedSlides] = useState<HeroSlide[]>([]);
   const [loadedSlides, setLoadedSlides] = useState<Set<string>>(() => new Set());
   const slides: HeroSlide[] = managedSlides.length ? managedSlides : heroSlides;
   const count = slides.length;
   const heroCacheKey = "majlise-aala-hero-v1";
+  const suggestedSearch = ["Nikah", "Walima", "Aqiqah", "Corporate event"][hint] ?? "catering";
 
   useEffect(() => {
     void (async () => {
@@ -280,12 +283,30 @@ function Hero() {
               <h1 className="mt-3 max-w-[360px] text-balance font-display text-[32px] leading-[1.06] text-white sm:max-w-xl sm:text-[54px] lg:text-[64px]">
                 {slides[index]!.title}
               </h1>
-              <div className="mt-5 flex max-w-md items-center gap-3 rounded-[14px] bg-white px-4 py-3 text-foreground shadow-lg">
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  const query = searchQuery.trim() || suggestedSearch;
+                  router.push(`/packages?q=${encodeURIComponent(query)}`);
+                }}
+                className="mt-5 flex max-w-md items-center gap-3 rounded-[14px] bg-white px-4 py-3 text-foreground shadow-lg transition-shadow focus-within:shadow-[0_0_0_3px_rgba(202,164,93,0.6),0_12px_24px_rgba(0,0,0,0.2)]"
+              >
                 <Search className="h-4 w-4 text-gold" />
-                <span className="text-[14px] text-muted-foreground">
-                  Search {["Nikah", "Walima", "Aqiqah", "Corporate event"][hint]} packages
-                </span>
-              </div>
+                <input
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  aria-label="Search catering packages"
+                  placeholder={`Search ${suggestedSearch} packages`}
+                  className="min-w-0 flex-1 bg-transparent text-[14px] outline-none placeholder:text-muted-foreground"
+                />
+                <button
+                  type="submit"
+                  aria-label="Search packages"
+                  className="press grid h-7 w-7 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"
+                >
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+              </form>
             </div>
           </div>
 

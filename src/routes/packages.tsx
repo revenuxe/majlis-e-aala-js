@@ -90,6 +90,75 @@ export default function PackagesPage() {
     ? occasions.find((item) => item.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") === categorySlug)
     : null;
   const viewingPackages = searchParams.get("view") === "packages";
+  const searchQuery = searchParams.get("q")?.trim() ?? "";
+  const matchingPackages = searchQuery
+    ? packages.filter((pkg) =>
+        `${pkg.name} ${pkg.tagline} ${pkg.sections.flatMap((section) => [section.title, ...section.items]).join(" ")}`
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()),
+      )
+    : [];
+
+  if (searchQuery) {
+    return (
+      <main className="mx-auto max-w-[860px] px-5 py-8 pb-32 sm:px-8">
+        <button
+          onClick={() => navigate.push("/packages")}
+          className="press text-[13px] font-semibold text-gold"
+        >
+          ← Browse event categories
+        </button>
+        <SectionHeader
+          eyebrow="Package search"
+          title={`Results for “${searchQuery}”`}
+          subtitle={
+            matchingPackages.length
+              ? "Choose a result to view its price and full inclusions."
+              : "Try an event name, package name, or an included menu item."
+          }
+        />
+        <div className="mt-7 grid gap-4 sm:grid-cols-2">
+          {matchingPackages.map((pkg) => {
+            const event = occasions.find((item) => item.id === pkg.eventCategoryId);
+            const slug = event?.name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+            return (
+              <button
+                key={pkg.id}
+                type="button"
+                onClick={() => {
+                  if (!event || !slug) return;
+                  update({ occasion: event.id, packageId: null, mode: "package" });
+                  navigate.push(`/packages/${slug}?view=packages`);
+                }}
+                className="press rounded-[20px] border border-border bg-card p-5 text-left shadow-card transition-colors hover:border-gold/60"
+              >
+                <p className="eyebrow text-gold">{event?.name ?? "Catering package"}</p>
+                <h2 className="mt-2 font-display text-[27px] leading-tight">{pkg.name}</h2>
+                <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">
+                  {pkg.tagline}
+                </p>
+                <p className="mt-4 text-[13px] font-semibold text-foreground">
+                  {pkg.sections
+                    .map((section) => section.title)
+                    .slice(0, 4)
+                    .join(" · ")}
+                </p>
+                <span className="mt-5 inline-flex items-center gap-2 text-[13px] font-bold text-gold">
+                  View package <ArrowRight className="h-4 w-4" />
+                </span>
+              </button>
+            );
+          })}
+          {!matchingPackages.length && (
+            <div className="rounded-[20px] border border-border bg-card p-5 text-[14px] leading-relaxed text-muted-foreground">
+              No packages matched that search. Browse by event category to see every available
+              package.
+            </div>
+          )}
+        </div>
+      </main>
+    );
+  }
 
   if (!occasion) {
     return (
