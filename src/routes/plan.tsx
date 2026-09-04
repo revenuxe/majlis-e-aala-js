@@ -656,6 +656,7 @@ function StepChoice({ onPick }: { onPick: () => void }) {
 function StepFood() {
   const { plan, update, addItem, setQuantity, quantityOf, dishes, packages, catalogLoading } =
     usePlan();
+  const [expandedPackageId, setExpandedPackageId] = useState<string | null>(null);
   const [expandedSectionKey, setExpandedSectionKey] = useState<string | null>(null);
 
   if (plan.mode === "package") {
@@ -676,36 +677,49 @@ function StepFood() {
                     : "border-border",
                 )}
               >
-                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-4">
-                  <div className="min-w-0">
-                    <h2 className="text-[16px] font-semibold">
-                      {p.name} - {inr(p.pricePerMann)} / Mann
-                    </h2>
-                    <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
-                      {p.sections.map((section) => section.title).join(" • ") ||
-                        "Menu details are loading..."}
-                      {" • "}Estimated {inr(packageTotalFor(p, plan.guests))} for {plan.guests}{" "}
-                      guests
-                    </p>
-                  </div>
-                  <span
-                    className={cx(
-                      "grid h-7 w-7 place-items-center rounded-full border",
-                      plan.packageId === p.id ? "border-primary bg-primary" : "border-border",
-                    )}
+                <div className="p-4">
+                  <h2 className="font-display text-[25px] leading-tight">{p.name}</h2>
+                  {p.tagline && (
+                    <p className="mt-1 text-[13px] text-muted-foreground">{p.tagline}</p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandedPackageId((current) => (current === p.id ? null : p.id))
+                    }
+                    aria-expanded={expandedPackageId === p.id}
+                    className="press mt-5 grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[16px] bg-surface px-4 py-3 text-left"
                   >
-                    {plan.packageId === p.id && (
-                      <Check className="h-4 w-4 text-primary-foreground" />
-                    )}
-                  </span>
+                    <span>
+                      <span className="block text-[24px] font-bold leading-none">
+                        {inr(packageTotalFor(p, plan.guests))}
+                      </span>
+                      <span className="mt-1 block text-[12px] text-muted-foreground">
+                        Package price · serves {p.guestCountFrom}–{p.guestCountTo} guests
+                      </span>
+                    </span>
+                    <span
+                      className={cx(
+                        "grid h-10 w-10 place-items-center rounded-full border border-border bg-card text-muted-foreground transition-transform",
+                        expandedPackageId === p.id && "rotate-180 border-gold/50 text-gold",
+                      )}
+                    >
+                      <ChevronDown className="h-5 w-5" />
+                    </span>
+                  </button>
                 </div>
-                {p.sections.length > 0 && (
+                {expandedPackageId === p.id && (
                   <div className="border-t border-border bg-surface/30">
                     <div className="border-b border-border bg-champagne/30 px-4 py-2.5">
                       <p className="text-[10px] font-bold uppercase tracking-[.14em] text-gold">
                         What's included
                       </p>
                     </div>
+                    {p.sections.length === 0 && (
+                      <p className="px-4 py-3 text-[12px] text-muted-foreground">
+                        Menu details are loading…
+                      </p>
+                    )}
                     {p.sections.map((section, index) => {
                       const key = `${p.id}:${section.title}`;
                       const expanded = expandedSectionKey === key;
