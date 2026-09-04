@@ -119,6 +119,46 @@ export function PlanProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let cancelled = false;
+
+    const loadCustomerBookings = async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData.user;
+      if (!user || cancelled) return;
+      const { data, error } = await supabase
+        .from("orders")
+        .select("booking_reference, occasion, event_date, guests, package_id, status, created_at")
+        .eq("customer_id", user.id)
+        .order("created_at", { ascending: false });
+      if (error || cancelled) return;
+      setBookings(
+        (data ?? [])
+          .filter((order) => Boolean(order.booking_reference))
+          .map((order) => ({
+            reference: order.booking_reference!,
+            occasion: order.occasion ?? "Celebration",
+            eventDate: order.event_date ?? "",
+            guests: order.guests,
+            packageName:
+              catalogPackages.find((pkg) => pkg.id === order.package_id)?.name ??
+              "Catering package",
+            status: order.status as BookingSummary["status"],
+            createdAt: order.created_at,
+          })),
+      );
+    };
+
+    void loadCustomerBookings();
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) void loadCustomerBookings();
+    });
+    return () => {
+      cancelled = true;
+      listener.subscription.unsubscribe();
+    };
+  }, [catalogPackages]);
+
+  useEffect(() => {
+    let cancelled = false;
     void (async () => {
       const { data: userData } = await supabase.auth.getUser();
       const user = userData.user;

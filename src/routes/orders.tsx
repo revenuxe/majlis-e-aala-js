@@ -4,7 +4,6 @@ import { CalendarDays, ChevronRight, Loader2, MapPin, PackageX } from "lucide-re
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button, EmptyState, SectionHeader, cx } from "@/components/ui-kit";
-import { usePlan } from "@/lib/plan-store";
 
 type CustomerOrder = {
   booking_reference: string;
@@ -19,7 +18,6 @@ type CustomerOrder = {
 const statusLabel = (status: string) => (status === "new" ? "Pending" : status);
 
 export default function OrdersPage() {
-  const { bookings } = usePlan();
   const [orders, setOrders] = useState<CustomerOrder[]>([]);
   const [selectedReference, setSelectedReference] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,34 +43,20 @@ export default function OrdersPage() {
     const databaseOrders = (data ?? []).filter((order): order is CustomerOrder =>
       Boolean(order.booking_reference),
     );
-    const localOrders: CustomerOrder[] = bookings.map((booking) => ({
-      booking_reference: booking.reference,
-      occasion: booking.occasion,
-      event_date: booking.eventDate || null,
-      guests: booking.guests,
-      estimated_total: 0,
-      status: booking.status,
-      venue: null,
-    }));
-    const nextOrders = [
-      ...databaseOrders,
-      ...localOrders.filter(
-        (localOrder) =>
-          !databaseOrders.some(
-            (databaseOrder) => databaseOrder.booking_reference === localOrder.booking_reference,
-          ),
-      ),
-    ];
-    setOrders(nextOrders);
-    setSelectedReference((current) => current ?? nextOrders[0]?.booking_reference ?? null);
+    setOrders(databaseOrders);
+    setSelectedReference(
+      (current) =>
+        (current && databaseOrders.some((order) => order.booking_reference === current)
+          ? current
+          : databaseOrders[0]?.booking_reference) ?? null,
+    );
     setLoading(false);
   };
 
   useEffect(() => {
     void load();
-    // `load` reads current bookings; intentionally rerun only when they change.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bookings]);
+    // Load the authenticated customer's live records rather than browser-cached bookings.
+  }, []);
 
   const selected = orders.find((order) => order.booking_reference === selectedReference);
   const cancel = async () => {
