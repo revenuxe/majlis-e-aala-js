@@ -63,8 +63,8 @@ export default function Home() {
     <main>
       <Hero />
       <OccasionSelector />
-      <HowItWorks />
       <QuickPlanner />
+      <HowItWorks />
       <Standards />
       <Packages />
       <BuildYourMenuCTA />
