@@ -354,14 +354,14 @@ export default function PackagesPage() {
                   suffix="Guests"
                   onChange={(guests) => update({ guests: Math.max(25, guests) })}
                 />
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-3 grid grid-cols-5 gap-2">
                   {[50, 100, 200, 300, 500].map((guests) => (
                     <button
                       key={guests}
                       type="button"
                       onClick={() => update({ guests })}
                       className={cx(
-                        "press rounded-full border px-3 py-1.5 text-[12px] font-semibold",
+                        "press w-full rounded-full border px-1 py-1.5 text-[12px] font-semibold",
                         plan.guests === guests
                           ? "border-primary bg-primary text-primary-foreground"
                           : "border-border bg-surface hover:border-gold",
