@@ -126,11 +126,16 @@ export default function ProfilePage() {
             : "Sign in to view bookings and save your details."}
         </p>
         {!user && !showAuth && (
-          <div className="mt-5 flex flex-wrap gap-3">
-            <Button size="lg" onClick={() => setShowAuth(true)}>
+          <div className="mt-5 flex flex-nowrap gap-3">
+            <Button size="lg" className="shrink-0 px-4" onClick={() => setShowAuth(true)}>
               <User className="h-4 w-4" /> Sign in
             </Button>
-            <Button size="lg" disabled={authBusy} onClick={() => void signInWithGoogle()}>
+            <Button
+              size="lg"
+              className="min-w-0 flex-1 whitespace-nowrap px-3 text-[13px]"
+              disabled={authBusy}
+              onClick={() => void signInWithGoogle()}
+            >
               <img
                 src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
                 alt=""
