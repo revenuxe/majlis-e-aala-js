@@ -620,18 +620,19 @@ function BuildYourMenuCTA() {
       <div className="grid gap-6 rounded-[24px] bg-primary p-7 text-primary-foreground sm:p-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
         <div className="min-w-0">
           <span className="eyebrow" style={{ color: "var(--gold)" }}>
-            Full control
+            Made for your occasion
           </span>
           <h3 className="mt-2 font-display text-[30px] leading-tight sm:text-[38px]">
-            Build your own menu, dish by dish.
+            Find the right package for your gathering.
           </h3>
           <p className="mt-3 max-w-md text-[15px] opacity-75">
-            We guide you category by category and recommend quantities for your guest count.
+            Choose your occasion, set the guest count and compare package estimates before you make
+            a booking request.
           </p>
         </div>
-        <Link href="/plan">
+        <Link href="/packages">
           <Button size="lg" variant="champagne" full className="lg:w-auto lg:px-8">
-            Build My Menu
+            Explore Packages <ArrowRight className="h-4 w-4" />
           </Button>
         </Link>
       </div>
@@ -746,6 +747,30 @@ function HomeFAQs() {
     [
       "Do you cater outside Bengaluru?",
       "We serve many Bengaluru neighbourhoods. Share your venue while planning and our team will confirm service coverage and any event-specific requirements.",
+    ],
+    [
+      "Are package prices final?",
+      "The displayed amount is an estimate based on your guest count and selected package. The catering team confirms final quantities, menu inclusions, venue requirements and the formal quotation before the event is booked.",
+    ],
+    [
+      "Can you accommodate vegetarian or mixed menus?",
+      "Yes. Choose a food preference while planning and tell us about any family, dietary or service preferences. Our team will guide the suitable package and final menu conversation.",
+    ],
+    [
+      "Do packages include service staff and buffet setup?",
+      "Every package lists its own inclusions. Open the package details to review the menu sections, then the catering team will confirm staffing, buffet setup and any optional services for your venue.",
+    ],
+    [
+      "Can I change my guest count after submitting a request?",
+      "Yes. Your initial request gives us a planning reference. Tell the catering team when the count changes and they will update quantities and the estimate with you.",
+    ],
+    [
+      "What should I share about my venue?",
+      "Share the venue address, area, event date, serving style and any access or setup details you already know. This helps the team plan service smoothly.",
+    ],
+    [
+      "How do I confirm a catering booking?",
+      "Submit your request online, then our team will contact you to review availability, menu, guest count and final quotation. A booking is confirmed only after that conversation.",
     ],
   ];
   return (
