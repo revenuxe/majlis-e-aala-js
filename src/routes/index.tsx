@@ -119,6 +119,7 @@ function Hero() {
   const [index, setIndex] = useState(0);
   const [hint, setHint] = useState(0);
   const [managedSlides, setManagedSlides] = useState<HeroSlide[]>([]);
+  const [loadedSlides, setLoadedSlides] = useState<Set<string>>(() => new Set());
   const slides: HeroSlide[] = managedSlides.length ? managedSlides : heroSlides;
   const count = slides.length;
   const heroCacheKey = "majlise-aala-hero-v1";
@@ -199,6 +200,12 @@ function Hero() {
                 i === index ? "opacity-100" : "pointer-events-none opacity-0",
               )}
             >
+              {!loadedSlides.has(s.title) && (
+                <div
+                  aria-hidden="true"
+                  className="absolute inset-0 animate-pulse bg-[radial-gradient(circle_at_72%_28%,rgba(202,164,93,0.34),transparent_28%),linear-gradient(135deg,#211b14,#5b4931_48%,#17130f)]"
+                />
+              )}
               <picture className="block h-full w-full">
                 {s.mobileImage ? (
                   <source media="(max-width: 639px)" srcSet={s.mobileImage} />
@@ -207,7 +214,11 @@ function Hero() {
                   src={s.image}
                   alt={s.eyebrow}
                   loading={i === 0 ? "eager" : "lazy"}
-                  className="h-full w-full object-cover"
+                  onLoad={() => setLoadedSlides((current) => new Set(current).add(s.title))}
+                  className={cx(
+                    "h-full w-full object-cover transition-opacity duration-700",
+                    loadedSlides.has(s.title) ? "opacity-100" : "opacity-0",
+                  )}
                 />
               </picture>
               <div className="absolute inset-0 bg-gradient-to-t from-[rgba(12,12,11,0.92)] via-[rgba(12,12,11,0.45)] to-[rgba(12,12,11,0.15)]" />
