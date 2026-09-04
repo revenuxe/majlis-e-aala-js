@@ -227,12 +227,10 @@ export function PlanProvider({ children }: { children: ReactNode }) {
           },
         );
 
-        const packagesLoad = Promise.all([
-          packagesRequest,
-          sectionsRequest,
-          sectionItemsRequest,
-        ]).then(([packagesResult, sectionsResult, sectionItemsResult]) => {
-          if (packagesResult.error || sectionsResult.error || sectionItemsResult.error) return;
+        // Package selection only needs these fields. Publish them immediately rather
+        // than waiting for the optional menu-section queries to finish.
+        const packagesLoad = packagesRequest.then((packagesResult) => {
+          if (packagesResult.error) return;
           setCatalogPackages(
             packagesResult.data.map((pkg) => ({
               id: pkg.id,
@@ -251,17 +249,44 @@ export function PlanProvider({ children }: { children: ReactNode }) {
               excludedServices: pkg.excluded_services,
               serviceOptions: pkg.service_options,
               signature: pkg.signature,
-              sections: sectionsResult.data
-                .filter((section) => section.package_id === pkg.id)
-                .map((section) => ({
-                  title: section.title,
-                  items: sectionItemsResult.data
-                    .filter((item) => item.section_id === section.id)
-                    .map((item) => item.label),
-                })),
+              sections: [],
             })),
           );
         });
+
+        void Promise.all([packagesRequest, sectionsRequest, sectionItemsRequest]).then(
+          ([packagesResult, sectionsResult, sectionItemsResult]) => {
+            if (packagesResult.error || sectionsResult.error || sectionItemsResult.error) return;
+            setCatalogPackages(
+              packagesResult.data.map((pkg) => ({
+                id: pkg.id,
+                name: pkg.name,
+                tagline: pkg.tagline,
+                pricePerMann: pkg.price_per_mann,
+                guestsPerMann: pkg.guests_per_mann,
+                guestCountFrom: pkg.guest_count_from ?? pkg.guests_per_mann,
+                guestCountTo: pkg.guest_count_to ?? pkg.guests_per_mann,
+                eventCategoryId: pkg.event_category_id,
+                foodPreference:
+                  pkg.food_preference === "veg" || pkg.food_preference === "nonveg"
+                    ? pkg.food_preference
+                    : "mixed",
+                includedServices: pkg.included_services,
+                excludedServices: pkg.excluded_services,
+                serviceOptions: pkg.service_options,
+                signature: pkg.signature,
+                sections: sectionsResult.data
+                  .filter((section) => section.package_id === pkg.id)
+                  .map((section) => ({
+                    title: section.title,
+                    items: sectionItemsResult.data
+                      .filter((item) => item.section_id === section.id)
+                      .map((item) => item.label),
+                  })),
+              })),
+            );
+          },
+        );
 
         void addOnsRequest.then((result: any) => {
           if (!result.error)

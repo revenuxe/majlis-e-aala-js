@@ -682,13 +682,14 @@ function StepFood() {
                 }
               />
             ))}
-          {packages.filter((p) => !p.eventCategoryId || p.eventCategoryId === plan.occasion)
-            .length === 0 && (
-            <p className="rounded-[16px] border border-border bg-surface/50 p-4 text-sm text-muted-foreground">
-              No package has been added for this occasion yet. Choose another occasion or ask us for
-              a custom menu.
-            </p>
-          )}
+          {!catalogLoading &&
+            packages.filter((p) => !p.eventCategoryId || p.eventCategoryId === plan.occasion)
+              .length === 0 && (
+              <p className="rounded-[16px] border border-border bg-surface/50 p-4 text-sm text-muted-foreground">
+                No package has been added for this occasion yet. Choose another occasion or ask us
+                for a custom menu.
+              </p>
+            )}
         </div>
       </>
     );
