@@ -1,6 +1,6 @@
 "use client";
 import { Check, Minus, Plus, X } from "lucide-react";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 export function cx(...parts: (string | false | null | undefined)[]) {
   return parts.filter(Boolean).join(" ");
@@ -133,6 +133,19 @@ export function QuantitySelector({
 }) {
   const h = size === "lg" ? "h-14" : size === "sm" ? "h-10" : "h-12";
   const btn = size === "lg" ? "w-14" : size === "sm" ? "w-10" : "w-12";
+  const [draft, setDraft] = useState(String(value));
+
+  useEffect(() => {
+    setDraft(String(value));
+  }, [value]);
+
+  const commitDraft = () => {
+    const next = Number.parseInt(draft, 10);
+    const safeValue = Number.isNaN(next) ? value : Math.max(min, next);
+    onChange(safeValue);
+    setDraft(String(safeValue));
+  };
+
   return (
     <div
       className={cx(
@@ -149,10 +162,23 @@ export function QuantitySelector({
       >
         <Minus className="h-4 w-4" strokeWidth={2} />
       </button>
-      <span className="px-3 text-[15px] font-semibold tabular-nums">
-        {value.toLocaleString("en-IN")}
-        {suffix ? ` ${suffix}` : ""}
-      </span>
+      <label className="flex min-w-0 items-center justify-center px-2 text-[15px] font-semibold tabular-nums">
+        <span className="sr-only">Quantity</span>
+        <input
+          type="number"
+          inputMode="numeric"
+          min={min}
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          onBlur={commitDraft}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") event.currentTarget.blur();
+          }}
+          aria-label={suffix ? `${suffix} quantity` : "Quantity"}
+          className="w-16 bg-transparent text-right outline-none"
+        />
+        {suffix && <span className="ml-1 whitespace-nowrap">{suffix}</span>}
+      </label>
       <button
         type="button"
         aria-label="Increase"
