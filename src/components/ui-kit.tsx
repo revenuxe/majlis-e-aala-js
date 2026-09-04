@@ -133,14 +133,17 @@ export function QuantitySelector({
 }) {
   const h = size === "lg" ? "h-14" : size === "sm" ? "h-10" : "h-12";
   const btn = size === "lg" ? "w-14" : size === "sm" ? "w-10" : "w-12";
-  const [draft, setDraft] = useState(String(value));
+  const valueText = value > 0 ? String(value) : "";
+  const [draft, setDraft] = useState(valueText);
 
   useEffect(() => {
-    setDraft(String(value));
+    setDraft(value > 0 ? String(value) : "");
   }, [value]);
 
   const commitDraft = () => {
-    const next = Number.parseInt(draft, 10);
+    const trimmedDraft = draft.trim();
+    if (!trimmedDraft) return;
+    const next = Number.parseInt(trimmedDraft, 10);
     const safeValue = Number.isNaN(next) ? value : Math.max(min, next);
     onChange(safeValue);
     setDraft(String(safeValue));
