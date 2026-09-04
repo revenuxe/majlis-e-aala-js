@@ -17,16 +17,7 @@ import heroImg from "@/assets/hero-banquet.jpg";
 import biryaniImg from "@/assets/cat-biryani.jpg";
 import kebabImg from "@/assets/cat-kebabs.jpg";
 import weddingImg from "@/assets/editorial-wedding.jpg";
-import {
-  categories,
-  dishes,
-  inr,
-  packageTotalFor,
-  packages,
-  serviceAreas,
-  standards,
-  testimonials,
-} from "@/lib/data";
+import { categories, dishes, inr, serviceAreas, standards, testimonials } from "@/lib/data";
 import { usePlan } from "@/lib/plan-store";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -66,7 +57,6 @@ export default function Home() {
       <QuickPlanner />
       <HowItWorks />
       <Standards />
-      <Packages />
       <BuildYourMenuCTA />
       <Testimonials />
       <ServiceAreas />
@@ -618,66 +608,6 @@ function MostLoved({ dishes: list }: { dishes: typeof dishes }) {
               </div>
             </div>
           </Link>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function Packages() {
-  const { plan } = usePlan();
-  return (
-    <Section>
-      <SectionHeader
-        eyebrow="Easiest way to plan"
-        title="Catering Packages"
-        subtitle="Quoted per Mann — one Mann serves 100 guests, crockery and service included."
-      />
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {packages.map((p) => (
-          <div
-            key={p.id}
-            className={cx(
-              "flex flex-col rounded-[20px] border p-5",
-              p.signature
-                ? "border-gold bg-champagne/40"
-                : "border-border bg-card shadow-[var(--shadow-card)]",
-            )}
-          >
-            {p.signature && (
-              <span className="eyebrow mb-2 block" style={{ color: "var(--gold)" }}>
-                Flagship
-              </span>
-            )}
-            <h3 className="font-display text-[26px] leading-tight">{p.name}</h3>
-            <p className="mt-1.5 text-[13px] text-muted-foreground">{p.tagline}</p>
-            <p className="mt-4 text-[24px] font-bold leading-none">
-              {inr(p.pricePerMann)}
-              <span className="text-[13px] font-medium text-muted-foreground"> / Mann</span>
-            </p>
-            <p className="mt-1 text-[12px] text-muted-text">
-              {inr(packageTotalFor(p, plan.guests))} for {plan.guests} guests
-            </p>
-            <ul className="mt-4 flex-1 space-y-1.5 text-[13px] text-muted-foreground">
-              {p.sections.map((s) => (
-                <li key={s.title} className="flex items-start gap-2">
-                  <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: "var(--gold)" }} />
-                  <span className="min-w-0">
-                    {s.title}
-                    <span className="text-muted-text">
-                      {" "}
-                      · {s.items.length} {s.items.length === 1 ? "item" : "items"}
-                    </span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <Link href="/packages" className="mt-5">
-              <Button full variant={p.signature ? "primary" : "outline"}>
-                View Package
-              </Button>
-            </Link>
-          </div>
         ))}
       </div>
     </Section>
