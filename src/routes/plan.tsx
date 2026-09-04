@@ -1172,13 +1172,14 @@ function StepAuth({
             type="button"
             size="lg"
             full
-            variant="outline"
             disabled={busy}
             onClick={() => void signInWithGoogle()}
           >
-            <span className="grid h-5 w-5 place-items-center rounded-full bg-card text-[13px] font-bold text-primary">
-              G
-            </span>
+            <img
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+              alt=""
+              className="h-5 w-5"
+            />
             Continue with Google
           </Button>
           <div className="flex items-center gap-3 text-[11px] uppercase tracking-[.12em] text-muted-text">

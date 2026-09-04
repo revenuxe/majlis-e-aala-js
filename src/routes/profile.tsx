@@ -130,15 +130,12 @@ export default function ProfilePage() {
             <Button size="lg" onClick={() => setShowAuth(true)}>
               <User className="h-4 w-4" /> Sign in
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              disabled={authBusy}
-              onClick={() => void signInWithGoogle()}
-            >
-              <span className="grid h-5 w-5 place-items-center rounded-full bg-card text-[13px] font-bold text-primary">
-                G
-              </span>
+            <Button size="lg" disabled={authBusy} onClick={() => void signInWithGoogle()}>
+              <img
+                src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                alt=""
+                className="h-5 w-5"
+              />
               Continue with Google
             </Button>
           </div>
@@ -233,15 +230,16 @@ export default function ProfilePage() {
               {authMessage && <p className="text-[13px] text-muted-foreground">{authMessage}</p>}
               <Button
                 type="button"
-                variant="outline"
                 size="lg"
                 full
                 disabled={authBusy}
                 onClick={() => void signInWithGoogle()}
               >
-                <span className="grid h-5 w-5 place-items-center rounded-full bg-card text-[13px] font-bold text-primary">
-                  G
-                </span>
+                <img
+                  src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                  alt=""
+                  className="h-5 w-5"
+                />
                 Continue with Google
               </Button>
               <div className="flex items-center gap-3 text-[11px] uppercase tracking-[.12em] text-muted-text">
