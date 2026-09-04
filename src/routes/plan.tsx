@@ -688,25 +688,37 @@ function StepFood() {
                       setExpandedPackageId((current) => (current === p.id ? null : p.id))
                     }
                     aria-expanded={expandedPackageId === p.id}
-                    className="press mt-5 grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[16px] bg-surface px-4 py-3 text-left"
+                    className="press mt-5 w-full overflow-hidden rounded-[16px] bg-surface text-left"
                   >
-                    <span>
-                      <span className="block text-[24px] font-bold leading-none">
-                        {inr(packageTotalFor(p, plan.guests))}
+                    <span className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3">
+                      <span>
+                        <span className="block text-[24px] font-bold leading-none">
+                          {inr(packageTotalFor(p, plan.guests))}
+                        </span>
+                        <span className="mt-1 block text-[12px] text-muted-foreground">
+                          Package price · serves {p.guestCountFrom}–{p.guestCountTo} guests
+                        </span>
                       </span>
-                      <span className="mt-1 block text-[12px] text-muted-foreground">
-                        Package price · serves {p.guestCountFrom}–{p.guestCountTo} guests
+                      <span
+                        className={cx(
+                          "grid h-10 w-10 place-items-center rounded-full border border-border bg-card text-muted-foreground transition-transform",
+                          expandedPackageId === p.id && "rotate-180 border-gold/50 text-gold",
+                        )}
+                      >
+                        <ChevronDown className="h-5 w-5" />
                       </span>
                     </span>
-                    <span
-                      className={cx(
-                        "grid h-10 w-10 place-items-center rounded-full border border-border bg-card text-muted-foreground transition-transform",
-                        expandedPackageId === p.id && "rotate-180 border-gold/50 text-gold",
-                      )}
-                    >
-                      <ChevronDown className="h-5 w-5" />
+                    <span className="flex items-center justify-between border-t border-border/80 px-4 py-2.5 text-[12px] font-semibold text-gold">
+                      {expandedPackageId === p.id ? "Hide what’s included" : "View what’s included"}
+                      <span>
+                        {expandedPackageId === p.id ? "Tap to collapse" : "Tap to view menu items"}
+                      </span>
                     </span>
                   </button>
+                  <p className="mt-3 text-[12px] leading-relaxed text-muted-foreground">
+                    Estimate for {plan.guests.toLocaleString("en-IN")} guests. Final menu
+                    inclusions, quantities and service details are confirmed by our catering team.
+                  </p>
                 </div>
                 {expandedPackageId === p.id && (
                   <div className="border-t border-border bg-surface/30">
