@@ -141,7 +141,9 @@ export default function ProfilePage() {
                 alt=""
                 className="h-5 w-5"
               />
-              Continue with Google
+              <span>
+                <span className="hidden min-[480px]:inline">Continue with </span>Google
+              </span>
             </Button>
           </div>
         )}
