@@ -134,6 +134,10 @@ export default function PlanFlow() {
   }, [step]);
 
   useEffect(() => {
+    if (customer && step === 6) setStep(7);
+  }, [customer, step]);
+
+  useEffect(() => {
     void supabase.auth.getUser().then(({ data }) => {
       if (data.user) {
         setCustomer(data.user);
@@ -292,6 +296,7 @@ export default function PlanFlow() {
             onAuthenticated={(user) => {
               setCustomer(user);
               applySavedProfile(user);
+              setStep(7);
             }}
           />
         )}
@@ -1075,7 +1080,7 @@ function StepAuth({
     setError(null);
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/plan?step=6` },
+      options: { redirectTo: `${window.location.origin}/plan?step=7` },
     });
     if (oauthError) {
       setError(oauthError.message);
@@ -1083,36 +1088,7 @@ function StepAuth({
     }
   };
 
-  if (customer) {
-    return (
-      <>
-        <StepHeading
-          title="You’re signed in"
-          note="Your saved details will be ready on the next step."
-        />
-        <div className="rounded-[18px] border border-border bg-card p-5 shadow-card">
-          <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-full bg-champagne text-gold">
-              <Check className="h-5 w-5" strokeWidth={3} />
-            </span>
-            <div>
-              <p className="font-semibold">{customer.email}</p>
-              <p className="mt-0.5 text-[13px] text-muted-foreground">
-                Your booking details are protected.
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => void supabase.auth.signOut()}
-            className="press mt-5 text-[13px] font-semibold text-gold"
-          >
-            Use a different account
-          </button>
-        </div>
-      </>
-    );
-  }
+  if (customer) return null;
 
   return (
     <>
