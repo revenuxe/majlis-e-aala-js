@@ -116,7 +116,12 @@ function HowItWorks() {
 
 function Section({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <section className={cx("mx-auto max-w-[1280px] px-5 py-12 sm:px-8 sm:py-16", className)}>
+    <section
+      className={cx(
+        "relative mx-auto max-w-[1280px] px-5 py-12 before:pointer-events-none before:absolute before:left-1/2 before:top-0 before:h-px before:w-[calc(100%-40px)] before:-translate-x-1/2 before:bg-gradient-to-r before:from-transparent before:via-gold/70 before:to-transparent sm:px-8 sm:py-16 sm:before:w-[calc(100%-64px)]",
+        className,
+      )}
+    >
       {children}
     </section>
   );
@@ -381,7 +386,7 @@ function OccasionSelector() {
               aria-pressed={selected}
               className={cx(
                 "group relative min-h-[222px] cursor-pointer overflow-hidden rounded-[22px] border-2 text-left shadow-[0_14px_30px_rgba(55,42,25,0.18)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_42px_rgba(55,42,25,0.28)] active:translate-y-0 active:scale-[0.975] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/40 sm:min-h-[280px] sm:rounded-[26px]",
-                selected ? "border-gold ring-2 ring-gold/60" : "border-card hover:border-gold",
+                selected ? "border-gold ring-2 ring-gold/60" : "border-gold/35 hover:border-gold",
               )}
             >
               <img
@@ -429,7 +434,7 @@ function QuickPlanner() {
 
   return (
     <Section className="py-6 sm:py-8">
-      <div className="rounded-[24px] border border-border bg-card p-5 shadow-[var(--shadow-card)] sm:p-8">
+      <div className="relative overflow-hidden rounded-[24px] border border-gold/45 bg-card p-5 shadow-[0_16px_34px_rgba(55,42,25,0.12)] before:pointer-events-none before:absolute before:inset-x-7 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent sm:p-8">
         <div className="flex items-center gap-3">
           <span className="gold-rule" />
           <span className="eyebrow">Plan your catering</span>
