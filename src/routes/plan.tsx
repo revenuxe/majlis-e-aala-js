@@ -555,7 +555,7 @@ function StepPreferences() {
 
       <p className="eyebrow mt-6">Serving style</p>
       <div className="mt-3 grid grid-cols-2 gap-2">
-        {["Buffet", "Packed Meals", "Live Counter", "Traditional Service"].map((s) => {
+        {["Traditional Service", "Buffet", "Packed Meals", "Live Counter"].map((s) => {
           const selected = plan.servingStyle === s;
           return (
             <button
