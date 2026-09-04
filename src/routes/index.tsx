@@ -279,7 +279,10 @@ function OccasionSelector() {
         title="What are you celebrating?"
         subtitle="Pick a category to see the packages created for it."
       />
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4" aria-busy={catalogLoading}>
+      <div
+        className="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4"
+        aria-busy={catalogLoading}
+      >
         {catalogLoading && occasions.length === 0
           ? Array.from({ length: 4 }, (_, index) => (
               <div
@@ -294,8 +297,8 @@ function OccasionSelector() {
             <button
               key={o.id}
               onClick={() => {
-                update({ occasion: o.id, packageId: null });
-                navigate.push("/plan?step=2");
+                update({ occasion: o.id, packageId: null, mode: "package" });
+                navigate.push(`/packages/${o.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`);
               }}
               aria-pressed={selected}
               className={cx(
