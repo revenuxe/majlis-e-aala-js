@@ -667,90 +667,115 @@ function StepFood() {
           {packages
             .filter((p) => !p.eventCategoryId || p.eventCategoryId === plan.occasion)
             .map((p) => (
-              <ChoiceCard
+              <article
                 key={p.id}
-                title={`${p.name} — ${inr(p.pricePerMann)} / Mann`}
-                note={`${p.sections.map((s) => s.title).join(" • ")} · Estimated ${inr(
-                  packageTotalFor(p, plan.guests),
-                )} for ${plan.guests} guests`}
-                selected={plan.packageId === p.id}
-                onClick={() =>
-                  update({
-                    packageId: p.id,
-                    occasion: p.eventCategoryId ?? plan.occasion,
-                    foodPreference: p.foodPreference ?? "mixed",
-                    services: p.includedServices ?? [],
-                  })
-                }
-              />
-            ))}
-          {packages
-            .filter((p) => !p.eventCategoryId || p.eventCategoryId === plan.occasion)
-            .map((p) =>
-              p.sections.length > 0 ? (
-                <div
-                  key={`${p.id}:menu`}
-                  className="overflow-hidden rounded-[16px] border border-border bg-card"
-                >
-                  <div className="border-b border-border bg-champagne/30 px-4 py-2.5">
-                    <p className="text-[10px] font-bold uppercase tracking-[.14em] text-gold">
-                      {p.name} â€” whatâ€™s included
+                className={cx(
+                  "overflow-hidden rounded-[16px] border bg-card",
+                  plan.packageId === p.id
+                    ? "border-primary ring-1 ring-primary/20"
+                    : "border-border",
+                )}
+              >
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-4">
+                  <div className="min-w-0">
+                    <h2 className="text-[16px] font-semibold">
+                      {p.name} - {inr(p.pricePerMann)} / Mann
+                    </h2>
+                    <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
+                      {p.sections.map((section) => section.title).join(" • ") ||
+                        "Menu details are loading..."}
+                      {" • "}Estimated {inr(packageTotalFor(p, plan.guests))} for {plan.guests}{" "}
+                      guests
                     </p>
                   </div>
-                  {p.sections.map((section, index) => {
-                    const key = `${p.id}:${section.title}`;
-                    const expanded = expandedSectionKey === key;
-                    return (
-                      <div key={key} className="border-b border-border last:border-b-0">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setExpandedSectionKey((current) => (current === key ? null : key))
-                          }
-                          aria-expanded={expanded}
-                          className={cx(
-                            "press flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left",
-                            expanded ? "bg-surface" : "bg-card hover:bg-surface/60",
-                          )}
-                        >
-                          <span className="flex min-w-0 items-center gap-3">
-                            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-champagne text-[10px] font-bold text-gold">
-                              {index + 1}
-                            </span>
-                            <span className="truncate text-[14px] font-semibold">
-                              {section.title}
-                            </span>
-                          </span>
-                          <span
+                  <span
+                    className={cx(
+                      "grid h-7 w-7 place-items-center rounded-full border",
+                      plan.packageId === p.id ? "border-primary bg-primary" : "border-border",
+                    )}
+                  >
+                    {plan.packageId === p.id && (
+                      <Check className="h-4 w-4 text-primary-foreground" />
+                    )}
+                  </span>
+                </div>
+                {p.sections.length > 0 && (
+                  <div className="border-t border-border bg-surface/30">
+                    <div className="border-b border-border bg-champagne/30 px-4 py-2.5">
+                      <p className="text-[10px] font-bold uppercase tracking-[.14em] text-gold">
+                        What's included
+                      </p>
+                    </div>
+                    {p.sections.map((section, index) => {
+                      const key = `${p.id}:${section.title}`;
+                      const expanded = expandedSectionKey === key;
+                      return (
+                        <div key={key} className="border-b border-border last:border-b-0">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setExpandedSectionKey((current) => (current === key ? null : key))
+                            }
+                            aria-expanded={expanded}
                             className={cx(
-                              "grid h-7 w-7 shrink-0 place-items-center rounded-full border border-border bg-card text-muted-foreground transition-transform",
-                              expanded && "rotate-180 border-gold/50 text-gold",
+                              "press flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left",
+                              expanded ? "bg-surface" : "bg-card hover:bg-surface/60",
                             )}
                           >
-                            <ChevronDown className="h-4 w-4" />
-                          </span>
-                        </button>
-                        {expanded && (
-                          <div className="border-t border-border bg-surface/50 px-4 py-3.5 animate-in fade-in slide-in-from-top-1">
-                            {section.items.length > 0 ? (
-                              <ul className="space-y-1.5 text-[13px] leading-relaxed text-muted-foreground">
-                                {section.items.map((item) => (
-                                  <li key={item}>â€¢ {item}</li>
-                                ))}
-                              </ul>
-                            ) : (
-                              <p className="text-[12px] text-muted-foreground">
-                                Included in this package
-                              </p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                            <span className="flex min-w-0 items-center gap-3">
+                              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-champagne text-[10px] font-bold text-gold">
+                                {index + 1}
+                              </span>
+                              <span className="truncate text-[14px] font-semibold">
+                                {section.title}
+                              </span>
+                            </span>
+                            <span
+                              className={cx(
+                                "grid h-7 w-7 shrink-0 place-items-center rounded-full border border-border bg-card text-muted-foreground transition-transform",
+                                expanded && "rotate-180 border-gold/50 text-gold",
+                              )}
+                            >
+                              <ChevronDown className="h-4 w-4" />
+                            </span>
+                          </button>
+                          {expanded && (
+                            <div className="border-t border-border bg-surface/50 px-4 py-3.5 animate-in fade-in slide-in-from-top-1">
+                              {section.items.length > 0 ? (
+                                <ul className="space-y-1.5 text-[13px] leading-relaxed text-muted-foreground">
+                                  {section.items.map((item) => (
+                                    <li key={item}>• {item}</li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p className="text-[12px] text-muted-foreground">
+                                  Included in this package
+                                </p>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                <div className="border-t border-border p-4">
+                  <Button
+                    full
+                    onClick={() =>
+                      update({
+                        packageId: p.id,
+                        occasion: p.eventCategoryId ?? plan.occasion,
+                        foodPreference: p.foodPreference ?? "mixed",
+                        services: p.includedServices ?? [],
+                      })
+                    }
+                  >
+                    {plan.packageId === p.id ? "Selected package" : "Select package"}
+                  </Button>
                 </div>
-              ) : null,
-            )}
+              </article>
+            ))}
           {!catalogLoading &&
             packages.filter((p) => !p.eventCategoryId || p.eventCategoryId === plan.occasion)
               .length === 0 && (
