@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Search, User } from "lucide-react";
+import { ChevronDown, Heart, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { BrandLogo, BrandMark } from "./Brand";
 import { Button, cx } from "./ui-kit";
@@ -58,11 +58,11 @@ export function SiteHeader() {
               <Search className="h-[19px] w-[19px]" strokeWidth={1.75} />
             </button>
             <Link
-              href="/profile"
-              aria-label="Profile"
+              href="/profile/drafts"
+              aria-label="Saved drafts"
               className="press grid h-10 w-10 place-items-center rounded-full"
             >
-              <User className="h-[19px] w-[19px]" strokeWidth={1.75} />
+              <Heart className="h-[19px] w-[19px]" strokeWidth={1.75} />
             </Link>
           </div>
         </div>
