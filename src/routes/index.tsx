@@ -166,6 +166,8 @@ type HeroSlide = {
   text: string;
 };
 
+const heroSlideKey = (slide: HeroSlide) => `${slide.image}|${slide.mobileImage ?? ""}`;
+
 function Hero() {
   const router = useRouter();
   const [index, setIndex] = useState(0);
@@ -240,6 +242,15 @@ function Hero() {
     return () => window.clearInterval(id);
   }, []);
 
+  useEffect(() => {
+    const nextSlide = slides[(index + 1) % count];
+    if (!nextSlide) return;
+    const nextImage = new window.Image();
+    const useMobileImage = window.matchMedia("(max-width: 639px)").matches;
+    nextImage.src =
+      useMobileImage && nextSlide.mobileImage ? nextSlide.mobileImage : nextSlide.image;
+  }, [count, index, slides]);
+
   return (
     <section className="mx-auto max-w-[1280px] px-4 pt-4 sm:px-8 sm:pt-6">
       <div className="relative overflow-hidden rounded-[22px] bg-soft-black sm:rounded-[28px]">
@@ -254,7 +265,7 @@ function Hero() {
                 i === index ? "opacity-100" : "pointer-events-none opacity-0",
               )}
             >
-              {!loadedSlides.has(s.title) && (
+              {!loadedSlides.has(heroSlideKey(s)) && (
                 <div
                   aria-hidden="true"
                   className="absolute inset-0 animate-pulse bg-[radial-gradient(circle_at_72%_28%,rgba(202,164,93,0.34),transparent_28%),linear-gradient(135deg,#211b14,#5b4931_48%,#17130f)]"
@@ -268,10 +279,12 @@ function Hero() {
                   src={s.image}
                   alt={s.eyebrow}
                   loading={i === 0 ? "eager" : "lazy"}
-                  onLoad={() => setLoadedSlides((current) => new Set(current).add(s.title))}
+                  fetchPriority={i === 0 ? "high" : "low"}
+                  decoding="async"
+                  onLoad={() => setLoadedSlides((current) => new Set(current).add(heroSlideKey(s)))}
                   className={cx(
-                    "h-full w-full object-cover transition-opacity duration-700",
-                    loadedSlides.has(s.title) ? "opacity-100" : "opacity-0",
+                    "h-full w-full object-cover transition-opacity duration-300",
+                    loadedSlides.has(heroSlideKey(s)) ? "opacity-100" : "opacity-0",
                   )}
                 />
               </picture>
