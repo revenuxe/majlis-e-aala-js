@@ -217,6 +217,9 @@ export function PlanProvider({ children }: { children: ReactNode }) {
           .order("sort_order");
         const itemsRequest = supabase.from("menu_items").select("*").order("sort_order");
         const packagesRequest = supabase.from("packages").select("*").order("sort_order");
+        const packageEventCategoriesRequest = (supabase as any)
+          .from("package_event_categories")
+          .select("package_id, event_category_id");
         const sectionsRequest = supabase.from("package_sections").select("*").order("sort_order");
         const sectionItemsRequest = supabase
           .from("package_section_items")
@@ -294,9 +297,21 @@ export function PlanProvider({ children }: { children: ReactNode }) {
           );
         });
 
-        void Promise.all([packagesRequest, sectionsRequest, sectionItemsRequest]).then(
-          ([packagesResult, sectionsResult, sectionItemsResult]) => {
+        void Promise.all([
+          packagesRequest,
+          sectionsRequest,
+          sectionItemsRequest,
+          packageEventCategoriesRequest,
+        ]).then(
+          ([packagesResult, sectionsResult, sectionItemsResult, packageEventCategoriesResult]) => {
             if (packagesResult.error || sectionsResult.error || sectionItemsResult.error) return;
+            const eventIdsByPackage = new Map<string, string[]>();
+            for (const assignment of packageEventCategoriesResult.data ?? []) {
+              eventIdsByPackage.set(assignment.package_id, [
+                ...(eventIdsByPackage.get(assignment.package_id) ?? []),
+                assignment.event_category_id,
+              ]);
+            }
             setCatalogPackages(
               packagesResult.data.map((pkg) => ({
                 id: pkg.id,
@@ -307,6 +322,7 @@ export function PlanProvider({ children }: { children: ReactNode }) {
                 guestCountFrom: pkg.guest_count_from ?? pkg.guests_per_mann,
                 guestCountTo: pkg.guest_count_to ?? pkg.guests_per_mann,
                 eventCategoryId: pkg.event_category_id,
+                eventCategoryIds: eventIdsByPackage.get(pkg.id) ?? [],
                 foodPreference:
                   pkg.food_preference === "veg" || pkg.food_preference === "nonveg"
                     ? pkg.food_preference

@@ -23,6 +23,7 @@ import weddingImg from "@/assets/editorial-wedding.jpg";
 import {
   inr,
   packageGuestFit,
+  packageSupportsOccasion,
   packageGuestRange,
   packageTotalFor,
   type CateringPackage,
@@ -111,7 +112,7 @@ export default function NikahPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const nikah = occasions.find((item) => item.name.trim().toLowerCase() === "nikah");
   const nikahPackages = useMemo(
-    () => packages.filter((item) => Boolean(nikah) && item.eventCategoryId === nikah?.id),
+    () => packages.filter((item) => Boolean(nikah) && packageSupportsOccasion(item, nikah!.id)),
     [nikah, packages],
   );
   const guestCount = Math.max(25, plan.guests || 350);

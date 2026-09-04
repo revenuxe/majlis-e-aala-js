@@ -8,6 +8,7 @@ import {
   mannsFor,
   packageGuestFit,
   packageGuestRange,
+  packageSupportsOccasion,
   packageTotalFor,
   perGuestFor,
   type CateringPackage,
@@ -210,7 +211,7 @@ export default function PackagesPage() {
   }
 
   const eventPackages = packages
-    .filter((item) => item.eventCategoryId === occasion.id)
+    .filter((item) => packageSupportsOccasion(item, occasion.id))
     .sort((a, b) => {
       const priority = { within: 0, below: 1, above: 2 } as const;
       return priority[packageGuestFit(a, plan.guests)] - priority[packageGuestFit(b, plan.guests)];
@@ -614,7 +615,7 @@ export default function PackagesPage() {
         {packages
           .filter(
             (p) =>
-              (!plan.occasion || !p.eventCategoryId || p.eventCategoryId === plan.occasion) &&
+              (!plan.occasion || packageSupportsOccasion(p, plan.occasion)) &&
               `${p.name} ${p.tagline}`.toLowerCase().includes(search.toLowerCase()),
           )
           .map((p) => (

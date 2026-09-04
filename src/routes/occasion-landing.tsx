@@ -18,6 +18,7 @@ import mainsImg from "@/assets/cat-mains.jpg";
 import {
   inr,
   packageGuestFit,
+  packageSupportsOccasion,
   packageGuestRange,
   packageTotalFor,
   type CateringPackage,
@@ -188,7 +189,7 @@ export function OccasionLanding({ kind }: { kind: OccasionKind }) {
     (item) => item.name.trim().toLowerCase() === copy.eventName.toLowerCase(),
   );
   const eventPackages = useMemo(
-    () => packages.filter((pkg) => pkg.eventCategoryId === occasion?.id),
+    () => packages.filter((pkg) => Boolean(occasion) && packageSupportsOccasion(pkg, occasion!.id)),
     [packages, occasion],
   );
   const planEvent = (pkg?: CateringPackage) => {

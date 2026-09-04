@@ -46,6 +46,7 @@ export interface CateringPackage {
   guestCountFrom?: number;
   guestCountTo?: number;
   eventCategoryId?: string | null;
+  eventCategoryIds?: string[];
   foodPreference?: "veg" | "nonveg" | "mixed";
   includedServices?: string[];
   excludedServices?: string[];
@@ -53,6 +54,16 @@ export interface CateringPackage {
   sections: PackageSection[];
   signature?: boolean;
 }
+
+/** Empty assignments mean the package is available for every event category. */
+export const packageSupportsOccasion = (pkg: CateringPackage, occasionId: string) => {
+  const assigned = pkg.eventCategoryIds?.length
+    ? pkg.eventCategoryIds
+    : pkg.eventCategoryId
+      ? [pkg.eventCategoryId]
+      : [];
+  return assigned.length === 0 || assigned.includes(occasionId);
+};
 
 /** Catering is quoted in "Mann" — one Mann serves 100 guests. */
 export const GUESTS_PER_MANN = 100;

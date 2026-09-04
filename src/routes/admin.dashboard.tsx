@@ -129,13 +129,30 @@ export default function AdminDashboard() {
         return;
       }
       if (listTab === "packages") {
-        const [p, s, si, ec] = await Promise.all([
+        const [p, s, si, ec, pec] = await Promise.all([
           supabase.from("packages").select("*").order("sort_order"),
           supabase.from("package_sections").select("*").order("sort_order"),
           supabase.from("package_section_items").select("*").order("sort_order"),
           supabase.from("event_categories").select("*").order("sort_order"),
+          (supabase as any)
+            .from("package_event_categories")
+            .select("package_id, event_category_id"),
         ]);
-        setPackages((p.data ?? []) as PackageRow[]);
+        const eventIdsByPackage = new Map<string, string[]>();
+        for (const assignment of pec.data ?? []) {
+          eventIdsByPackage.set(assignment.package_id, [
+            ...(eventIdsByPackage.get(assignment.package_id) ?? []),
+            assignment.event_category_id,
+          ]);
+        }
+        setPackages(
+          (p.data ?? []).map((pkg) => ({
+            ...pkg,
+            event_category_ids:
+              eventIdsByPackage.get(pkg.id) ??
+              (pkg.event_category_id ? [pkg.event_category_id] : []),
+          })) as PackageRow[],
+        );
         setSections((s.data ?? []) as SectionRow[]);
         setSectionItems((si.data ?? []) as SectionItemRow[]);
         setEventCategories((ec.data ?? []) as EventCategoryRow[]);
@@ -924,7 +941,7 @@ function PackagesPanel({
   const [price, setPrice] = useState("100000");
   const [guestCountFrom, setGuestCountFrom] = useState("100");
   const [guestCountTo, setGuestCountTo] = useState("100");
-  const [eventCategoryId, setEventCategoryId] = useState("");
+  const [eventCategoryIds, setEventCategoryIds] = useState<string[]>([]);
   const [foodPreference, setFoodPreference] = useState<"veg" | "nonveg" | "mixed">("mixed");
   const [includedServices, setIncludedServices] = useState<string[]>([]);
   const [excludedServices, setExcludedServices] = useState<string[]>([]);
@@ -941,7 +958,7 @@ function PackagesPanel({
     setPrice("100000");
     setGuestCountFrom("100");
     setGuestCountTo("100");
-    setEventCategoryId("");
+    setEventCategoryIds([]);
     setFoodPreference("mixed");
     setIncludedServices([]);
     setExcludedServices([]);
@@ -960,7 +977,13 @@ function PackagesPanel({
     setPrice(String(pkg.price_per_mann));
     setGuestCountFrom(String(pkg.guest_count_from ?? pkg.guests_per_mann));
     setGuestCountTo(String(pkg.guest_count_to ?? pkg.guests_per_mann));
-    setEventCategoryId(pkg.event_category_id ?? "");
+    setEventCategoryIds(
+      pkg.event_category_ids?.length
+        ? pkg.event_category_ids
+        : pkg.event_category_id
+          ? [pkg.event_category_id]
+          : [],
+    );
     setFoodPreference(pkg.food_preference ?? "mixed");
     setIncludedServices(pkg.included_services ?? []);
     setExcludedServices(pkg.excluded_services ?? []);
@@ -997,7 +1020,8 @@ function PackagesPanel({
         guest_count_from: Number(guestCountFrom) || 1,
         guest_count_to: Math.max(Number(guestCountFrom) || 1, Number(guestCountTo) || 1),
         guests_per_mann: Math.max(Number(guestCountFrom) || 1, Number(guestCountTo) || 1),
-        event_category_id: eventCategoryId || null,
+        // Keep the old column populated for legacy integrations; the join table is authoritative.
+        event_category_id: eventCategoryIds[0] ?? null,
         food_preference: foodPreference,
         included_services: includedServices,
         excluded_services: excludedServices,
@@ -1022,6 +1046,23 @@ function PackagesPanel({
         packageId = data.id;
       }
       if (!packageId) throw new Error("Missing package id");
+
+      const { error: assignmentDeleteError } = await (supabase as any)
+        .from("package_event_categories")
+        .delete()
+        .eq("package_id", packageId);
+      if (assignmentDeleteError) throw assignmentDeleteError;
+      if (eventCategoryIds.length) {
+        const { error: assignmentInsertError } = await (supabase as any)
+          .from("package_event_categories")
+          .insert(
+            eventCategoryIds.map((event_category_id) => ({
+              package_id: packageId,
+              event_category_id,
+            })),
+          );
+        if (assignmentInsertError) throw assignmentInsertError;
+      }
 
       // Replace sections + items with the current draft (simple and predictable).
       await supabase.from("package_sections").delete().eq("package_id", packageId);
@@ -1196,18 +1237,18 @@ function PackagesPanel({
               />
             </Field>
           </div>
-          <Field label="Event category">
-            <Select value={eventCategoryId} onChange={(e) => setEventCategoryId(e.target.value)}>
-              <option value="">Available for every occasion</option>
-              {eventCategories
-                .filter((category) => category.is_active)
-                .map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-            </Select>
-          </Field>
+          <MultiSelect
+            label="Event categories"
+            items={eventCategories
+              .filter((category) => category.is_active)
+              .map((category) => ({ id: category.id, label: category.name }))}
+            selected={eventCategoryIds}
+            onToggle={(id) =>
+              setEventCategoryIds((current) =>
+                current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
+              )
+            }
+          />
           <Field label="Cover image">
             <ImageField value={image} onChange={setImage} />
           </Field>

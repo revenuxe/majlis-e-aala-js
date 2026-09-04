@@ -10,6 +10,7 @@ export type PackageRow = {
   guest_count_from: number;
   guest_count_to: number;
   event_category_id: string | null;
+  event_category_ids?: string[];
   food_preference: "veg" | "nonveg" | "mixed";
   included_services: string[];
   excluded_services: string[];

@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
-import { inr, packageTotalFor } from "@/lib/data";
+import { inr, packageSupportsOccasion, packageTotalFor } from "@/lib/data";
 import { recommendedTrays, usePlan } from "@/lib/plan-store";
 import { supabase } from "@/integrations/supabase/client";
 import { BrandMark } from "@/components/Brand";
@@ -666,7 +666,7 @@ function StepFood() {
         <div className="grid gap-3">
           {catalogLoading && packages.length === 0 && <CatalogueLoading label="packages" />}
           {packages
-            .filter((p) => !p.eventCategoryId || p.eventCategoryId === plan.occasion)
+            .filter((p) => !plan.occasion || packageSupportsOccasion(p, plan.occasion))
             .map((p) => (
               <article
                 key={p.id}
@@ -803,7 +803,7 @@ function StepFood() {
               </article>
             ))}
           {!catalogLoading &&
-            packages.filter((p) => !p.eventCategoryId || p.eventCategoryId === plan.occasion)
+            packages.filter((p) => !plan.occasion || packageSupportsOccasion(p, plan.occasion))
               .length === 0 && (
               <p className="rounded-[16px] border border-border bg-surface/50 p-4 text-sm text-muted-foreground">
                 No package has been added for this occasion yet. Choose another occasion or ask us
