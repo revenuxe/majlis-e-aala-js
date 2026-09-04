@@ -6,6 +6,7 @@ import {
   ArrowUpRight,
   Check,
   ChefHat,
+  ChevronDown,
   HeartHandshake,
   SlidersHorizontal,
   Search,
@@ -63,8 +64,65 @@ export default function Home() {
     <main>
       <Hero />
       <OccasionSelector />
+      <HowItWorks />
       <QuickPlanner />
+      <Standards />
+      <Packages />
+      <BuildYourMenuCTA />
+      <WeddingEditorial />
+      <Testimonials />
+      <ServiceAreas />
+      <HomeFAQs />
     </main>
+  );
+}
+
+function HowItWorks() {
+  const steps = [
+    [
+      "01",
+      "Choose your occasion",
+      "Tell us whether you are planning a Nikah, Walima, Aqiqah, wedding or corporate gathering.",
+    ],
+    [
+      "02",
+      "Set your guest count",
+      "See packages and estimates shaped around the number of guests you are hosting.",
+    ],
+    [
+      "03",
+      "Select a menu",
+      "Open each package to review inclusions, or build a menu dish by dish.",
+    ],
+    [
+      "04",
+      "Confirm with our team",
+      "Send your request and our Bengaluru catering team will confirm the final details with you.",
+    ],
+  ];
+  return (
+    <Section>
+      <SectionHeader
+        eyebrow="Simple from the start"
+        title="How catering comes together"
+        subtitle="A clear path from your first idea to a beautifully served gathering."
+      />
+      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {steps.map(([number, title, note]) => (
+          <div
+            key={number}
+            className="group rounded-[20px] border border-border bg-card p-5 shadow-[0_8px_20px_rgba(55,42,25,0.07)] transition-all hover:-translate-y-1 hover:border-gold/70"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[12px] font-bold tracking-[.16em] text-gold">{number}</span>
+              <ArrowUpRight className="h-4 w-4 text-gold" />
+            </div>
+            <h3 className="mt-8 text-[17px] font-semibold">{title}</h3>
+            <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">{note}</p>
+          </div>
+        ))}
+      </div>
+    </Section>
   );
 }
 
@@ -769,6 +827,80 @@ function ServiceAreas() {
             We may still be able to help — please message our catering team.
           </p>
         )}
+      </div>
+    </Section>
+  );
+}
+
+function HomeFAQs() {
+  const [open, setOpen] = useState<number | null>(0);
+  const faqs = [
+    [
+      "How early should I book catering in Bengaluru?",
+      "For weddings and larger gatherings, sharing your date a few weeks in advance gives our team the best chance to reserve the right kitchen and service team. We will confirm availability after receiving your request.",
+    ],
+    [
+      "Can I customise a catering package?",
+      "Yes. Start with a package for a clear estimate, then share your family preferences, dietary requirements and service needs. Final inclusions are confirmed with the catering team.",
+    ],
+    [
+      "What does a Mann mean?",
+      "A Mann is our bulk-catering serving reference. The package page shows the included guest range and a tailored estimate for your selected guest count.",
+    ],
+    [
+      "Do you cater outside Bengaluru?",
+      "We serve many Bengaluru neighbourhoods. Share your venue while planning and our team will confirm service coverage and any event-specific requirements.",
+    ],
+  ];
+  return (
+    <Section>
+      <div className="rounded-[24px] border border-border bg-surface/55 p-5 sm:p-8">
+        <SectionHeader
+          eyebrow="Helpful answers"
+          title="Before you plan"
+          subtitle="A few common questions from families planning a celebration."
+        />
+        <div className="mt-6 divide-y divide-border overflow-hidden rounded-[16px] border border-border bg-card">
+          {faqs.map(([question, answer], index) => {
+            const expanded = open === index;
+            return (
+              <div key={question}>
+                <button
+                  type="button"
+                  onClick={() => setOpen(expanded ? null : index)}
+                  aria-expanded={expanded}
+                  className="press flex w-full items-center justify-between gap-4 px-4 py-4 text-left sm:px-5"
+                >
+                  <span className="text-[15px] font-semibold">{question}</span>
+                  <ChevronDown
+                    className={cx(
+                      "h-5 w-5 shrink-0 text-gold transition-transform",
+                      expanded && "rotate-180",
+                    )}
+                  />
+                </button>
+                {expanded && (
+                  <p className="border-t border-border bg-surface/50 px-4 py-4 text-[14px] leading-relaxed text-muted-foreground sm:px-5">
+                    {answer}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <div className="mt-6 flex flex-col gap-3 rounded-[18px] bg-primary p-5 text-primary-foreground sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-[16px] font-semibold">Ready to plan your gathering?</p>
+            <p className="mt-1 text-[13px] text-primary-foreground/70">
+              Choose an occasion and see package estimates for your guest count.
+            </p>
+          </div>
+          <Link href="/plan">
+            <Button variant="champagne" size="lg" className="w-full sm:w-auto">
+              Start planning <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        </div>
       </div>
     </Section>
   );
