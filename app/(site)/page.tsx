@@ -5,7 +5,7 @@ import { siteUrl } from "@/lib/site-url";
 export const metadata: Metadata = {
   title: "Best Muslim Food Caterers in Bangalore | Majlis E Aala",
   description:
-    "Premium Halal Muslim catering in Bangalore for Nikah, Walima, Aqiqah, weddings and corporate events. Explore custom menus, buffet setups, serving staff and live counters.",
+    "Halal catering in Bangalore for weddings, Nikah, Walima and Aqiqah. Enjoy authentic flavours and custom menus with Majlis E Aala.",
   alternates: { canonical: "/" },
   keywords: [
     "Muslim food caterers in Bangalore",

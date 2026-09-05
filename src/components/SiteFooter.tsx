@@ -35,7 +35,7 @@ export function SiteFooter() {
               <Link href="/corporate-events">Corporate Events</Link>
             </div>
           </div>
-          <div>
+          <div data-nosnippet="">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] opacity-50">
               Contact
             </p>

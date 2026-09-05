@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     template: "%s | Majlis E Aala",
   },
   description:
-    "Majlis E Aala offers premium Halal Muslim catering in Bangalore for Nikah, Walima, Aqiqah, weddings, corporate events, custom menus, buffet service and live counters.",
+    "Halal catering in Bangalore for weddings, Nikah, Walima and Aqiqah. Enjoy authentic flavours and custom menus with Majlis E Aala.",
   icons: { icon: "/favicon.ico", shortcut: "/favicon.ico" },
   alternates: { canonical: "/" },
   openGraph: { type: "website", siteName: "Majlis E Aala", locale: "en_IN", url: "/" },
