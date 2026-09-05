@@ -127,35 +127,6 @@ function Section({ children, className }: { children: React.ReactNode; className
   );
 }
 
-const heroSlides = [
-  {
-    image: heroImg.src,
-    eyebrow: "Weddings & Walima",
-    title: "A Feast Worth Remembering.",
-    text: "Exceptional Halal catering crafted for weddings, celebrations and gatherings of every size.",
-  },
-  {
-    image: biryaniImg.src,
-    eyebrow: "Signature Dum Biryani",
-    title: "Slow-Cooked. Never Rushed.",
-    text: "Long-grain basmati, whole spices and sealed dum cooking on your event day itself.",
-  },
-  {
-    image: kebabImg.src,
-    eyebrow: "Live Grills & Kebabs",
-    title: "Straight Off The Coal.",
-    text: "Manned grill counters serving kebabs hot to your guests, all evening long.",
-  },
-  {
-    image: weddingImg.src,
-    // @ts-expect-error -- the final spread supplies the customer-facing eyebrow.
-    eyebrow: "Packages from ₹1,00,000 / Mann",
-    title: "Catering, considered.",
-    text: "Explore the menus and service options currently available for your celebration.",
-    ...Object.assign({}, { eyebrow: "Made for your occasion" }),
-  },
-];
-
 const HERO_CACHE_TTL = 5 * 60 * 1000;
 
 type HeroSlide = {
@@ -185,8 +156,9 @@ function Hero() {
   const [hint, setHint] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [managedSlides, setManagedSlides] = useState<HeroSlide[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [loadedSlides, setLoadedSlides] = useState<Set<string>>(() => new Set());
-  const slides: HeroSlide[] = managedSlides.length ? managedSlides : heroSlides;
+  const slides = managedSlides;
   const count = slides.length;
   const heroCacheKey = "majlise-aala-hero-v1";
   const suggestedSearch = ["Nikah", "Walima", "Aqiqah", "Corporate event"][hint] ?? "catering";
@@ -204,10 +176,11 @@ function Hero() {
           Date.now() - cached.savedAt < HERO_CACHE_TTL
         ) {
           setManagedSlides(cached.slides);
+          setIsLoading(false);
           return;
         }
       } catch {
-        /* use bundled slides while loading */
+        /* Fetch configured slides when the cache is unavailable. */
       }
       // The migration adds this table; generated Supabase types are refreshed separately.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -241,10 +214,15 @@ function Hero() {
         /* cache is optional */
       }
       setIndex(0);
-    })();
+    })()
+      .catch(() => {
+        /* Keep the static hero usable if configured slides cannot be loaded. */
+      })
+      .finally(() => setIsLoading(false));
   }, []);
 
   useEffect(() => {
+    if (count < 2) return;
     const id = window.setInterval(() => setIndex((i) => (i + 1) % count), 6000);
     return () => window.clearInterval(id);
   }, [count]);
@@ -254,6 +232,7 @@ function Hero() {
   }, []);
 
   useEffect(() => {
+    if (count < 2) return;
     const nextSlide = slides[(index + 1) % count];
     if (!nextSlide) return;
     const nextImage = new window.Image();
@@ -310,7 +289,18 @@ function Hero() {
                 Majlise Aala Catering
               </span>
               <h1 className="mt-3 max-w-[360px] text-balance font-display text-[32px] leading-[1.06] text-white sm:max-w-xl sm:text-[54px] lg:max-w-[840px] lg:text-[64px] lg:[text-wrap:wrap]">
-                <HeroTitle title={slides[index]!.title} />
+                {isLoading ? (
+                  <span role="status" className="block motion-safe:animate-pulse">
+                    <span className="sr-only">Loading featured catering</span>
+                    <span aria-hidden="true" className="block h-[1em] w-4/5 rounded bg-white/10" />
+                    <span
+                      aria-hidden="true"
+                      className="mt-2 block h-[1em] w-3/5 rounded bg-white/10"
+                    />
+                  </span>
+                ) : (
+                  <HeroTitle title={slides[index]?.title ?? "Halal Catering in Bangalore"} />
+                )}
               </h1>
               <form
                 onSubmit={(event) => {
