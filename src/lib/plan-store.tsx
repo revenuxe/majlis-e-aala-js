@@ -60,6 +60,7 @@ interface PlanContextValue {
   packages: CateringPackage[];
   occasions: Occasion[];
   catalogLoading: boolean;
+  packagesError: string | null;
   update: (patch: Partial<PlanState>) => void;
   addItem: (dishId: string, quantity?: number) => void;
   setQuantity: (dishId: string, quantity: number) => void;
@@ -79,7 +80,7 @@ const STORAGE_KEY = "majlise-aala-plan";
 const BOOKINGS_STORAGE_KEY = "majlise-aala-bookings";
 // Bump this whenever the catalogue structure or seeded package data changes,
 // so customers never keep a retired package in local storage.
-const CATALOG_CACHE_KEY = "majlise-aala-catalog-v2";
+const CATALOG_CACHE_KEY = "majlise-aala-catalog-v3";
 
 export function servingsPerUnit(serves: string) {
   const values = [...serves.matchAll(/\d+/g)].map((match) => Number(match[0]));
@@ -96,6 +97,7 @@ export function PlanProvider({ children }: { children: ReactNode }) {
   const [catalogPackages, setCatalogPackages] = useState<CateringPackage[]>([]);
   const [catalogOccasions, setCatalogOccasions] = useState<Occasion[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
+  const [packagesError, setPackagesError] = useState<string | null>(null);
   const [bookings, setBookings] = useState<BookingSummary[]>([]);
   const [addOns, setAddOns] = useState<CateringAddOn[]>([]);
 
@@ -216,7 +218,9 @@ export function PlanProvider({ children }: { children: ReactNode }) {
           .select("id, name")
           .order("sort_order");
         const itemsRequest = supabase.from("menu_items").select("*").order("sort_order");
-        const packagesRequest = supabase.from("packages").select("*").order("sort_order");
+        const packagesRequest = Promise.resolve(
+          supabase.from("packages").select("*").order("sort_order"),
+        );
         const packageEventCategoriesRequest = (supabase as any)
           .from("package_event_categories")
           .select("package_id, event_category_id");
@@ -270,12 +274,20 @@ export function PlanProvider({ children }: { children: ReactNode }) {
           },
         );
 
-        // Package selection only needs these fields. Publish them immediately rather
-        // than waiting for the optional menu-section queries to finish.
-        const packagesLoad = packagesRequest.then((packagesResult) => {
-          if (packagesResult.error) return;
-          setCatalogPackages(
-            packagesResult.data.map((pkg) => ({
+        // Occasion assignments are required for filtering; menu sections are not.
+        // Publish a complete set of assignments before exposing fresh packages.
+        const packagesLoad = Promise.all([packagesRequest, packageEventCategoriesRequest]).then(
+          ([packagesResult, assignmentsResult]) => {
+            if (packagesResult.error || assignmentsResult.error) {
+              throw new Error("Unable to load package availability");
+            }
+            const eventIdsByPackage = new Map<string, string[]>();
+            for (const assignment of assignmentsResult.data ?? []) {
+              const ids = eventIdsByPackage.get(assignment.package_id) ?? [];
+              ids.push(assignment.event_category_id);
+              eventIdsByPackage.set(assignment.package_id, ids);
+            }
+            const nextPackages: CateringPackage[] = packagesResult.data.map((pkg) => ({
               id: pkg.id,
               name: pkg.name,
               tagline: pkg.tagline,
@@ -284,6 +296,7 @@ export function PlanProvider({ children }: { children: ReactNode }) {
               guestCountFrom: pkg.guest_count_from ?? pkg.guests_per_mann,
               guestCountTo: pkg.guest_count_to ?? pkg.guests_per_mann,
               eventCategoryId: pkg.event_category_id,
+              eventCategoryIds: eventIdsByPackage.get(pkg.id) ?? [],
               foodPreference:
                 pkg.food_preference === "veg" || pkg.food_preference === "nonveg"
                   ? pkg.food_preference
@@ -293,44 +306,18 @@ export function PlanProvider({ children }: { children: ReactNode }) {
               serviceOptions: pkg.service_options,
               signature: pkg.signature,
               sections: [],
-            })),
-          );
-        });
+            }));
+            setCatalogPackages(nextPackages);
+            return nextPackages;
+          },
+        );
 
-        void Promise.all([
-          packagesRequest,
-          sectionsRequest,
-          sectionItemsRequest,
-          packageEventCategoriesRequest,
-        ]).then(
-          ([packagesResult, sectionsResult, sectionItemsResult, packageEventCategoriesResult]) => {
-            if (packagesResult.error || sectionsResult.error || sectionItemsResult.error) return;
-            const eventIdsByPackage = new Map<string, string[]>();
-            for (const assignment of packageEventCategoriesResult.data ?? []) {
-              eventIdsByPackage.set(assignment.package_id, [
-                ...(eventIdsByPackage.get(assignment.package_id) ?? []),
-                assignment.event_category_id,
-              ]);
-            }
+        void Promise.all([packagesLoad, sectionsRequest, sectionItemsRequest])
+          .then(([loadedPackages, sectionsResult, sectionItemsResult]) => {
+            if (sectionsResult.error || sectionItemsResult.error) return;
             setCatalogPackages(
-              packagesResult.data.map((pkg) => ({
-                id: pkg.id,
-                name: pkg.name,
-                tagline: pkg.tagline,
-                pricePerMann: pkg.price_per_mann,
-                guestsPerMann: pkg.guests_per_mann,
-                guestCountFrom: pkg.guest_count_from ?? pkg.guests_per_mann,
-                guestCountTo: pkg.guest_count_to ?? pkg.guests_per_mann,
-                eventCategoryId: pkg.event_category_id,
-                eventCategoryIds: eventIdsByPackage.get(pkg.id) ?? [],
-                foodPreference:
-                  pkg.food_preference === "veg" || pkg.food_preference === "nonveg"
-                    ? pkg.food_preference
-                    : "mixed",
-                includedServices: pkg.included_services,
-                excludedServices: pkg.excluded_services,
-                serviceOptions: pkg.service_options,
-                signature: pkg.signature,
+              loadedPackages.map((pkg) => ({
+                ...pkg,
                 sections: sectionsResult.data
                   .filter((section) => section.package_id === pkg.id)
                   .map((section) => ({
@@ -341,9 +328,10 @@ export function PlanProvider({ children }: { children: ReactNode }) {
                   })),
               })),
             );
-          },
-        );
-
+          })
+          .catch(() => {
+            /* Package loading reports errors; optional details keep current data. */
+          });
         void addOnsRequest.then((result: any) => {
           if (!result.error)
             setAddOns(
@@ -358,6 +346,8 @@ export function PlanProvider({ children }: { children: ReactNode }) {
         });
 
         await Promise.all([occasionsLoad, dishesLoad, packagesLoad]);
+      } catch {
+        setPackagesError("We couldn't load the latest packages. Please try again shortly.");
       } finally {
         setCatalogLoading(false);
       }
@@ -448,6 +438,7 @@ export function PlanProvider({ children }: { children: ReactNode }) {
       packages: catalogPackages,
       occasions: catalogOccasions,
       catalogLoading,
+      packagesError,
       update,
       addItem,
       setQuantity,
@@ -464,7 +455,16 @@ export function PlanProvider({ children }: { children: ReactNode }) {
         ]),
       reset: () => setPlan(initialState),
     };
-  }, [addOns, bookings, catalogDishes, catalogLoading, catalogOccasions, catalogPackages, plan]);
+  }, [
+    addOns,
+    bookings,
+    catalogDishes,
+    catalogLoading,
+    catalogOccasions,
+    catalogPackages,
+    packagesError,
+    plan,
+  ]);
 
   return <PlanContext.Provider value={value}>{children}</PlanContext.Provider>;
 }

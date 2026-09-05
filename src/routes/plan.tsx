@@ -659,8 +659,17 @@ function StepChoice({ onPick }: { onPick: () => void }) {
 }
 
 function StepFood() {
-  const { plan, update, addItem, setQuantity, quantityOf, dishes, packages, catalogLoading } =
-    usePlan();
+  const {
+    plan,
+    update,
+    addItem,
+    setQuantity,
+    quantityOf,
+    dishes,
+    packages,
+    catalogLoading,
+    packagesError,
+  } = usePlan();
   const [expandedPackageId, setExpandedPackageId] = useState<string | null>(null);
   const [expandedSectionKey, setExpandedSectionKey] = useState<string | null>(null);
 
@@ -669,7 +678,15 @@ function StepFood() {
       <>
         <StepHeading title="Pick your package" note={`Prices shown for ${plan.guests} guests.`} />
         <div className="grid gap-3">
-          {catalogLoading && packages.length === 0 && <CatalogueLoading label="packages" />}
+          {catalogLoading &&
+            !packages.some((p) => !plan.occasion || packageSupportsOccasion(p, plan.occasion)) && (
+              <CatalogueLoading label="packages" />
+            )}
+          {packagesError && (
+            <p role="alert" className="text-sm text-muted-foreground">
+              {packagesError}
+            </p>
+          )}
           {packages
             .filter((p) => !plan.occasion || packageSupportsOccasion(p, plan.occasion))
             .map((p) => (
@@ -808,6 +825,7 @@ function StepFood() {
               </article>
             ))}
           {!catalogLoading &&
+            !packagesError &&
             packages.filter((p) => !plan.occasion || packageSupportsOccasion(p, plan.occasion))
               .length === 0 && (
               <p className="rounded-[16px] border border-border bg-surface/50 p-4 text-sm text-muted-foreground">
