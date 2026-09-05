@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Facebook, Instagram } from "lucide-react";
 import { BrandLogo } from "./Brand";
 
 export function SiteFooter() {
@@ -12,6 +13,27 @@ export function SiteFooter() {
           Premium Halal catering for weddings, Walima, Aqiqah, corporate and private gatherings
           across Bengaluru.
         </p>
+
+        <div className="mt-5 flex items-center gap-3">
+          <a
+            href="https://www.facebook.com/people/Majlis-E-Aala/61594133069424/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Majlis E Aala on Facebook (opens in a new tab)"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          >
+            <Facebook className="h-5 w-5" aria-hidden="true" />
+          </a>
+          <a
+            href="https://www.instagram.com/majliseaala/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Majlis E Aala on Instagram (opens in a new tab)"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          >
+            <Instagram className="h-5 w-5" aria-hidden="true" />
+          </a>
+        </div>
 
         <div className="mt-10 grid gap-8 sm:grid-cols-3">
           <div>
