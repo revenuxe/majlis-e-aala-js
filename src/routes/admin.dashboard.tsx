@@ -130,7 +130,7 @@ export default function AdminDashboard() {
       }
       if (listTab === "packages") {
         const [p, s, si, ec, pec] = await Promise.all([
-          supabase.from("packages").select("*").order("sort_order"),
+          supabase.from("packages").select("*").order("price_per_mann").order("name"),
           supabase.from("package_sections").select("*").order("sort_order"),
           supabase.from("package_section_items").select("*").order("sort_order"),
           supabase.from("event_categories").select("*").order("sort_order"),
@@ -180,7 +180,11 @@ export default function AdminDashboard() {
       const [a, ec, p] = await Promise.all([
         (supabase as any).from("add_ons").select("*").order("sort_order"),
         supabase.from("event_categories").select("*").order("sort_order"),
-        supabase.from("packages").select("id, name, event_category_id").order("sort_order"),
+        supabase
+          .from("packages")
+          .select("id, name, event_category_id")
+          .order("price_per_mann")
+          .order("name"),
       ]);
       setAddOns((a.data ?? []) as AddOnRow[]);
       setEventCategories((ec.data ?? []) as EventCategoryRow[]);

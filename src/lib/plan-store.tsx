@@ -219,7 +219,7 @@ export function PlanProvider({ children }: { children: ReactNode }) {
           .order("sort_order");
         const itemsRequest = supabase.from("menu_items").select("*").order("sort_order");
         const packagesRequest = Promise.resolve(
-          supabase.from("packages").select("*").order("sort_order"),
+          supabase.from("packages").select("*").order("price_per_mann").order("name"),
         );
         const packageEventCategoriesRequest = (supabase as any)
           .from("package_event_categories")
@@ -435,7 +435,10 @@ export function PlanProvider({ children }: { children: ReactNode }) {
     return {
       plan,
       dishes: catalogDishes,
-      packages: catalogPackages,
+      // Sort cached and freshly loaded packages consistently across every flow.
+      packages: [...catalogPackages].sort(
+        (a, b) => a.pricePerMann - b.pricePerMann || a.name.localeCompare(b.name),
+      ),
       occasions: catalogOccasions,
       catalogLoading,
       packagesError,
