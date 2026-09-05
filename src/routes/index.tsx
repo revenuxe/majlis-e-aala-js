@@ -129,25 +129,25 @@ function Section({ children, className }: { children: React.ReactNode; className
 
 const heroSlides = [
   {
-    image: heroImg,
+    image: heroImg.src,
     eyebrow: "Weddings & Walima",
     title: "A Feast Worth Remembering.",
     text: "Exceptional Halal catering crafted for weddings, celebrations and gatherings of every size.",
   },
   {
-    image: biryaniImg,
+    image: biryaniImg.src,
     eyebrow: "Signature Dum Biryani",
     title: "Slow-Cooked. Never Rushed.",
     text: "Long-grain basmati, whole spices and sealed dum cooking on your event day itself.",
   },
   {
-    image: kebabImg,
+    image: kebabImg.src,
     eyebrow: "Live Grills & Kebabs",
     title: "Straight Off The Coal.",
     text: "Manned grill counters serving kebabs hot to your guests, all evening long.",
   },
   {
-    image: weddingImg,
+    image: weddingImg.src,
     // @ts-expect-error -- the final spread supplies the customer-facing eyebrow.
     eyebrow: "Packages from ₹1,00,000 / Mann",
     title: "Catering, considered.",

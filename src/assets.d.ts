@@ -1,20 +1,20 @@
 declare module "*.jpg" {
-  const src: string;
+  const src: import("next/image").StaticImageData;
   export default src;
 }
 declare module "*.jpeg" {
-  const src: string;
+  const src: import("next/image").StaticImageData;
   export default src;
 }
 declare module "*.png" {
-  const src: string;
+  const src: import("next/image").StaticImageData;
   export default src;
 }
 declare module "*.webp" {
-  const src: string;
+  const src: import("next/image").StaticImageData;
   export default src;
 }
 declare module "*.svg" {
-  const src: string;
+  const src: import("next/image").StaticImageData;
   export default src;
 }

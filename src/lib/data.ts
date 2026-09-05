@@ -103,10 +103,10 @@ export const perGuestFor = (pkg: CateringPackage, guests: number) =>
   Math.round(packageTotalFor(pkg, guests) / Math.max(1, guests));
 
 export const categories: Category[] = [
-  { id: "biryani", name: "Signature Biryani", image: biryaniImg, items: 8 },
-  { id: "kebabs", name: "Grills & Kebabs", image: kebabImg, items: 11 },
-  { id: "mains", name: "Main Course", image: mainsImg, items: 14 },
-  { id: "desserts", name: "Desserts", image: dessertImg, items: 9 },
+  { id: "biryani", name: "Signature Biryani", image: biryaniImg.src, items: 8 },
+  { id: "kebabs", name: "Grills & Kebabs", image: kebabImg.src, items: 11 },
+  { id: "mains", name: "Main Course", image: mainsImg.src, items: 14 },
+  { id: "desserts", name: "Desserts", image: dessertImg.src, items: 9 },
 ];
 
 export const menuFilters = [
@@ -123,16 +123,16 @@ export const menuFilters = [
 ] as const;
 
 export const occasions: Occasion[] = [
-  { id: "wedding", name: "Wedding", image: weddingImg },
-  { id: "walima", name: "Walima", image: weddingImg },
-  { id: "nikah", name: "Nikah", image: dessertImg },
-  { id: "aqiqah", name: "Aqiqah", image: mainsImg },
-  { id: "family", name: "Family Gathering", image: biryaniImg },
-  { id: "corporate", name: "Corporate", image: kebabImg },
-  { id: "birthday", name: "Birthday", image: dessertImg },
-  { id: "iftar", name: "Iftar", image: mainsImg },
-  { id: "eid", name: "Eid", image: biryaniImg },
-  { id: "private", name: "Private Event", image: weddingImg },
+  { id: "wedding", name: "Wedding", image: weddingImg.src },
+  { id: "walima", name: "Walima", image: weddingImg.src },
+  { id: "nikah", name: "Nikah", image: dessertImg.src },
+  { id: "aqiqah", name: "Aqiqah", image: mainsImg.src },
+  { id: "family", name: "Family Gathering", image: biryaniImg.src },
+  { id: "corporate", name: "Corporate", image: kebabImg.src },
+  { id: "birthday", name: "Birthday", image: dessertImg.src },
+  { id: "iftar", name: "Iftar", image: mainsImg.src },
+  { id: "eid", name: "Eid", image: biryaniImg.src },
+  { id: "private", name: "Private Event", image: weddingImg.src },
 ];
 
 export const dishes: Dish[] = [
@@ -144,7 +144,7 @@ export const dishes: Dish[] = [
     price: 1499,
     serves: "Serves 5–6",
     diet: "nonveg",
-    image: biryaniImg,
+    image: biryaniImg.src,
     tags: ["bestseller", "most-loved"],
   },
   {
@@ -155,7 +155,7 @@ export const dishes: Dish[] = [
     price: 2199,
     serves: "Serves 5–6",
     diet: "nonveg",
-    image: biryaniImg,
+    image: biryaniImg.src,
     tags: ["premium", "most-loved"],
   },
   {
@@ -166,7 +166,7 @@ export const dishes: Dish[] = [
     price: 699,
     serves: "Serves 5–6",
     diet: "veg",
-    image: biryaniImg,
+    image: biryaniImg.src,
   },
   {
     id: "chicken-65",
@@ -176,7 +176,7 @@ export const dishes: Dish[] = [
     price: 899,
     serves: "Serves 5–6",
     diet: "nonveg",
-    image: kebabImg,
+    image: kebabImg.src,
     tags: ["bestseller"],
   },
   {
@@ -187,7 +187,7 @@ export const dishes: Dish[] = [
     price: 1099,
     serves: "Serves 5–6",
     diet: "nonveg",
-    image: kebabImg,
+    image: kebabImg.src,
     tags: ["most-loved"],
   },
   {
@@ -198,7 +198,7 @@ export const dishes: Dish[] = [
     price: 999,
     serves: "Serves 5–6",
     diet: "nonveg",
-    image: kebabImg,
+    image: kebabImg.src,
   },
   {
     id: "mutton-seekh-kebab",
@@ -208,7 +208,7 @@ export const dishes: Dish[] = [
     price: 1399,
     serves: "Serves 5–6",
     diet: "nonveg",
-    image: kebabImg,
+    image: kebabImg.src,
     tags: ["premium"],
   },
   {
@@ -219,7 +219,7 @@ export const dishes: Dish[] = [
     price: 1199,
     serves: "Serves 4–5",
     diet: "nonveg",
-    image: kebabImg,
+    image: kebabImg.src,
   },
   {
     id: "chicken-korma",
@@ -229,7 +229,7 @@ export const dishes: Dish[] = [
     price: 1299,
     serves: "Serves 5–6",
     diet: "nonveg",
-    image: mainsImg,
+    image: mainsImg.src,
     tags: ["most-loved"],
   },
   {
@@ -240,7 +240,7 @@ export const dishes: Dish[] = [
     price: 1899,
     serves: "Serves 5–6",
     diet: "nonveg",
-    image: mainsImg,
+    image: mainsImg.src,
     tags: ["premium"],
   },
   {
@@ -251,7 +251,7 @@ export const dishes: Dish[] = [
     price: 1349,
     serves: "Serves 5–6",
     diet: "nonveg",
-    image: mainsImg,
+    image: mainsImg.src,
     tags: ["bestseller"],
   },
   {
@@ -262,7 +262,7 @@ export const dishes: Dish[] = [
     price: 1099,
     serves: "Serves 5–6",
     diet: "veg",
-    image: mainsImg,
+    image: mainsImg.src,
   },
   {
     id: "dal-makhani",
@@ -272,7 +272,7 @@ export const dishes: Dish[] = [
     price: 899,
     serves: "Serves 5–6",
     diet: "veg",
-    image: mainsImg,
+    image: mainsImg.src,
   },
   {
     id: "butter-naan",
@@ -282,7 +282,7 @@ export const dishes: Dish[] = [
     price: 320,
     serves: "20 pieces",
     diet: "veg",
-    image: mainsImg,
+    image: mainsImg.src,
   },
   {
     id: "rumali-roti",
@@ -292,7 +292,7 @@ export const dishes: Dish[] = [
     price: 280,
     serves: "20 pieces",
     diet: "veg",
-    image: mainsImg,
+    image: mainsImg.src,
   },
   {
     id: "shahi-tukda",
@@ -302,7 +302,7 @@ export const dishes: Dish[] = [
     price: 799,
     serves: "Serves 5–6",
     diet: "veg",
-    image: dessertImg,
+    image: dessertImg.src,
     tags: ["bestseller"],
   },
   {
@@ -313,7 +313,7 @@ export const dishes: Dish[] = [
     price: 549,
     serves: "20 pieces",
     diet: "veg",
-    image: dessertImg,
+    image: dessertImg.src,
   },
   {
     id: "fruit-custard",
@@ -323,7 +323,7 @@ export const dishes: Dish[] = [
     price: 599,
     serves: "Serves 5–6",
     diet: "veg",
-    image: dessertImg,
+    image: dessertImg.src,
   },
   {
     id: "falooda",
@@ -333,7 +333,7 @@ export const dishes: Dish[] = [
     price: 649,
     serves: "10 glasses",
     diet: "veg",
-    image: dessertImg,
+    image: dessertImg.src,
   },
   {
     id: "live-chaat",
@@ -343,7 +343,7 @@ export const dishes: Dish[] = [
     price: 6500,
     serves: "Up to 100 guests",
     diet: "veg",
-    image: mainsImg,
+    image: mainsImg.src,
     tags: ["premium"],
   },
 ];
@@ -591,6 +591,6 @@ export const standards = [
   { title: "Made for Celebrations", note: "From 30 guests to 1,000 and beyond." },
 ];
 
-export const editorialImage = weddingImg;
+export const editorialImage = weddingImg.src;
 
 export const inr = (n: number) => "₹" + n.toLocaleString("en-IN");
