@@ -10,6 +10,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/packages",
     "/about",
     "/contact",
+    "/blog",
+    "/blog/muslim-wedding-catering-bangalore-menu-guide",
     "/privacy",
     "/terms",
   ].map((path) => ({
