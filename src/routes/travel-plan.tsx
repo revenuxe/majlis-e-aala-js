@@ -76,11 +76,13 @@ function Choice({
   onClick,
   title,
   note,
+  compact = false,
 }: {
   selected: boolean;
   onClick: () => void;
   title: string;
   note?: string;
+  compact?: boolean;
 }) {
   return (
     <button
@@ -88,14 +90,29 @@ function Choice({
       aria-pressed={selected}
       onClick={onClick}
       className={cx(
-        "press flex min-h-20 w-full items-center justify-between gap-4 rounded-[18px] border-2 p-4 text-left",
+        "press flex min-h-20 w-full min-w-0 rounded-[18px] border-2 text-left",
+        compact
+          ? "flex-col-reverse items-start justify-end gap-2 p-3 sm:p-4"
+          : "items-center justify-between gap-4 p-4",
         selected ? "border-primary bg-champagne/30" : "border-border bg-card hover:border-gold",
       )}
     >
-      <span>
-        <span className="block text-[15px] font-semibold">{title}</span>
+      <span className="min-w-0">
+        <span
+          className={cx(
+            "block font-semibold",
+            compact ? "text-[13px] leading-snug sm:text-[15px]" : "text-[15px]",
+          )}
+        >
+          {title}
+        </span>
         {note && (
-          <span className="mt-1 block text-[13px] leading-relaxed text-muted-foreground">
+          <span
+            className={cx(
+              "mt-1 block leading-relaxed text-muted-foreground",
+              compact ? "text-[11px] sm:text-[13px]" : "text-[13px]",
+            )}
+          >
             {note}
           </span>
         )}
@@ -103,6 +120,7 @@ function Choice({
       <span
         className={cx(
           "grid h-6 w-6 shrink-0 place-items-center rounded-full border",
+          compact && "self-end",
           selected ? "border-primary bg-primary text-white" : "border-border",
         )}
       >
@@ -604,14 +622,16 @@ export default function TravelPlan() {
                   className={inputClass}
                 />
               </Field>
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-2 gap-3">
                 <Choice
+                  compact
                   selected={draft.datesFlexible}
                   onClick={() => update({ datesFlexible: true, departureId: null })}
                   title="My dates are flexible"
                   note="Choose a month, or decide with the team."
                 />
                 <Choice
+                  compact
                   selected={!draft.datesFlexible}
                   onClick={() => update({ datesFlexible: false, departureId: null })}
                   title="I have a date in mind"
