@@ -22,6 +22,7 @@ export function TravelPackageChoice({
   pkg,
   selected = false,
   adults,
+  children = 0,
   onSelect,
 }: {
   pkg: TravelPackage;
@@ -82,6 +83,17 @@ export function TravelPackageChoice({
             <ChevronDown size={22} />
           </span>
         </button>
+        <p className="mt-4 text-[13px] leading-relaxed text-muted-foreground">
+          <strong className="font-semibold text-foreground">
+            {adults} {adults === 1 ? "adult" : "adults"}
+            {children > 0 ? ` and ${children} ${children === 1 ? "child" : "children"}` : ""} travelling.
+          </strong>{" "}
+          {price == null
+            ? "Your quotation will be tailored to your group and room preferences."
+            : "The estimate covers adults at the stated room-sharing rate."}{" "}
+          Children and room upgrades are quoted separately. Your final price may vary with travel
+          dates and availability.
+        </p>
       </div>
       <div id={detailsId} hidden={!expanded} className="border-y border-border">
         <Section title="Journey overview">
