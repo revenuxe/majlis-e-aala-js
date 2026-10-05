@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -18,6 +18,8 @@ import {
   Menu,
   MessageCircle,
   Plane,
+  Pause,
+  Play,
   Search,
   SlidersHorizontal,
   ShieldCheck,
@@ -27,6 +29,7 @@ import {
 import { BrandLogo, BrandMark } from "@/components/Brand";
 import { Button, QuantitySelector, SectionHeader, cx } from "@/components/ui-kit";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { useTravelHero } from "@/hooks/use-travel-hero";
 import {
   journeys,
   travelCategories,
@@ -41,24 +44,6 @@ const fieldClass =
   "h-12 w-full rounded-xl border border-border bg-background px-3 text-[14px] outline-none focus:border-gold focus:ring-2 focus:ring-gold/20";
 const anchorClass =
   "press inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-[14px] font-semibold text-primary-foreground hover:bg-soft-black";
-
-const travelHeroSlides = [
-  {
-    image: "/travel/makkah-courtyard.jpg",
-    alt: "The Kaaba at Masjid al-Haram in Makkah",
-    title: "Sacred journeys. Thoughtfully planned.",
-  },
-  {
-    image: "/travel/madinah.jpg",
-    alt: "The Prophet’s Mosque in Madinah",
-    title: "A journey of faith, at your pace.",
-  },
-  {
-    image: "/travel/kerala.jpg",
-    alt: "The green hills and backwaters of Kerala",
-    title: "Beautiful escapes. Lasting memories.",
-  },
-];
 
 function Section({
   id,
@@ -94,11 +79,20 @@ export default function TravelHome() {
   const [notes, setNotes] = useState("");
   const [preparedMessage, setPreparedMessage] = useState<string | null>(null);
   const [heroIndex, setHeroIndex] = useState(0);
-  const currentHero = travelHeroSlides[heroIndex] ?? {
-    image: "/travel/makkah-courtyard.jpg",
-    alt: "The Kaaba in Makkah",
-    title: "Sacred journeys. Thoughtfully planned.",
-  };
+  const { slides: travelHeroSlides, loading: heroLoading, failed: heroFailed } = useTravelHero();
+  const [heroPaused, setHeroPaused] = useState(false);
+  const [heroInteracting, setHeroInteracting] = useState(false);
+  const activeHeroIndex = travelHeroSlides.length ? heroIndex % travelHeroSlides.length : 0;
+  const currentHero = travelHeroSlides[activeHeroIndex];
+  useEffect(() => {
+    if (travelHeroSlides.length < 2 || heroPaused || heroInteracting) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (reducedMotion.matches) return;
+    const timer = window.setInterval(() => {
+      if (!document.hidden && !reducedMotion.matches) setHeroIndex((index) => index + 1);
+    }, 6000);
+    return () => window.clearInterval(timer);
+  }, [travelHeroSlides.length, heroPaused, heroInteracting]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const visibleJourneys = journeys.filter(
@@ -221,38 +215,85 @@ export default function TravelHome() {
 
       <main id="travel-main">
         <section className="mx-auto max-w-[1280px] px-4 pt-4 sm:px-8 sm:pt-6">
-          <div className="relative overflow-hidden rounded-[22px] bg-soft-black sm:rounded-[28px]">
+          <div
+            className="relative overflow-hidden rounded-[22px] bg-soft-black sm:rounded-[28px]"
+            aria-roledescription="carousel"
+            role="region"
+            aria-label="Featured travel journeys"
+            onMouseEnter={() => setHeroInteracting(true)}
+            onMouseLeave={() => setHeroInteracting(false)}
+            onFocusCapture={() => setHeroInteracting(true)}
+            onBlurCapture={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) setHeroInteracting(false);
+            }}
+          >
             <div className="relative h-[440px] sm:h-[520px] lg:h-[600px]">
-              <Image
-                src={currentHero.image}
-                alt={currentHero.alt}
-                fill
-                priority
-                sizes="(max-width: 1280px) 100vw, 1216px"
-                className="object-cover"
-              />
+              {travelHeroSlides.map((slide, index) => (
+                <div
+                  key={slide.id}
+                  aria-hidden={index !== activeHeroIndex}
+                  className={cx(
+                    "absolute inset-0 transition-opacity duration-700 motion-reduce:transition-none",
+                    index === activeHeroIndex ? "opacity-100" : "pointer-events-none opacity-0",
+                  )}
+                >
+                  <picture className="block h-full w-full">
+                    {slide.mobile_image_url && (
+                      <source media="(max-width: 639px)" srcSet={slide.mobile_image_url} />
+                    )}
+                    <img
+                      src={slide.desktop_image_url}
+                      alt={slide.title}
+                      loading={index === 0 ? "eager" : "lazy"}
+                      fetchPriority={index === 0 ? "high" : "low"}
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                    />
+                  </picture>
+                </div>
+              ))}
+              {heroFailed && !travelHeroSlides.length && (
+                <Image
+                  src="/travel/makkah-courtyard.jpg"
+                  alt="The Kaaba in Makkah"
+                  fill
+                  priority
+                  sizes="(max-width: 1280px) 100vw, 1216px"
+                  className="object-cover"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-[rgba(12,12,11,0.92)] via-[rgba(12,12,11,0.45)] to-[rgba(12,12,11,0.15)]" />
               <div className="absolute left-5 top-5 inline-flex min-h-9 items-center gap-2 rounded-full border border-white/30 bg-background/95 px-3 text-[11px] font-semibold text-primary sm:left-9 sm:top-8">
                 <Compass size={14} className="text-gold" />
                 Journeys with meaning
               </div>
               <div
-                className="absolute right-5 top-16 flex gap-2 sm:right-9 sm:top-8"
+                className="absolute right-5 top-16 flex max-w-[calc(100%-40px)] gap-2 overflow-x-auto sm:right-9 sm:top-8"
                 role="group"
                 aria-label="Featured travel destinations"
               >
+                {travelHeroSlides.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => setHeroPaused(!heroPaused)}
+                    aria-label={heroPaused ? "Play carousel" : "Pause carousel"}
+                    className="grid h-11 w-11 place-items-center rounded-full border border-white/30 bg-black/40 text-white"
+                  >
+                    {heroPaused ? <Play size={16} /> : <Pause size={16} />}
+                  </button>
+                )}
                 {travelHeroSlides.map((slide, index) => (
                   <button
-                    key={slide.title}
+                    key={slide.id}
                     onClick={() => setHeroIndex(index)}
-                    aria-label={slide.alt}
-                    aria-pressed={heroIndex === index}
+                    aria-label={`Show slide ${index + 1}: ${slide.title}`}
+                    aria-pressed={activeHeroIndex === index}
                     className="grid h-11 w-11 place-items-center rounded-full border border-white/30 bg-black/20"
                   >
                     <span
                       className={cx(
                         "h-2 rounded-full",
-                        heroIndex === index ? "w-5 bg-champagne" : "w-2 bg-white/60",
+                        activeHeroIndex === index ? "w-5 bg-champagne" : "w-2 bg-white/60",
                       )}
                     />
                   </button>
@@ -260,9 +301,25 @@ export default function TravelHome() {
               </div>
               <div className="absolute inset-x-0 bottom-0 p-5 sm:p-9 lg:p-12">
                 <div className="max-w-xl">
-                  <span className="eyebrow block !text-gold">Majlise Aala Tours & Travels</span>
+                  <span className="eyebrow block !text-gold">
+                    {currentHero?.eyebrow || "Majlise Aala Tours & Travels"}
+                  </span>
                   <h1 className="mt-3 max-w-[360px] text-balance font-display text-[32px] leading-[1.06] text-white sm:max-w-xl sm:text-[54px] lg:max-w-[840px] lg:text-[64px] lg:[text-wrap:wrap]">
-                    {currentHero.title}
+                    {heroLoading ? (
+                      <span role="status" className="block motion-safe:animate-pulse">
+                        <span className="sr-only">Loading featured journeys</span>
+                        <span
+                          aria-hidden="true"
+                          className="block h-[1em] w-4/5 rounded bg-white/10"
+                        />
+                        <span
+                          aria-hidden="true"
+                          className="mt-2 block h-[1em] w-3/5 rounded bg-white/10"
+                        />
+                      </span>
+                    ) : (
+                      currentHero?.title || "Your next journey begins here."
+                    )}
                   </h1>
                   <form
                     onSubmit={(event) => {

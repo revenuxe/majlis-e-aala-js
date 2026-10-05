@@ -8,6 +8,42 @@ export type Database = {
   };
   public: {
     Tables: {
+      travel_hero_carousels: {
+        Row: {
+          id: string;
+          eyebrow: string;
+          title: string;
+          desktop_image_url: string;
+          mobile_image_url: string | null;
+          is_active: boolean;
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          eyebrow?: string;
+          title: string;
+          desktop_image_url: string;
+          mobile_image_url?: string | null;
+          is_active?: boolean;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          eyebrow?: string;
+          title?: string;
+          desktop_image_url?: string;
+          mobile_image_url?: string | null;
+          is_active?: boolean;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       menu_categories: {
         Row: {
           created_at: string;

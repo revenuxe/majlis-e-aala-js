@@ -20,7 +20,7 @@ The travel page does not mount the catering PlanProvider or query its database.
 ## Homepage content
 
 1. Travel navigation with no service bar above the header.
-2. Rounded inset hero with manually selected destination slides, bottom-aligned
+2. Rounded inset hero with Supabase-managed destination slides, bottom-aligned
    editorial heading and a working journey search, matching the catering hero.
 3. Four-item feature strip, matching the catering trust strip.
 4. Umrah, Hajj, international and domestic category cards with white title
@@ -67,6 +67,28 @@ A future travel backend should separately model destinations, travel packages,
 departures, city stays, hotels, room occupancy, itinerary days, inclusions,
 exclusions and enquiries. Confirm real operating arrangements, contact details,
 travel cancellation terms and inventory before adding bookable packages.
+
+## Admin hero management
+
+Open `/admin/dashboard`, select **Homepage**, then **Catering** or **Travels**.
+Both use the same slide editor: headline, eyebrow, desktop image, optional
+mobile image, visibility and display order. Lower display-order numbers appear
+first. Each tab has its own homepage preview link.
+
+Catering continues to use `hero_carousels`. Travels uses `travel_hero_carousels`.
+The migration `20261005120000_travel_hero_carousels.sql` creates the travel table
+and migrates the three original travel slides into editable rows. It preserves
+the existing catering records. Public visitors can read active slides only;
+authenticated administrators can create, edit, hide and delete slides.
+
+The travel hero fetches active rows in order on page load and when the browser
+tab regains focus. It uses configured mobile artwork below 640px, with desktop
+artwork as the fallback. Slides rotate every six seconds, with pause and manual
+selection controls. Rotation pauses during interaction and respects reduced
+motion. Hiding every slide leaves a neutral heading and the working search form;
+hidden slides are not replaced by the original hardcoded content. A connection
+failure retains previously loaded slides, or uses the local Makkah image when
+none have loaded.
 
 ## Photography
 

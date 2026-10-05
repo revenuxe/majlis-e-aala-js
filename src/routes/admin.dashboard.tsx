@@ -70,6 +70,7 @@ const routeMetadata = {
 
 type MainTab = "dashboard" | "orders" | "listings" | "homepage";
 type ListTab = "packages" | "event-categories" | "categories" | "menu" | "add-ons";
+type HomepageTab = "catering" | "travels";
 type AddOnRow = {
   id: string;
   name: string;
@@ -85,6 +86,7 @@ export default function AdminDashboard() {
   const [ready, setReady] = useState(false);
   const [tab, setTab] = useState<MainTab>("dashboard");
   const [listTab, setListTab] = useState<ListTab>("packages");
+  const [homepageTab, setHomepageTab] = useState<HomepageTab>("catering");
 
   const [packages, setPackages] = useState<PackageRow[]>([]);
   const [sections, setSections] = useState<SectionRow[]>([]);
@@ -95,6 +97,8 @@ export default function AdminDashboard() {
   const [addOns, setAddOns] = useState<AddOnRow[]>([]);
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [heroSlides, setHeroSlides] = useState<HeroCarouselRow[]>([]);
+  const [travelHeroSlides, setTravelHeroSlides] = useState<HeroCarouselRow[]>([]);
+  const [heroLoadErrors, setHeroLoadErrors] = useState<Partial<Record<HomepageTab, string>>>({});
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
@@ -121,11 +125,28 @@ export default function AdminDashboard() {
         return;
       }
       if (tab === "homepage") {
-        const { data } = await (supabase as any)
-          .from("hero_carousels")
-          .select("*")
-          .order("sort_order");
-        setHeroSlides((data ?? []) as HeroCarouselRow[]);
+        const [catering, travels] = await Promise.all([
+          (supabase as any)
+            .from("hero_carousels")
+            .select("*")
+            .order("sort_order")
+            .order("created_at"),
+          supabase
+            .from("travel_hero_carousels")
+            .select("*")
+            .order("sort_order")
+            .order("created_at"),
+        ]);
+        setHeroSlides((catering.data ?? []) as HeroCarouselRow[]);
+        setTravelHeroSlides(travels.data ?? []);
+        setHeroLoadErrors({
+          ...(catering.error
+            ? { catering: "We couldn't load the catering carousel. Please retry." }
+            : {}),
+          ...(travels.error
+            ? { travels: "We couldn't load the travel carousel. Please retry." }
+            : {}),
+        });
         return;
       }
       if (listTab === "packages") {
@@ -342,7 +363,70 @@ export default function AdminDashboard() {
         ) : tab === "orders" ? (
           <OrdersPanel orders={orders} packages={packages} onChanged={load} />
         ) : tab === "homepage" ? (
-          <HomepagePanel slides={heroSlides} onChanged={load} />
+          <section className="space-y-5">
+            <div role="tablist" aria-label="Homepage service" className="flex gap-2">
+              {(
+                [
+                  ["catering", "Catering"],
+                  ["travels", "Travels"],
+                ] as const
+              ).map(([key, label]) => (
+                <button
+                  key={key}
+                  id={`homepage-tab-${key}`}
+                  role="tab"
+                  aria-selected={homepageTab === key}
+                  aria-controls="homepage-carousel-panel"
+                  tabIndex={homepageTab === key ? 0 : -1}
+                  onClick={() => setHomepageTab(key)}
+                  onKeyDown={(event) => {
+                    if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+                      event.preventDefault();
+                      const next =
+                        event.key === "Home"
+                          ? "catering"
+                          : event.key === "End"
+                            ? "travels"
+                            : key === "catering"
+                              ? "travels"
+                              : "catering";
+                      setHomepageTab(next);
+                      document.getElementById(`homepage-tab-${next}`)?.focus();
+                    }
+                  }}
+                  className={cx(
+                    "press min-h-11 rounded-full border px-5 text-[14px] font-semibold",
+                    homepageTab === key
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-card text-muted-foreground",
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div
+              role="tabpanel"
+              id="homepage-carousel-panel"
+              aria-labelledby={`homepage-tab-${homepageTab}`}
+            >
+              {heroLoadErrors[homepageTab] ? (
+                <div role="alert" className="rounded-[20px] border border-border bg-card p-6">
+                  <p>{heroLoadErrors[homepageTab]}</p>
+                  <Button className="mt-4" onClick={() => void load()}>
+                    Retry
+                  </Button>
+                </div>
+              ) : (
+                <HomepagePanel
+                  key={homepageTab}
+                  service={homepageTab}
+                  slides={homepageTab === "catering" ? heroSlides : travelHeroSlides}
+                  onChanged={load}
+                />
+              )}
+            </div>
+          </section>
         ) : (
           <section className="space-y-5">
             <div>
@@ -628,10 +712,14 @@ function MultiSelect({
 function HomepagePanel({
   slides,
   onChanged,
+  service,
 }: {
   slides: HeroCarouselRow[];
   onChanged: () => Promise<void>;
+  service: HomepageTab;
 }) {
+  const table = service === "travels" ? "travel_hero_carousels" : "hero_carousels";
+  const serviceLabel = service === "travels" ? "Travels" : "Catering";
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<HeroCarouselRow | null>(null);
   const [title, setTitle] = useState("");
@@ -640,6 +728,7 @@ function HomepagePanel({
   const [mobileImage, setMobileImage] = useState("");
   const [active, setActive] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [sortOrder, setSortOrder] = useState(0);
   const openNew = () => {
     setEditing(null);
     setTitle("");
@@ -647,6 +736,7 @@ function HomepagePanel({
     setDesktopImage("");
     setMobileImage("");
     setActive(true);
+    setSortOrder(slides.length ? Math.max(...slides.map((slide) => slide.sort_order)) + 1 : 0);
     setOpen(true);
   };
   const openEdit = (slide: HeroCarouselRow) => {
@@ -656,50 +746,73 @@ function HomepagePanel({
     setDesktopImage(slide.desktop_image_url);
     setMobileImage(slide.mobile_image_url ?? "");
     setActive(slide.is_active);
+    setSortOrder(slide.sort_order);
     setOpen(true);
   };
   async function save() {
-    if (!title.trim() || !desktopImage) {
+    if (!title.trim() || !desktopImage.trim()) {
       toast.error("A title and desktop image are required");
+      return;
+    }
+    if (!Number.isInteger(sortOrder) || sortOrder < 0) {
+      toast.error("Display order must be a whole number starting at 0");
       return;
     }
     setSaving(true);
     const payload = {
       title: title.trim(),
       eyebrow: eyebrow.trim(),
-      desktop_image_url: desktopImage,
-      mobile_image_url: mobileImage || null,
+      desktop_image_url: desktopImage.trim(),
+      mobile_image_url: mobileImage.trim() || null,
       is_active: active,
-      sort_order: editing?.sort_order ?? slides.length,
+      sort_order: sortOrder,
     };
-    const { error } = editing
-      ? await (supabase as any).from("hero_carousels").update(payload).eq("id", editing.id)
-      : await (supabase as any).from("hero_carousels").insert(payload);
-    setSaving(false);
-    if (error) {
-      toast.error(error.message);
-      return;
+    try {
+      const { error } = editing
+        ? await (supabase as any).from(table).update(payload).eq("id", editing.id)
+        : await (supabase as any).from(table).insert(payload);
+      if (error) throw error;
+      toast.success(editing ? "Hero slide updated" : "Hero slide created");
+      try {
+        window.localStorage.removeItem("majlise-aala-hero-v1");
+      } catch {
+        /* Cache is optional. */
+      }
+      setOpen(false);
+      await onChanged();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not save this slide. Please try again.",
+      );
+    } finally {
+      setSaving(false);
     }
-    toast.success(editing ? "Hero slide updated" : "Hero slide created");
-    setOpen(false);
-    await onChanged();
   }
   async function remove(slide: HeroCarouselRow) {
-    const { error } = await (supabase as any).from("hero_carousels").delete().eq("id", slide.id);
-    if (error) {
-      toast.error(error.message);
-      return;
+    try {
+      const { error } = await (supabase as any).from(table).delete().eq("id", slide.id);
+      if (error) throw error;
+      toast.success("Hero slide deleted");
+      try {
+        window.localStorage.removeItem("majlise-aala-hero-v1");
+      } catch {
+        /* Cache is optional. */
+      }
+      await onChanged();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not delete this slide. Please try again.",
+      );
     }
-    toast.success("Hero slide deleted");
-    await onChanged();
   }
+
   return (
     <section className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="eyebrow">Homepage</p>
+          <p className="eyebrow">Homepage / {serviceLabel}</p>
           <h1 className="mt-1 font-display text-[30px] leading-tight sm:text-[38px]">
-            Hero carousel
+            {serviceLabel} hero carousel
           </h1>
           <p className="mt-2 text-[14px] text-muted-foreground">
             Optimized desktop and mobile artwork. Active slides are served in display order.
@@ -709,6 +822,15 @@ function HomepagePanel({
           <Plus className="h-4 w-4" /> Add slide
         </Button>
       </div>
+      <a
+        href={service === "travels" ? "/travel" : "/"}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex min-h-11 items-center text-[13px] font-semibold underline"
+      >
+        Preview {serviceLabel.toLowerCase()} homepage{" "}
+        <span className="sr-only">(opens in a new tab)</span>
+      </a>
       <div className="grid gap-4 lg:grid-cols-2">
         {slides.map((slide) => (
           <article
@@ -735,6 +857,7 @@ function HomepagePanel({
               <div className="min-w-0 flex-1">
                 <p className="truncate font-display text-[21px]">{slide.title}</p>
                 <p className="truncate text-[12px] text-muted-foreground">
+                  Order {slide.sort_order} ·{" "}
                   {slide.mobile_image_url
                     ? "Desktop + mobile artwork"
                     : "Desktop artwork · mobile fallback"}
@@ -776,14 +899,20 @@ function HomepagePanel({
             <TextInput
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="A Feast Worth Remembering."
+              placeholder={
+                service === "travels"
+                  ? "Sacred journeys. Thoughtfully planned."
+                  : "A Feast Worth Remembering."
+              }
             />
           </Field>
           <Field label="Eyebrow">
             <TextInput
               value={eyebrow}
               onChange={(e) => setEyebrow(e.target.value)}
-              placeholder="Majlise Aala Catering"
+              placeholder={
+                service === "travels" ? "Majlise Aala Tours & Travels" : "Majlise Aala Catering"
+              }
             />
           </Field>
           <Field label="Desktop image (recommended 1920 × 900)">
@@ -793,6 +922,17 @@ function HomepagePanel({
             <ImageField value={mobileImage} onChange={setMobileImage} />
           </Field>
           <Toggle checked={active} onChange={setActive} label="Visible on homepage" />
+          <Field label="Display order" hint="Lower numbers appear first. Start at 0.">
+            <TextInput
+              type="number"
+              min={0}
+              step={1}
+              value={Number.isNaN(sortOrder) ? "" : sortOrder}
+              onChange={(event) =>
+                setSortOrder(event.target.value === "" ? NaN : Number(event.target.value))
+              }
+            />
+          </Field>
         </div>
       </Sheet>
     </section>
