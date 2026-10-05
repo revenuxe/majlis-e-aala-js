@@ -44,3 +44,7 @@ The homepage now links to `/travel/packages/umrah`, `/travel/packages/hajj`, `/t
 ## Traveller-first planning
 
 Package pages and the planner package step now share a catering-style image banner with a white traveller count panel. Change edits adult/child counts on the catalogue and recalculates adult estimates immediately. Counts pass into the planner, where child ages are required before proceeding. Seniors remain within the adult count. The seven steps are travellers, journey category (skipped when already selected), package, dates/departure, preferences, optional sign-in and review. Legacy saved step indices are mapped into the new order; newly saved drafts carry flowVersion 2. The server retains authoritative adult-rate multiplication and quotes children and changes separately.
+
+## Packages entry from travel navigation
+
+The travel mobile navbar Packages item opens `/travel/packages`. Its first screen asks for adult and child counts, then displays the same shared journey-category cards used on the homepage. Category links carry validated counts to the package catalogue and preserve them while switching categories. Adult estimates multiply the saved adult rate by the selected adults; children are quoted separately and their ages are collected in booking. Counts are bounded to 100 total travellers with at most 20 children and at least one adult.

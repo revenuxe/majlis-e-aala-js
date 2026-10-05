@@ -60,7 +60,20 @@ export default function TravelPackages({ category }: { category: TravelCategory 
   const [children, setChildren] = useState(0);
   const [editingCount, setEditingCount] = useState(false);
   useEffect(() => {
-    const query = new URLSearchParams(window.location.search).get("q");
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get("q");
+    const requestedAdults = Number(params.get("travellers"));
+    const requestedChildren = Number(params.get("children"));
+    if (Number.isInteger(requestedAdults) && requestedAdults >= 1 && requestedAdults <= 100) {
+      setAdults(requestedAdults);
+      if (
+        Number.isInteger(requestedChildren) &&
+        requestedChildren >= 0 &&
+        requestedChildren <= 20 &&
+        requestedAdults + requestedChildren <= 100
+      )
+        setChildren(requestedChildren);
+    }
     if (query) setFilter((current) => ({ ...current, search: query.slice(0, 150) }));
   }, []);
   const packages = catalog.packages.filter((pkg) => pkg.category === category);
@@ -126,7 +139,7 @@ export default function TravelPackages({ category }: { category: TravelCategory 
           {travelCategories.map((item) => (
             <Link
               key={item.id}
-              href={`/travel/packages/${item.id}`}
+              href={`/travel/packages/${item.id}?travellers=${adults}&children=${children}`}
               aria-current={item.id === category ? "page" : undefined}
               className={`shrink-0 border-b-2 py-3 text-sm ${item.id === category ? "border-primary font-semibold" : "border-transparent text-muted-foreground"}`}
             >

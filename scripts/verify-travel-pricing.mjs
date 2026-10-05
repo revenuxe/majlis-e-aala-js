@@ -66,6 +66,30 @@ try {
     0,
     "Homepage must not contain the package catalogue",
   );
+  assert.equal(
+    await evaluate(
+      "[...document.querySelectorAll('[aria-label=\"Travel quick navigation\"] a')].find(a=>a.innerText==='Packages')?.getAttribute('href')",
+    ),
+    "/travel/packages",
+  );
+  await call("Page.navigate", { url: "http://localhost:3000/travel/packages" });
+  await until(async () => (await body()).includes("joining your journey?"), "Package count page");
+  await new Promise((resolve) => setTimeout(resolve, 600));
+  await evaluate("document.querySelectorAll('button[aria-label=Increase]')[0].click()");
+  await pause();
+  await evaluate("document.querySelectorAll('button[aria-label=Increase]')[1].click()");
+  await pause();
+  await click("CHOOSE YOUR JOURNEY");
+  assert((await body()).includes("4 travellers"));
+  assert.equal(
+    await evaluate("document.querySelectorAll('main button img').length"),
+    4,
+    "Exact shared journey cards",
+  );
+  await click("Umrah");
+  await until(async () => (await body()).includes("2,69,997"), "Three adults priced at 89999 each");
+  assert((await body()).includes("4 travellers"));
+  assert((await body()).includes("3 adults and 1 child selected"));
   for (const [category, count] of [
     ["umrah", 17],
     ["hajj", 8],
