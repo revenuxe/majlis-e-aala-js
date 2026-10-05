@@ -79,6 +79,8 @@ try {
   await pause();
   await evaluate("document.querySelectorAll('button[aria-label=Increase]')[1].click()");
   await pause();
+  await evaluate("document.querySelector('input[type=checkbox]').click()");
+  await pause();
   await click("CHOOSE YOUR JOURNEY");
   assert((await body()).includes("4 travellers"));
   assert.equal(
@@ -90,6 +92,13 @@ try {
   await until(async () => (await body()).includes("2,69,997"), "Three adults priced at 89999 each");
   assert((await body()).includes("4 travellers"));
   assert((await body()).includes("Starting estimate for 3 adults"));
+  assert((await body()).includes("1 seniors included"), "Senior count carried to catalogue");
+  await evaluate("document.querySelector('article button[aria-pressed]').click()");
+  await until(
+    async () =>
+      await evaluate("JSON.parse(localStorage.getItem('ma-travel-draft-v1'))?.draft.seniors===1"),
+    "Senior count carried to booking",
+  );
   for (const [category, count] of [
     ["umrah", 17],
     ["hajj", 8],

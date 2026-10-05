@@ -229,6 +229,14 @@ export default function TravelPlan() {
         (_, index) => restored.childAges[index] ?? -1,
       );
     }
+    const requestedSeniors = Number(params.get("seniors"));
+    if (
+      params.has("seniors") &&
+      Number.isInteger(requestedSeniors) &&
+      requestedSeniors >= 0 &&
+      requestedSeniors <= restored.adults
+    )
+      restored.seniors = requestedSeniors;
     restored.seniors = Math.min(restored.seniors, restored.adults);
     setDraft(restored);
     let token = "";
@@ -250,8 +258,12 @@ export default function TravelPlan() {
   useEffect(() => {
     if (!ready) return;
     const params = new URLSearchParams(window.location.search);
-    if (["category", "package", "travellers", "children"].some((key) => params.has(key))) {
-      ["category", "package", "travellers"].forEach((key) => params.delete(key));
+    if (
+      ["category", "package", "travellers", "children", "seniors"].some((key) => params.has(key))
+    ) {
+      ["category", "package", "travellers", "children", "seniors"].forEach((key) =>
+        params.delete(key),
+      );
       window.history.replaceState(
         null,
         "",
@@ -752,6 +764,7 @@ export default function TravelPlan() {
           {step === 2 && (
             <>
               <TravelCountBanner
+                seniors={draft.seniors}
                 category={draft.category}
                 adults={draft.adults}
                 children={draft.children}

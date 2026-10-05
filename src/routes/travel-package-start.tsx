@@ -5,12 +5,15 @@ import { useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { BrandLogo } from "@/components/Brand";
 import { Button, QuantitySelector, SectionHeader } from "@/components/ui-kit";
+import { TravelSeniorCount } from "@/components/TravelSeniorCount";
 import { TravelJourneyCards } from "@/components/TravelJourneyCards";
 
 export default function TravelPackageStart() {
   const router = useRouter();
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
+  const [seniors, setSeniors] = useState(0);
+  const seniorCount = Math.min(seniors, adults);
   const [choosingJourney, setChoosingJourney] = useState(false);
   return (
     <div className="min-h-screen bg-background">
@@ -61,6 +64,9 @@ export default function TravelPackageStart() {
                 </p>
               </div>
             </div>
+            <div className="mt-4">
+              <TravelSeniorCount adults={adults} value={seniorCount} onChange={setSeniors} />
+            </div>
             <p className="mt-4 text-xs text-muted-foreground">
               Include senior citizens in adults. Assistance preferences are available during
               booking.
@@ -86,6 +92,7 @@ export default function TravelPackageStart() {
                 <p className="mt-2 text-sm font-semibold">
                   {adults + children} travellers · {adults} adults
                   {children ? `, ${children} children` : ""}
+                  {seniorCount ? ` (${seniorCount} seniors included)` : ""}
                 </p>
               </div>
               <button
@@ -103,7 +110,7 @@ export default function TravelPackageStart() {
             <TravelJourneyCards
               onSelect={(category) =>
                 router.push(
-                  `/travel/packages/${category}?travellers=${adults}&children=${children}`,
+                  `/travel/packages/${category}?travellers=${adults}&children=${children}&seniors=${seniorCount}`,
                 )
               }
             />

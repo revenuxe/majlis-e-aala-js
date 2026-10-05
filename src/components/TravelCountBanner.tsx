@@ -1,4 +1,5 @@
 "use client";
+import { TravelSeniorCount } from "@/components/TravelSeniorCount";
 import { QuantitySelector } from "@/components/ui-kit";
 import type { TravelCategory } from "@/lib/travel";
 import { travelCategories } from "@/lib/travel";
@@ -7,6 +8,8 @@ export function TravelCountBanner({
   category,
   adults,
   children,
+  seniors = 0,
+  onSeniors,
   onChange,
   editing = false,
   onAdults,
@@ -15,6 +18,8 @@ export function TravelCountBanner({
   category: TravelCategory | "";
   adults: number;
   children: number;
+  seniors?: number;
+  onSeniors?: (value: number) => void;
   onChange: () => void;
   editing?: boolean;
   onAdults?: (value: number) => void;
@@ -45,7 +50,10 @@ export function TravelCountBanner({
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               <p className="eyebrow">Your traveller count</p>
-              <p className="mt-1 text-[15px] font-semibold">{adults + children} travellers </p>
+              <p className="mt-1 text-[15px] font-semibold">
+                {adults + children} travellers
+                {seniors > 0 ? ` (${seniors} seniors included)` : ""}{" "}
+              </p>
               <p className="mt-0.5 text-[10px] text-muted-foreground sm:text-[11px]">
                 All adult package estimates update instantly.
               </p>
@@ -60,6 +68,11 @@ export function TravelCountBanner({
           </div>
           {editing && onAdults && onChildren && (
             <div className="mt-5 grid gap-5 border-t border-border pt-5 sm:grid-cols-2">
+              {onSeniors && (
+                <div className="sm:col-span-2">
+                  <TravelSeniorCount adults={adults} value={seniors} onChange={onSeniors} />
+                </div>
+              )}
               <div>
                 <p className="mb-2 text-sm font-semibold">Adults · 18+</p>
                 <QuantitySelector

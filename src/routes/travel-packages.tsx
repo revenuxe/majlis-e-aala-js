@@ -58,6 +58,8 @@ export default function TravelPackages({ category }: { category: TravelCategory 
   const [limit, setLimit] = useState(6);
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
+  const [seniors, setSeniors] = useState(0);
+  const seniorCount = Math.min(seniors, adults);
   const [editingCount, setEditingCount] = useState(false);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -66,6 +68,13 @@ export default function TravelPackages({ category }: { category: TravelCategory 
     const requestedChildren = Number(params.get("children"));
     if (Number.isInteger(requestedAdults) && requestedAdults >= 1 && requestedAdults <= 100) {
       setAdults(requestedAdults);
+      const requestedSeniors = Number(params.get("seniors"));
+      if (
+        Number.isInteger(requestedSeniors) &&
+        requestedSeniors >= 0 &&
+        requestedSeniors <= requestedAdults
+      )
+        setSeniors(requestedSeniors);
       if (
         Number.isInteger(requestedChildren) &&
         requestedChildren >= 0 &&
@@ -120,6 +129,8 @@ export default function TravelPackages({ category }: { category: TravelCategory 
             category={category}
             adults={adults}
             children={children}
+            seniors={seniorCount}
+            onSeniors={setSeniors}
             editing={editingCount}
             onChange={() => setEditingCount(!editingCount)}
             onAdults={setAdults}
@@ -139,7 +150,7 @@ export default function TravelPackages({ category }: { category: TravelCategory 
           {travelCategories.map((item) => (
             <Link
               key={item.id}
-              href={`/travel/packages/${item.id}?travellers=${adults}&children=${children}`}
+              href={`/travel/packages/${item.id}?travellers=${adults}&children=${children}&seniors=${seniorCount}`}
               aria-current={item.id === category ? "page" : undefined}
               className={`shrink-0 border-b-2 py-3 text-sm ${item.id === category ? "border-primary font-semibold" : "border-transparent text-muted-foreground"}`}
             >
@@ -338,7 +349,7 @@ export default function TravelPackages({ category }: { category: TravelCategory 
               children={children}
               onSelect={() =>
                 window.location.assign(
-                  `/travel/plan?category=${category}&package=${pkg.id}&travellers=${adults}&children=${children}`,
+                  `/travel/plan?category=${category}&package=${pkg.id}&travellers=${adults}&children=${children}&seniors=${seniorCount}`,
                 )
               }
             />
@@ -355,7 +366,7 @@ export default function TravelPackages({ category }: { category: TravelCategory 
         <div className="mt-10 rounded-2xl bg-surface p-6">
           <h2 className="font-display text-2xl">Prefer a journey made for you?</h2>
           <Link
-            href={`/travel/plan?category=${category}&travellers=${adults}&children=${children}`}
+            href={`/travel/plan?category=${category}&travellers=${adults}&children=${children}&seniors=${seniorCount}`}
             className="mt-3 inline-flex min-h-11 items-center gap-2 text-sm font-semibold"
           >
             Plan a custom journey
