@@ -347,6 +347,7 @@ export default function TravelPackages({ category }: { category: TravelCategory 
               pkg={pkg}
               adults={adults}
               children={children}
+              seniors={seniorCount}
               onSelect={() =>
                 window.location.assign(
                   `/travel/plan?category=${category}&package=${pkg.id}&travellers=${adults}&children=${children}&seniors=${seniorCount}`,

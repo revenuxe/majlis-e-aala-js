@@ -23,12 +23,14 @@ export function TravelPackageChoice({
   selected = false,
   adults,
   children = 0,
+  seniors = 0,
   onSelect,
 }: {
   pkg: TravelPackage;
   selected?: boolean;
   adults: number;
   children?: number;
+  seniors?: number;
   onSelect: () => void;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -87,7 +89,11 @@ export function TravelPackageChoice({
           <strong className="font-semibold text-foreground">
             {adults} {adults === 1 ? "adult" : "adults"}
             {children > 0 ? ` and ${children} ${children === 1 ? "child" : "children"}` : ""}{" "}
-            travelling.
+            travelling
+            {seniors > 0
+              ? `, including ${Math.min(seniors, adults)} senior ${Math.min(seniors, adults) === 1 ? "citizen" : "citizens"} within the adults`
+              : ""}
+            .
           </strong>{" "}
           {price == null
             ? "Your quotation will be tailored to your group and room preferences."
