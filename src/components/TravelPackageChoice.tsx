@@ -86,7 +86,8 @@ export function TravelPackageChoice({
         <p className="mt-4 text-[13px] leading-relaxed text-muted-foreground">
           <strong className="font-semibold text-foreground">
             {adults} {adults === 1 ? "adult" : "adults"}
-            {children > 0 ? ` and ${children} ${children === 1 ? "child" : "children"}` : ""} travelling.
+            {children > 0 ? ` and ${children} ${children === 1 ? "child" : "children"}` : ""}{" "}
+            travelling.
           </strong>{" "}
           {price == null
             ? "Your quotation will be tailored to your group and room preferences."
