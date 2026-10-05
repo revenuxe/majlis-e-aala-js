@@ -11,6 +11,7 @@ const navLinks = [
   { label: "Home", to: "/" },
   { label: "Packages", to: "/packages" },
   { label: "Catering", to: "/plan" },
+  { label: "Tours & Travels", to: "/travel" },
   { label: "About", to: "/about" },
 ] as const;
 
