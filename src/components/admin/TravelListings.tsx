@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button, cx } from "@/components/ui-kit";
@@ -41,8 +41,10 @@ const lines = (value: string) =>
     .filter(Boolean);
 const inputDate = () => new Date().toISOString().slice(0, 10);
 
-export function TravelListingsPanel() {
-  const [tab, setTab] = useState<"packages" | "departures" | "requests">("packages");
+export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" | "orders" }) {
+  const [tab, setTab] = useState<"packages" | "departures" | "requests">(
+    mode === "orders" ? "requests" : "packages",
+  );
   const [packages, setPackages] = useState<TravelPackage[]>([]);
   const [departures, setDepartures] = useState<TravelDeparture[]>([]);
   const [requests, setRequests] = useState<TravelRequest[]>([]);
@@ -55,9 +57,12 @@ export function TravelListingsPanel() {
   const [itinerary, setItinerary] = useState("");
   const [dep, setDep] = useState<TravelDeparture | Omit<TravelDeparture, "id"> | null>(null);
   const [request, setRequest] = useState<TravelRequest | null>(null);
+  const loadVersion = useRef(0);
   const load = useCallback(async () => {
+    const version = ++loadVersion.current;
     setLoading(true);
     setError(false);
+    setRequests([]);
     try {
       let query = db
         .from("travel_booking_requests")
@@ -66,22 +71,32 @@ export function TravelListingsPanel() {
         .limit(limit + 1);
       if (status) query = query.eq("status", status);
       const [p, d, r] = await Promise.all([
-        db.from("travel_packages").select("*").order("sort_order").order("name"),
-        db.from("travel_departures").select("*").order("start_date", { ascending: false }),
+        mode === "orders"
+          ? Promise.resolve({ data: [], error: null })
+          : db.from("travel_packages").select("*").order("sort_order").order("name"),
+        mode === "orders"
+          ? Promise.resolve({ data: [], error: null })
+          : db.from("travel_departures").select("*").order("start_date", { ascending: false }),
         query,
       ]);
       if (p.error || d.error || r.error) throw p.error || d.error || r.error;
+      if (version !== loadVersion.current) return;
       setPackages((p.data || []) as unknown as TravelPackage[]);
       setDepartures(d.data || []);
       setRequests((r.data || []) as unknown as TravelRequest[]);
     } catch {
-      setError(true);
+      if (version === loadVersion.current) setError(true);
     } finally {
-      setLoading(false);
+      if (version === loadVersion.current) setLoading(false);
     }
-  }, [limit, status]);
+  }, [limit, status, mode]);
   useEffect(() => {
     void load();
+    return () => {
+      // Invalidate pending requests when the filter changes or the panel unmounts.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      loadVersion.current++;
+    };
   }, [load]);
   async function save(kind: "package" | "departure" | "request") {
     setBusy(true);
@@ -179,33 +194,38 @@ export function TravelListingsPanel() {
   };
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap gap-2">
-        {(["packages", "departures", "requests"] as const).map((key) => (
-          <button
-            key={key}
-            onClick={() => setTab(key)}
-            className={cx(
-              "rounded-full border px-4 py-2 text-sm font-semibold capitalize",
-              tab === key ? "bg-primary text-primary-foreground" : "bg-card",
-            )}
-          >
-            {key}
-          </button>
-        ))}
-      </div>
+      {mode === "listings" && (
+        <div className="flex flex-wrap gap-2">
+          {(["packages", "departures", "requests"] as const).map((key) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={cx(
+                "rounded-full border px-4 py-2 text-sm font-semibold capitalize",
+                tab === key ? "bg-primary text-primary-foreground" : "bg-card",
+              )}
+            >
+              {key}
+            </button>
+          ))}
+        </div>
+      )}
       <p className="text-sm text-muted-foreground">
-        Manage travel independently from catering. Packages without a price show “quotation
-        required”. Departures are planning options; capacity does not reserve seats.
+        {mode === "orders"
+          ? "Manage travel requests, customer quotations and booking status. Changes appear in the customer's Travel Booking tracking."
+          : "Manage travel independently from catering. Packages without a price show quotation required. Departures are planning options; capacity does not reserve seats."}
       </p>
       {error ? (
         <div role="alert" className="rounded-xl border p-4">
-          Could not load travel listings.{" "}
+          Could not load travel {mode === "orders" ? "orders" : "listings"}.{" "}
           <button className="underline" onClick={() => void load()}>
             Try again
           </button>
         </div>
       ) : null}
-      {loading ? <p role="status">Loading travel listings…</p> : null}
+      {loading ? (
+        <p role="status">Loading travel {mode === "orders" ? "orders" : "listings"}…</p>
+      ) : null}
       {tab === "packages" && (
         <>
           <Button

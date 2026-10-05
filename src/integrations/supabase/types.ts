@@ -833,6 +833,24 @@ export type Database = {
         Args: { p_booking_reference: string };
         Returns: boolean;
       };
+      get_my_travel_booking: {
+        Args: { p_booking_reference: string };
+        Returns: {
+          adults: number;
+          booking_reference: string;
+          category: string;
+          children: number;
+          created_at: string;
+          dates_flexible: boolean;
+          departure_city: string;
+          estimated_adult_total: number;
+          package_name: string;
+          preferred_date: string;
+          preferred_month: string;
+          quoted_total: number;
+          status: string;
+        }[];
+      };
       get_my_travel_bookings: {
         Args: { p_limit?: number; p_offset?: number };
         Returns: {

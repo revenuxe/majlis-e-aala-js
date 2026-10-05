@@ -77,7 +77,6 @@ interface PlanContextValue {
 const PlanContext = createContext<PlanContextValue | null>(null);
 
 const STORAGE_KEY = "majlise-aala-plan";
-const BOOKINGS_STORAGE_KEY = "majlise-aala-bookings";
 // Bump this whenever the catalogue structure or seeded package data changes,
 // so customers never keep a retired package in local storage.
 const CATALOG_CACHE_KEY = "majlise-aala-catalog-v3";
@@ -108,30 +107,30 @@ export function PlanProvider({ children }: { children: ReactNode }) {
     } catch {
       /* ignore */
     }
-  }, []);
-
-  useEffect(() => {
     try {
-      const raw = window.localStorage.getItem(BOOKINGS_STORAGE_KEY);
-      if (raw) setBookings(JSON.parse(raw));
+      // Booking history now comes from the authenticated database, never a shared device cache.
+      window.localStorage.removeItem("majlise-aala-bookings");
     } catch {
-      /* ignore */
+      /* Storage is optional. */
     }
   }, []);
 
   useEffect(() => {
     let cancelled = false;
+    let revision = 0;
 
     const loadCustomerBookings = async () => {
+      const request = ++revision;
+      setBookings([]);
       const { data: userData } = await supabase.auth.getUser();
       const user = userData.user;
-      if (!user || cancelled) return;
+      if (!user || cancelled || request !== revision) return;
       const { data, error } = await supabase
         .from("orders")
         .select("booking_reference, occasion, event_date, guests, package_id, status, created_at")
         .eq("customer_id", user.id)
         .order("created_at", { ascending: false });
-      if (error || cancelled) return;
+      if (error || cancelled || request !== revision) return;
       setBookings(
         (data ?? [])
           .filter((order) => Boolean(order.booking_reference))
@@ -151,10 +150,19 @@ export function PlanProvider({ children }: { children: ReactNode }) {
 
     void loadCustomerBookings();
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) void loadCustomerBookings();
+      revision++;
+      setBookings([]);
+      if (session?.user)
+        queueMicrotask(() => {
+          if (!cancelled) void loadCustomerBookings();
+        });
     });
+    const focus = () => void loadCustomerBookings();
+    window.addEventListener("focus", focus);
     return () => {
       cancelled = true;
+      revision++;
+      window.removeEventListener("focus", focus);
       listener.subscription.unsubscribe();
     };
   }, [catalogPackages]);
@@ -390,14 +398,6 @@ export function PlanProvider({ children }: { children: ReactNode }) {
     }, 800);
     return () => window.clearTimeout(timer);
   }, [plan]);
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(BOOKINGS_STORAGE_KEY, JSON.stringify(bookings));
-    } catch {
-      /* ignore */
-    }
-  }, [bookings]);
 
   const value = useMemo<PlanContextValue>(() => {
     const update = (patch: Partial<PlanState>) => setPlan((p) => ({ ...p, ...patch }));

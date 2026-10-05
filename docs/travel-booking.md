@@ -29,7 +29,26 @@ The five existing itinerary ideas are migrated into editable, active packages
 with no invented prices or departures. Homepage cards and planner choices both
 read the same live catalogue. Contact details and FAQs remain in `src/lib/travel.ts`.
 
-## Backend
+## Service-specific orders and tracking
+
+Admin **Orders → Catering / Travel** keeps the two record types separate.
+Catering uses `orders`; Travel uses `travel_booking_requests` and reuses the same
+request editor as Listings, including quotations, status and internal notes.
+The Travel Orders view does not fetch or show package/departure editors.
+
+Customer `/orders` offers **Catering Booking / Travel Booking** tabs. Profile
+cards identify the service and link directly to the appropriate reference.
+Tracking labels use actual stored statuses: received, contacted/planning,
+quotation shared, confirmed, completed. Cancelled bookings show cancellation,
+without implying a completed event or journey. Refresh controls and window-focus
+reloads retrieve current database status. Auth changes clear customer records.
+The old shared-device catering history cache is removed; signed-in database
+records are the source of truth, with stale fetches discarded after account changes.
+Travel reference lookups use `get_my_travel_booking`, filtered by `auth.uid()`;
+an invalid or foreign reference displays an unavailable message. No customer can
+read internal admin notes or another customer's booking.
+
+## Backend permissions
 
 `travel_packages`, `travel_departures` and `travel_booking_requests` have RLS.
 Guests read active packages and upcoming active departures only. The full request

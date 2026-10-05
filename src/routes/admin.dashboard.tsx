@@ -89,6 +89,7 @@ export default function AdminDashboard() {
   const [ready, setReady] = useState(false);
   const [tab, setTab] = useState<MainTab>("dashboard");
   const [listingService, setListingService] = useState<ListingService>("catering");
+  const [orderService, setOrderService] = useState<"catering" | "travel">("catering");
   const [listTab, setListTab] = useState<ListTab>("packages");
   const [homepageTab, setHomepageTab] = useState<HomepageTab>("catering");
 
@@ -120,6 +121,7 @@ export default function AdminDashboard() {
         return;
       }
       if (tab === "orders") {
+        if (orderService === "travel") return;
         const [p, o] = await Promise.all([
           supabase.from("packages").select("id, name"),
           supabase.from("orders").select("*").order("created_at", { ascending: false }),
@@ -218,7 +220,7 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [listTab, listingService, tab]);
+  }, [listTab, listingService, orderService, tab]);
 
   useEffect(() => {
     // The server route already verifies the session and admin role before this
@@ -366,7 +368,36 @@ export default function AdminDashboard() {
             </div>
           </section>
         ) : tab === "orders" ? (
-          <OrdersPanel orders={orders} packages={packages} onChanged={load} />
+          <section className="space-y-5">
+            <div role="group" aria-label="Order service" className="flex gap-2">
+              {(["catering", "travel"] as const).map((service) => (
+                <button
+                  key={service}
+                  aria-pressed={orderService === service}
+                  onClick={() => setOrderService(service)}
+                  className={cx(
+                    "press min-h-11 rounded-full border px-5 text-sm font-semibold",
+                    orderService === service
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-card text-muted-foreground",
+                  )}
+                >
+                  {service === "catering" ? "Catering" : "Travel"}
+                </button>
+              ))}
+            </div>
+            {orderService === "catering" ? (
+              <OrdersPanel orders={orders} packages={packages} onChanged={load} />
+            ) : (
+              <>
+                <div>
+                  <p className="eyebrow">Travel bookings</p>
+                  <h1 className="mt-1 font-display text-[30px] sm:text-[38px]">Travel orders</h1>
+                </div>
+                <TravelListingsPanel mode="orders" />
+              </>
+            )}
+          </section>
         ) : tab === "homepage" ? (
           <section className="space-y-5">
             <div role="tablist" aria-label="Homepage service" className="flex gap-2">
@@ -1018,7 +1049,9 @@ function OrdersPanel({
     <section className="space-y-5">
       <div>
         <p className="eyebrow">Enquiries</p>
-        <h1 className="mt-1 font-display text-[30px] leading-tight sm:text-[38px]">Orders</h1>
+        <h1 className="mt-1 font-display text-[30px] leading-tight sm:text-[38px]">
+          Catering orders
+        </h1>
       </div>
       <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0">
         {["all", ...ORDER_STATUSES].map((s) => (

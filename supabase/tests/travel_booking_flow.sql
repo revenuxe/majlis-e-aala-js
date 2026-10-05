@@ -102,6 +102,8 @@ begin
   perform public.submit_travel_booking(jsonb_build_object('request_token',gen_random_uuid(),'customer_name','Account test','phone','910000000004','category','domestic','departure_city','Bengaluru','adults',1,'contact_consent',true));
   if (select count(*) from public.get_my_travel_bookings()) <> 1 then raise exception 'Own account request missing from history'; end if;
   select to_jsonb(h) into result from public.get_my_travel_bookings() h;
+  perform set_config('app.test_travel_reference', result->>'booking_reference', true);
+  if (select count(*) from public.get_my_travel_booking(result->>'booking_reference')) <> 1 then raise exception 'Specific booking lookup failed'; end if;
   if result ?| array['admin_notes','phone','email','request_token','customer_id'] then raise exception 'Private fields leaked through history'; end if;
   if exists(select 1 from public.travel_booking_requests) then raise exception 'Customer must not read internal request table'; end if;
 end;
@@ -111,6 +113,7 @@ select set_config('request.jwt.claim.sub',gen_random_uuid()::text,true);
 set local role authenticated;
 do $$ begin
   if exists(select 1 from public.get_my_travel_bookings()) then raise exception 'Another account can read customer history'; end if;
+  if exists(select 1 from public.get_my_travel_booking(current_setting('app.test_travel_reference'))) then raise exception 'Another account can track a private booking'; end if;
 end; $$;
 reset role;
 set local role anon;
@@ -119,6 +122,19 @@ declare denied boolean := false;
 begin
   begin perform public.get_my_travel_bookings(); exception when insufficient_privilege then denied := true; end;
   if not denied then raise exception 'Anonymous history access must be denied'; end if;
+  denied := false;
+  begin perform public.get_my_travel_booking(current_setting('app.test_travel_reference')); exception when insufficient_privilege then denied := true; end;
+  if not denied then raise exception 'Anonymous tracking lookup must be denied'; end if;
+end; $$;
+reset role;
+-- Test status updates using the existing admin role model, without retaining a role change.
+insert into public.user_roles(user_id,role)
+  select customer_id,'admin' from public.travel_booking_requests where booking_reference=current_setting('app.test_travel_reference');
+select set_config('request.jwt.claim.sub',(select customer_id::text from public.travel_booking_requests where booking_reference=current_setting('app.test_travel_reference')),true);
+set local role authenticated;
+do $$ begin
+  update public.travel_booking_requests set status='quoted',quoted_total=12345,admin_notes='Internal tracking test' where booking_reference=current_setting('app.test_travel_reference');
+  if not exists(select 1 from public.get_my_travel_booking(current_setting('app.test_travel_reference')) where status='quoted' and quoted_total=12345) then raise exception 'Admin update not visible in customer tracking'; end if;
 end; $$;
 reset role;
 rollback;

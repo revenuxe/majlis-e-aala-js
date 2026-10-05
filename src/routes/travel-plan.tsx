@@ -418,7 +418,10 @@ export default function TravelPlan() {
           <p className="mt-2 break-all text-[20px] font-semibold">{reference}</p>
         </div>
         {customer && (
-          <Link href="/profile" className="mb-5 text-sm font-semibold underline">
+          <Link
+            href={`/orders?service=travel&reference=${encodeURIComponent(reference)}`}
+            className="mb-5 text-sm font-semibold underline"
+          >
             View your travel requests in your account
           </Link>
         )}

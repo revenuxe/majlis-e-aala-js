@@ -58,7 +58,7 @@ try {
   await evaluate("localStorage.removeItem('ma-travel-draft-v1');sessionStorage.clear()");
   hook = await call("Page.addScriptToEvaluateOnNewDocument", {
     source: `
-window.__authTestBoot=crypto.randomUUID();window.__authPosts=[];window.__bookings=[];
+window.__authTestBoot=crypto.randomUUID();window.__authPosts=[];window.__bookings=[];window.__trackingStatus='quoted';
 const realFetch=window.fetch.bind(window);
 const testUser={id:${JSON.stringify(userId)},aud:'authenticated',role:'authenticated',email:'signed-in-traveller@example.com',app_metadata:{provider:'email',providers:['email']},user_metadata:{travel_profile:{name:'Saved Travel Customer',phone:'+91 9000000001',email:'signed-in-traveller@example.com'}},created_at:new Date().toISOString()};
 const expiry=Math.floor(Date.now()/1000)+3600;
@@ -76,7 +76,9 @@ if(url.includes('/user'))return json(testUser);
 return json({});
 }
 if(url.includes('/rpc/submit_travel_booking')){window.__bookings.push(JSON.parse(init.body));return json([{booking_reference:'MAT-SIGNED-IN-TEST'}]);}
-if(url.includes('/rpc/get_my_travel_bookings'))return json([{booking_reference:'MAT-SIGNED-IN-TEST',category:'umrah',package_name:'The Essential Umrah',departure_city:'Hyderabad',preferred_date:null,preferred_month:null,dates_flexible:true,adults:2,children:0,status:'new',estimated_adult_total:null,quoted_total:null,created_at:new Date().toISOString()}]);
+if(url.includes('/rpc/get_my_travel_booking'))return json([{booking_reference:'MAT-SIGNED-IN-TEST',category:'umrah',package_name:'The Essential Umrah',departure_city:'Hyderabad',preferred_date:null,preferred_month:null,dates_flexible:true,adults:2,children:0,status:window.__trackingStatus,estimated_adult_total:null,quoted_total:12345,created_at:new Date().toISOString()}]);
+if(url.includes('/rest/v1/orders'))return json([{id:'33333333-3333-4333-8333-333333333333',booking_reference:'CAT-TEST-ONLY',customer_name:'Catering Test Customer',phone:'910000000010',occasion:'Nikah',event_date:'2026-12-20',guests:100,estimated_total:45000,status:'confirmed',venue:{area:'Bengaluru'},created_at:new Date().toISOString()}]);
+if(url.includes('/rest/v1/travel_booking_requests'))return json([{id:'44444444-4444-4444-8444-444444444444',booking_reference:'MAT-SIGNED-IN-TEST',customer_name:'Travel Test Customer',phone:'910000000020',category:'umrah',departure_city:'Hyderabad',adults:2,children:0,child_ages:[],preferences:{room:'twin',stay:'comfort',assistance:[]},package_snapshot:{name:'The Essential Umrah'},estimated_adult_total:null,quoted_total:12345,notes:'',admin_notes:'',status:'quoted',created_at:new Date().toISOString()}]);
 if(url.includes('/travel_packages')||url.includes('/travel_departures')||url.includes('/travel_hero_carousels')){const headers=new Headers(init?.headers);headers.delete('Authorization');return realFetch(input,{...init,headers});}
 if(url.includes('/rest/v1/')&&!url.includes('/travel_packages')&&!url.includes('/travel_departures')&&!url.includes('/travel_hero_carousels'))return json([]);
 return realFetch(input,init);
@@ -175,6 +177,9 @@ return realFetch(input,init);
       `localStorage.getItem('majlise-aala-travel-profile:${userId}').includes('Saved Travel Customer')`,
     ),
   );
+  await evaluate(
+    "localStorage.setItem('majlise-aala-bookings',JSON.stringify([{reference:'OTHER-CUSTOMER-CACHE',occasion:'Other customer event',guests:999,packageName:'Private package',status:'confirmed'}]))",
+  );
   await call("Page.navigate", { url: "http://localhost:3000/profile" });
   await until(
     async () => (await body()).toLowerCase().includes("your travel requests"),
@@ -184,7 +189,118 @@ return realFetch(input,init);
     async () => (await body()).includes("MAT-SIGNED-IN-TEST"),
     "Account travel history missing",
   );
+  assert(
+    !(await body()).includes("OTHER-CUSTOMER-CACHE"),
+    "Legacy device cache must not leak another customer's booking",
+  );
+  assert.equal(await evaluate("localStorage.getItem('majlise-aala-bookings')"), null);
   assert.equal(await evaluate("document.documentElement.scrollWidth>innerWidth"), false);
+  await call("Page.navigate", {
+    url: "http://localhost:3000/orders?service=travel&reference=MAT-SIGNED-IN-TEST",
+  });
+  await until(
+    async () =>
+      await evaluate("!!document.querySelector('ol[aria-label=\"Travel booking tracking\"]')"),
+    "Travel tracking did not load",
+  );
+  assert((await body()).includes("Itinerary planning"));
+  assert.equal(
+    await evaluate(
+      "document.querySelector('[aria-current=step]').innerText.includes('Travel quotation shared')",
+    ),
+    true,
+  );
+  assert((await body()).includes("12345") || (await body()).includes("12,345"));
+  await click("Catering Booking");
+  await until(
+    async () =>
+      await evaluate("!!document.querySelector('ol[aria-label=\"Catering booking tracking\"]')"),
+    "Catering tracking did not load",
+  );
+  assert((await body()).includes("CAT-TEST-ONLY"));
+  assert(
+    !(await body()).includes("MAT-SIGNED-IN-TEST"),
+    "Travel records must not appear in catering tracking",
+  );
+  assert.equal(
+    await evaluate(
+      "document.querySelector('[aria-current=step]').innerText.includes('Catering booking confirmed')",
+    ),
+    true,
+  );
+  await click("Travel Booking");
+  await until(
+    async () =>
+      await evaluate("!!document.querySelector('ol[aria-label=\"Travel booking tracking\"]')"),
+    "Travel tab switch failed",
+  );
+  for (const width of [320, 390, 1280]) {
+    await call("Emulation.setDeviceMetricsOverride", {
+      width,
+      height: 844,
+      deviceScaleFactor: 1,
+      mobile: width < 600,
+    });
+    assert.equal(await evaluate("document.documentElement.scrollWidth>innerWidth"), false);
+  }
+  await evaluate("window.__trackingStatus='cancelled'");
+  await click("Refresh travel status");
+  await until(
+    async () => (await body()).includes("Travel booking cancelled"),
+    "Cancelled travel state missing",
+  );
+  assert.equal(
+    await evaluate("!!document.querySelector('ol[aria-label=\"Travel booking tracking\"]')"),
+    false,
+    "Cancelled journey must not show completed progress",
+  );
+  if (process.env.VERIFY_ADMIN_TRACKING === "1") {
+    await call("Page.navigate", { url: "http://localhost:3000/travel/admin-check" });
+    await until(
+      async () =>
+        await evaluate("[...document.querySelectorAll('button')].some(b=>b.innerText==='Orders')"),
+      "Admin test view missing",
+    );
+    await click("Orders");
+    await until(
+      async () => (await body()).includes("Catering orders"),
+      "Admin catering tab missing",
+    );
+    await evaluate(
+      "[...document.querySelectorAll('[aria-label=\"Order service\"] button')].find(b=>b.innerText==='Travel').click()",
+    );
+    await until(
+      async () => (await body()).includes("Travel Test Customer"),
+      "Admin travel orders missing",
+    );
+    assert(
+      !(await body()).includes("Catering Test Customer"),
+      "Admin travel/catering records mixed",
+    );
+    assert(
+      !(await body()).includes("Add travel package"),
+      "Order view must not show catalogue editors",
+    );
+    await evaluate(
+      "[...document.querySelectorAll('[aria-label=\"Order service\"] button')].find(b=>b.innerText==='Catering').click()",
+    );
+    await until(
+      async () => (await body()).includes("Catering Test Customer"),
+      "Admin catering orders missing",
+    );
+    assert(!(await body()).includes("Travel Test Customer"));
+    console.log("PASS: separate admin Catering/Travel order tabs and isolated records.");
+  }
+  await call("Network.clearBrowserCookies");
+  await call("Page.navigate", { url: "http://localhost:3000/orders?service=travel" });
+  await until(
+    async () => (await body()).includes("Sign in to view your orders"),
+    "Signed-out tracker must require authentication",
+  );
+  assert(
+    !(await body()).includes("MAT-SIGNED-IN-TEST"),
+    "Signed-out customer records must be cleared",
+  );
   // A callback must not redirect to an attacker-supplied origin.
   const invalid = await fetch(
     "http://localhost:3000/auth/callback?next=https%3A%2F%2Fexample.invalid",

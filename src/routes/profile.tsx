@@ -17,16 +17,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { usePlan } from "@/lib/plan-store";
 import { Button, SectionHeader } from "@/components/ui-kit";
+import { BookingTracking } from "@/components/BookingTracking";
 import { TravelBookingHistory } from "@/components/TravelBookingHistory";
 
-const timeline = [
-  "Booking Received",
-  "Catering Details Confirmed",
-  "Event Scheduled",
-  "Preparation",
-  "Ready / Dispatched",
-  "Completed",
-];
 const rows = [
   { icon: User, label: "Personal Details", section: "personal" },
   { icon: ScrollText, label: "Draft Menus", section: "drafts" },
@@ -114,9 +107,6 @@ export default function ProfilePage() {
   const upcoming = customerBookings
     .filter((booking) => !["completed", "cancelled"].includes(booking.status))
     .sort((a, b) => (a.eventDate || "9999").localeCompare(b.eventDate || "9999"))[0];
-  const activeStep = upcoming
-    ? { new: 0, contacted: 1, quoted: 1, confirmed: 2, completed: 5, cancelled: 0 }[upcoming.status]
-    : 0;
 
   return (
     <main className="mx-auto max-w-[860px] px-5 py-8 sm:px-8">
@@ -270,7 +260,7 @@ export default function ProfilePage() {
       )}
 
       <section className="mt-8">
-        <p className="eyebrow">Upcoming event</p>
+        <p className="eyebrow">Catering Booking tracking</p>
         <div className="mt-3 rounded-[16px] border border-border bg-card p-5">
           {upcoming ? (
             <>
@@ -283,25 +273,7 @@ export default function ProfilePage() {
                   : "Date to be confirmed"}
               </p>
               <p className="mt-3 font-mono text-[12px] text-muted-text">{upcoming.reference}</p>
-              <ol className="mt-5 space-y-4">
-                {timeline.map((label, index) => (
-                  <li key={label} className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-3">
-                    <span
-                      className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full"
-                      style={{ background: index <= activeStep ? "var(--halal)" : "var(--border)" }}
-                    />
-                    <span
-                      className={
-                        index <= activeStep
-                          ? "text-[14px] font-medium"
-                          : "text-[14px] text-muted-text"
-                      }
-                    >
-                      {label}
-                    </span>
-                  </li>
-                ))}
-              </ol>
+              <BookingTracking service="catering" status={upcoming.status} />
               <div className="mt-5 grid gap-1 border-t border-border pt-4 text-[13px] text-muted-foreground">
                 <span>Our catering team will contact you shortly.</span>
                 <a href="tel:+919886285028">+91 98862 85028</a>
@@ -314,14 +286,15 @@ export default function ProfilePage() {
       </section>
 
       <section className="mt-8">
-        <p className="eyebrow">Your bookings</p>
+        <p className="eyebrow">Catering Booking</p>
         <div className="no-scrollbar -mx-5 mt-3 flex gap-3 overflow-x-auto px-5 sm:mx-0 sm:grid sm:grid-cols-2 sm:px-0">
           {customerBookings.map((booking) => (
             <div
               key={booking.reference}
               className="w-[220px] shrink-0 rounded-[16px] border border-border bg-card p-5 sm:w-auto"
             >
-              <p className="text-[15px] font-semibold">{booking.occasion}</p>
+              <p className="text-xs font-semibold text-gold">Catering Booking</p>
+              <p className="mt-2 text-[15px] font-semibold">{booking.occasion}</p>
               <p className="mt-1 text-[13px] text-muted-foreground">
                 {booking.guests} guests · {booking.packageName}
               </p>
@@ -329,6 +302,12 @@ export default function ProfilePage() {
               <span className="mt-3 inline-block rounded-full bg-surface px-3 py-1 text-[11px] font-semibold capitalize">
                 {booking.status}
               </span>
+              <Link
+                href={`/orders?service=catering&reference=${encodeURIComponent(booking.reference)}`}
+                className="mt-3 flex min-h-11 items-center text-sm font-semibold underline"
+              >
+                Track catering booking
+              </Link>
             </div>
           ))}
           {customerBookings.length === 0 && (
