@@ -82,6 +82,7 @@ export default function TravelHome() {
   const { slides: travelHeroSlides, loading: heroLoading, failed: heroFailed } = useTravelHero();
   const [heroPaused, setHeroPaused] = useState(false);
   const [heroInteracting, setHeroInteracting] = useState(false);
+  const [loadedHeroImages, setLoadedHeroImages] = useState<Set<string>>(() => new Set());
   const activeHeroIndex = travelHeroSlides.length ? heroIndex % travelHeroSlides.length : 0;
   const currentHero = travelHeroSlides[activeHeroIndex];
   useEffect(() => {
@@ -93,6 +94,22 @@ export default function TravelHome() {
     }, 6000);
     return () => window.clearInterval(timer);
   }, [travelHeroSlides.length, heroPaused, heroInteracting]);
+  useEffect(() => {
+    if (travelHeroSlides.length < 2) return;
+    const nextSlide = travelHeroSlides[(activeHeroIndex + 1) % travelHeroSlides.length];
+    if (!nextSlide) return;
+    const mobile = window.matchMedia("(max-width: 639px)");
+    const preload = () => {
+      const nextImage = new window.Image();
+      nextImage.src =
+        mobile.matches && nextSlide.mobile_image_url
+          ? nextSlide.mobile_image_url
+          : nextSlide.desktop_image_url;
+    };
+    preload();
+    mobile.addEventListener("change", preload);
+    return () => mobile.removeEventListener("change", preload);
+  }, [activeHeroIndex, travelHeroSlides]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const visibleJourneys = journeys.filter(
@@ -237,17 +254,40 @@ export default function TravelHome() {
                     index === activeHeroIndex ? "opacity-100" : "pointer-events-none opacity-0",
                   )}
                 >
+                  {!loadedHeroImages.has(
+                    `${slide.desktop_image_url}|${slide.mobile_image_url ?? ""}`,
+                  ) && (
+                    <div
+                      aria-hidden="true"
+                      className="absolute inset-0 motion-safe:animate-pulse bg-[radial-gradient(circle_at_72%_28%,rgba(202,164,93,0.34),transparent_28%),linear-gradient(135deg,#211b14,#5b4931_48%,#17130f)]"
+                    />
+                  )}
                   <picture className="block h-full w-full">
                     {slide.mobile_image_url && (
                       <source media="(max-width: 639px)" srcSet={slide.mobile_image_url} />
                     )}
                     <img
+                      key={`${slide.desktop_image_url}|${slide.mobile_image_url ?? ""}`}
                       src={slide.desktop_image_url}
                       alt={slide.title}
                       loading={index === 0 ? "eager" : "lazy"}
                       fetchPriority={index === 0 ? "high" : "low"}
                       decoding="async"
-                      className="h-full w-full object-cover"
+                      onLoad={() =>
+                        setLoadedHeroImages((current) =>
+                          new Set(current).add(
+                            `${slide.desktop_image_url}|${slide.mobile_image_url ?? ""}`,
+                          ),
+                        )
+                      }
+                      className={cx(
+                        "h-full w-full object-cover transition-opacity duration-300 motion-reduce:transition-none",
+                        loadedHeroImages.has(
+                          `${slide.desktop_image_url}|${slide.mobile_image_url ?? ""}`,
+                        )
+                          ? "opacity-100"
+                          : "opacity-0",
+                      )}
                     />
                   </picture>
                 </div>
