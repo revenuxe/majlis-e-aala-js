@@ -10,6 +10,7 @@ import { TravelCountBanner } from "@/components/TravelCountBanner";
 import { TravelPrice } from "@/components/TravelPrice";
 import { TravelCatalogueControls } from "@/components/TravelCatalogueControls";
 import { TravelPackageChoice } from "@/components/TravelPackageChoice";
+import { TravelJourneyCards } from "@/components/TravelJourneyCards";
 import { BookingAuth } from "@/components/BookingAuth";
 import { saveTravelProfile, travelProfileFromUser } from "@/lib/travel-profile";
 import { Button, QuantitySelector, cx } from "@/components/ui-kit";
@@ -581,17 +582,10 @@ export default function TravelPlan() {
         <div className="mt-7 space-y-5">
           {step === 1 && (
             <>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {travelCategories.map((c) => (
-                  <Choice
-                    key={c.id}
-                    selected={draft.category === c.id}
-                    onClick={() => update({ category: c.id, packageId: null, departureId: null })}
-                    title={c.name}
-                    note={c.note}
-                  />
-                ))}
-              </div>
+              <TravelJourneyCards
+                {...(draft.category ? { selected: draft.category } : {})}
+                onSelect={(category) => update({ category, packageId: null, departureId: null })}
+              />
               <p className="rounded-xl bg-surface p-4 text-[13px] leading-relaxed text-muted-foreground">
                 For Hajj, our team will discuss the applicable official application route and
                 current authorisation requirements.
