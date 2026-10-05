@@ -123,7 +123,7 @@ try {
     async () => (await body()).includes("Umrah Economy"),
     "Live packages must load",
   );
-  await click("Choose this journey");
+  await click("Select package");
   await click("CONTINUE");
   assert((await body()).includes("Step 5 of 7"));
   await click("Gentle & relaxed");

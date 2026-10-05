@@ -768,6 +768,7 @@ export default function TravelPlan() {
                     pkg={pkg}
                     selected={draft.packageId === pkg.id}
                     adults={draft.adults}
+                    children={draft.children}
                     onSelect={() => update({ packageId: pkg.id, departureId: null })}
                   />
                 ))}

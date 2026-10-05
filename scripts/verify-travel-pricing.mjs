@@ -121,9 +121,22 @@ try {
   await select(0, "ramadan");
   assert.equal((await cards()).length, 4);
   assert((await body()).toLowerCase().includes("seasonal starting guide"));
-  await evaluate("document.querySelector('#journeys article button').click()");
+  assert.equal(
+    await evaluate(
+      "document.querySelector('#journeys article button[aria-expanded]').getAttribute('aria-expanded')",
+    ),
+    "false",
+    "Cards start collapsed",
+  );
+  await evaluate(
+    "document.querySelector('#journeys article button[aria-expanded]').focus();document.querySelector('#journeys article button[aria-expanded]').click()",
+  );
   await pause();
   assert((await body()).includes("Included in the package plan"));
+  await evaluate(
+    "[...document.querySelectorAll('#journeys article summary')].find(e=>e.innerText.includes('Pricing & room sharing')).click()",
+  );
+  await pause();
   assert((await body()).includes("Ramadan dates, hotels and flights must be re-quoted"));
   await evaluate(
     "document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))",
@@ -152,9 +165,42 @@ try {
     await until(async () => (await body()).includes("Step " + step + " of 7"), "Step " + step);
   }
   await until(async () => (await body()).includes("Umrah Economy"), "Planner catalogue load");
-  await click("Choose this journey");
+  await click("Select package");
   assert((await body()).includes("1,79,998"), "Adult estimate must be twice the saved adult rate");
   assert((await body()).includes("Children, room changes and extras are quoted separately"));
+  await evaluate("document.querySelector('main article button[aria-expanded]').click()");
+  await pause();
+  assert.equal(
+    await evaluate(
+      "document.querySelector('main article button[aria-expanded]').getAttribute('aria-expanded')",
+    ),
+    "true",
+  );
+  assert.equal(
+    await evaluate("document.querySelectorAll('main article details[open]').length"),
+    0,
+    "Nested sections start collapsed",
+  );
+  await evaluate(
+    "[...document.querySelectorAll('main article summary')].find(e=>e.innerText==='Itinerary').click()",
+  );
+  await pause();
+  await evaluate("document.querySelector('main article details[open] details summary').click()");
+  await pause();
+  assert.equal(
+    await evaluate("document.querySelectorAll('main article details[open]').length"),
+    2,
+    "Itinerary and individual stage expand independently",
+  );
+  await evaluate("document.querySelector('main article button[aria-expanded]').click()");
+  await pause();
+  assert.equal(
+    await evaluate(
+      "document.getElementById(document.querySelector('main article button[aria-expanded]').getAttribute('aria-controls')).hidden",
+    ),
+    true,
+    "Collapse hides nested content",
+  );
   await setInput("input[type=search]", "Turkey");
   assert(
     (await body()).includes("Your selected journey") && (await body()).includes("Umrah Economy"),

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTravelCatalog } from "@/hooks/use-travel-catalog";
-import { TravelPrice } from "@/components/TravelPrice";
+import { TravelPackageChoice } from "@/components/TravelPackageChoice";
 import { TravelCatalogueControls } from "@/components/TravelCatalogueControls";
 import { packageJourney, filterTravelPackages, initialCatalogueFilter } from "@/lib/travel-booking";
 import { useEffect, useState, type ReactNode } from "react";
@@ -33,14 +33,12 @@ import {
 } from "lucide-react";
 import { BrandLogo, BrandMark } from "@/components/Brand";
 import { Button, QuantitySelector, SectionHeader, cx } from "@/components/ui-kit";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useTravelHero } from "@/hooks/use-travel-hero";
 import {
   travelCategories,
   travelContact,
   travelFAQs,
   travelWhatsApp,
-  type Journey,
   type TravelCategory,
 } from "@/lib/travel";
 
@@ -78,8 +76,6 @@ export default function TravelHome() {
   const [journeyLimit, setJourneyLimit] = useState(6);
   const journeys = filterTravelPackages(catalog.packages, catalogueFilter).map(packageJourney);
   const [category, setCategory] = useState<TravelCategory | "all">("all");
-  const [selected, setSelected] = useState<Journey | null>(null);
-  const selectedPackage = catalog.packages.find((pkg) => pkg.id === selected?.id);
   const [enquiryJourney, setEnquiryJourney] = useState("Umrah");
   const [mobileMenu, setMobileMenu] = useState(false);
   const [travellers, setTravellers] = useState(2);
@@ -647,67 +643,17 @@ export default function TravelHome() {
               </div>
             )}
             <div className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {visibleJourneys.slice(0, journeyLimit).map((journey) => (
-                <article
-                  key={journey.id}
-                  className="overflow-hidden rounded-[20px] border border-border bg-card shadow-card"
-                >
-                  <div className="relative h-[230px]">
-                    <Image
-                      src={journey.image}
-                      alt={journey.places}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover"
-                    />
-                    <span className="absolute left-4 top-4 rounded-full bg-background/95 px-3 py-1.5 text-[11px] font-semibold">
-                      {journey.label}
-                    </span>
-                  </div>
-                  <div className="p-5">
-                    <p className="flex items-start gap-1.5 text-[12px] text-muted-foreground">
-                      <MapPin size={14} className="mt-0.5 shrink-0" />
-                      {journey.places}
-                    </p>
-                    <h3 className="mt-2 font-display text-[29px]">{journey.name}</h3>
-                    <p className="mt-1 flex items-center gap-2 text-[12px] text-muted-foreground">
-                      <CalendarDays size={14} />
-                      {journey.duration}
-                    </p>
-                    <ul className="my-5 grid grid-cols-2 gap-x-3 gap-y-3">
-                      {journey.highlights.map((item) => (
-                        <li
-                          key={item}
-                          className="flex items-start gap-2 text-[12px] leading-relaxed"
-                        >
-                          <Check size={14} className="mt-0.5 shrink-0 text-gold" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                    {catalog.packages.find((p) => p.id === journey.id) && (
-                      <TravelPrice
-                        pkg={catalog.packages.find((p) => p.id === journey.id)!}
-                        compact
-                      />
-                    )}
-                    <div className="mt-4 flex items-center justify-between gap-2 border-t border-border pt-4">
-                      <span className="text-xs text-muted-foreground">
-                        Explore the itinerary & inclusions
-                      </span>
-                      <button
-                        onClick={() => setSelected(journey)}
-                        className="press flex min-h-11 items-center gap-1 text-[13px] font-semibold"
-                      >
-                        Details <ArrowUpRight size={16} />
-                      </button>
-                    </div>
-                    <Button full className="mt-4" onClick={() => planJourney(journey.name)}>
-                      CHOOSE THIS JOURNEY <ArrowUpRight size={16} />
-                    </Button>
-                  </div>
-                </article>
-              ))}
+              {visibleJourneys.slice(0, journeyLimit).map((journey) => {
+                const pkg = catalog.packages.find((item) => item.id === journey.id);
+                return pkg ? (
+                  <TravelPackageChoice
+                    key={pkg.id}
+                    pkg={pkg}
+                    adults={travellers}
+                    onSelect={() => planJourney(pkg.name)}
+                  />
+                ) : null;
+              })}
             </div>
             {visibleJourneys.length > journeyLimit && (
               <Button
@@ -1074,76 +1020,6 @@ export default function TravelHome() {
           </a>
         </div>
       </nav>
-
-      <Dialog
-        open={selected !== null}
-        onOpenChange={(open) => {
-          if (!open) setSelected(null);
-        }}
-      >
-        <DialogContent className="max-h-[85dvh] w-[calc(100%-32px)] max-w-xl overflow-y-auto rounded-[24px] p-6 sm:p-8">
-          {selected && (
-            <>
-              <p className="eyebrow">{selected.label}</p>
-              <DialogTitle className="font-display text-[33px] font-medium leading-tight">
-                {selected.name}
-              </DialogTitle>
-              <DialogDescription className="text-[14px] leading-relaxed">
-                {selected.description}
-              </DialogDescription>
-              <p className="flex items-center gap-2 text-[12px] text-muted-foreground">
-                <MapPin size={14} />
-                {selected.places} · {selected.duration}
-              </p>
-              {selectedPackage && <TravelPrice pkg={selectedPackage} />}
-              {selectedPackage && (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <h3 className="text-sm font-semibold">Included in the package plan</h3>
-                    <ul className="mt-2 space-y-2 text-xs leading-relaxed text-muted-foreground">
-                      {selectedPackage.inclusions.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold">Not included</h3>
-                    <ul className="mt-2 space-y-2 text-xs leading-relaxed text-muted-foreground">
-                      {selectedPackage.exclusions.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              )}
-              <h3 className="mt-2 text-[14px] font-semibold">How your journey could look</h3>
-              <ol className="grid gap-4">
-                {selected.itinerary.map(([title, text], index) => (
-                  <li key={title} className="flex gap-3">
-                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-champagne text-[12px] font-semibold">
-                      {index + 1}
-                    </span>
-                    <div>
-                      <p className="text-[14px] font-semibold">{title}</p>
-                      <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
-                        {text}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-              <p className="rounded-xl bg-surface p-3 text-[12px] leading-relaxed text-muted-foreground">
-                An itinerary idea, subject to availability. Request exact hotel names, nights,
-                transfers, meals, flight details, visa services and cancellation terms in your
-                quotation.
-              </p>
-              <Button onClick={() => planJourney(selected.name)} full>
-                ENQUIRE ABOUT THIS JOURNEY <ArrowRight size={16} />
-              </Button>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
