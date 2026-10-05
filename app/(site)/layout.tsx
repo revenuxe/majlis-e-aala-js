@@ -8,7 +8,11 @@ import { SiteHeader } from "@/components/SiteHeader";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   const path = usePathname();
-  const focused = path.startsWith("/plan") || path.startsWith("/admin") || path === "/travel";
+  const focused =
+    path.startsWith("/plan") ||
+    path.startsWith("/admin") ||
+    path === "/travel" ||
+    path.startsWith("/travel/");
 
   useEffect(() => {
     // Hash-only links are intentionally left untouched.

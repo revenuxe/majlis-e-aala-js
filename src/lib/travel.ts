@@ -183,7 +183,7 @@ export const journeys: Journey[] = [
 export const travelFAQs = [
   [
     "How do I get a travel quotation?",
-    "Choose a journey, share your departure city, approximate dates and number of travellers. Send the details on WhatsApp so the team can discuss an itinerary and a written quotation. No payment or account is required to enquire.",
+    "Choose a journey, share your departure city, approximate dates and number of travellers. Use our step-by-step planner to review and submit your request. Sign in to save your contact details and see requests in your account, or continue as a guest. You'll receive a reference, and our team will discuss an itinerary and a written quotation. No payment is required to enquire.",
   ],
   [
     "What should an Umrah quotation include?",

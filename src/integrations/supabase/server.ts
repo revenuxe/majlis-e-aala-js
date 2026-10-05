@@ -11,14 +11,18 @@ function config() {
 }
 
 /** Request-scoped Supabase client for Server Components and Route Handlers. */
-export async function createSupabaseServerClient() {
+export async function createSupabaseServerClient({
+  writeCookies = false,
+}: { writeCookies?: boolean } = {}) {
   const cookieStore = await cookies();
   const { url, key } = config();
   return createServerClient<Database>(url, key, {
     cookies: {
       getAll: () => cookieStore.getAll(),
-      setAll: () => {
-        // Server Components cannot write cookies. proxy.ts refreshes sessions.
+      setAll: (values) => {
+        // Route handlers may write sessions; Server Components use proxy.ts.
+        if (writeCookies)
+          values.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
       },
     },
   });

@@ -30,7 +30,7 @@ The travel page does not mount the catering PlanProvider or query its database.
 6. Pilgrimage editorial section.
 7. Four-step enquiry-to-confirmation explanation.
 8. Documents, health, permits and official preparation resources.
-9. Enquiry form with departure city, month, travellers and personal preferences.
+9. Step-by-step booking request entry point with guest submission and a reference.
 10. FAQs, contact details and mobile quick navigation.
 
 ## Research and content decisions
@@ -56,17 +56,15 @@ itinerary starting points. None of the cards represents confirmed inventory.
 No invented prices, reviews, departure dates, hotel ratings, accreditations,
 pilgrim counts or approval guarantees are displayed.
 
-## Configuration and future booking structure
+## Configuration and booking structure
 
-Edit journey content, FAQs and the existing business contact in `src/lib/travel.ts`.
-The planner prepares a message; a customer explicitly opens WhatsApp to send it.
-It does not save an enquiry, accept payments or confirm a booking. The existing
-catering phone is reused pending a dedicated travel contact.
-
-A future travel backend should separately model destinations, travel packages,
-departures, city stays, hotels, room occupancy, itinerary days, inclusions,
-exclusions and enquiries. Confirm real operating arrangements, contact details,
-travel cancellation terms and inventory before adding bookable packages.
+Journey cards now read the live Supabase travel catalogue. Edit packages,
+departures and incoming requests in **Listings > Travels** in admin.
+The step-by-step planner at /travel/plan saves a validated request and returns a
+reference. Prices and availability still require a written quotation; it does
+not accept payments or reserve inventory. Contact details and FAQs remain in
+src/lib/travel.ts. The existing catering phone is reused pending a dedicated
+travel contact. See [travel booking](./travel-booking.md) for backend and checks.
 
 ## Admin hero management
 

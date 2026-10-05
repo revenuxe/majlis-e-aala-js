@@ -1,4 +1,5 @@
 "use client";
+import { TravelListingsPanel } from "@/components/admin/TravelListings";
 /* eslint-disable @typescript-eslint/no-explicit-any -- Supabase custom tables are migrated ahead of generated types. */
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -12,6 +13,7 @@ import {
   LogOut,
   Package as PackageIcon,
   Pencil,
+  Plane,
   Plus,
   Trash2,
   UtensilsCrossed,
@@ -69,6 +71,7 @@ const routeMetadata = {
 };
 
 type MainTab = "dashboard" | "orders" | "listings" | "homepage";
+type ListingService = "catering" | "travels";
 type ListTab = "packages" | "event-categories" | "categories" | "menu" | "add-ons";
 type HomepageTab = "catering" | "travels";
 type AddOnRow = {
@@ -85,6 +88,7 @@ export default function AdminDashboard() {
   const navigate = useRouter();
   const [ready, setReady] = useState(false);
   const [tab, setTab] = useState<MainTab>("dashboard");
+  const [listingService, setListingService] = useState<ListingService>("catering");
   const [listTab, setListTab] = useState<ListTab>("packages");
   const [homepageTab, setHomepageTab] = useState<HomepageTab>("catering");
 
@@ -149,6 +153,7 @@ export default function AdminDashboard() {
         });
         return;
       }
+      if (listingService === "travels") return;
       if (listTab === "packages") {
         const [p, s, si, ec, pec] = await Promise.all([
           supabase.from("packages").select("*").order("price_per_mann").order("name"),
@@ -213,7 +218,7 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [listTab, tab]);
+  }, [listTab, listingService, tab]);
 
   useEffect(() => {
     // The server route already verifies the session and admin role before this
@@ -432,59 +437,92 @@ export default function AdminDashboard() {
             <div>
               <p className="eyebrow">Listings</p>
               <h1 className="mt-1 font-display text-[30px] leading-tight sm:text-[38px]">
-                Packages & menus
+                Packages, menus &amp; travel
               </h1>
             </div>
-            <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+
+            {/* ── Service switcher: Catering / Travels ── */}
+            <div className="flex gap-2">
               {(
                 [
-                  ["packages", "Packages"],
-                  ["event-categories", "Event categories"],
-                  ["categories", "Menu categories"],
-                  ["menu", "Menu Items"],
-                  ["add-ons", "Add-ons"],
+                  ["catering", "Catering", <UtensilsCrossed key="cat" className="h-4 w-4" />],
+                  ["travels", "Travels", <Plane key="trv" className="h-4 w-4" />],
                 ] as const
-              ).map(([key, label]) => (
+              ).map(([key, label, icon]) => (
                 <button
                   key={key}
-                  onClick={() => setListTab(key)}
+                  onClick={() => setListingService(key)}
+                  aria-pressed={listingService === key}
                   className={cx(
-                    "press shrink-0 rounded-full border px-4 py-2.5 text-[13px] font-semibold transition-colors",
-                    listTab === key
+                    "press inline-flex min-h-11 items-center gap-2 rounded-full border px-5 text-[14px] font-semibold transition-colors",
+                    listingService === key
                       ? "border-primary bg-primary text-primary-foreground"
-                      : "border-border bg-card text-muted-foreground",
+                      : "border-border bg-card text-muted-foreground hover:bg-surface",
                   )}
                 >
+                  {icon}
                   {label}
                 </button>
               ))}
             </div>
 
-            {listTab === "packages" && (
-              <PackagesPanel
-                packages={packages}
-                sections={sections}
-                sectionItems={sectionItems}
-                eventCategories={eventCategories}
-                onChanged={load}
-              />
-            )}
-            {listTab === "categories" && (
-              <CategoriesPanel categories={categories} onChanged={load} />
-            )}
-            {listTab === "event-categories" && (
-              <EventCategoriesPanel categories={eventCategories} onChanged={load} />
-            )}
-            {listTab === "menu" && (
-              <MenuPanel items={menuItems} categories={categories} onChanged={load} />
-            )}
-            {listTab === "add-ons" && (
-              <AddOnsPanel
-                addOns={addOns}
-                eventCategories={eventCategories}
-                packages={packages}
-                onChanged={load}
-              />
+            {listingService === "catering" ? (
+              <div className="space-y-5">
+                {/* ── Catering sub-tabs ── */}
+                <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+                  {(
+                    [
+                      ["packages", "Packages"],
+                      ["event-categories", "Event categories"],
+                      ["categories", "Menu categories"],
+                      ["menu", "Menu Items"],
+                      ["add-ons", "Add-ons"],
+                    ] as const
+                  ).map(([key, label]) => (
+                    <button
+                      key={key}
+                      onClick={() => setListTab(key)}
+                      className={cx(
+                        "press shrink-0 rounded-full border px-4 py-2.5 text-[13px] font-semibold transition-colors",
+                        listTab === key
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-card text-muted-foreground",
+                      )}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+
+                {listTab === "packages" && (
+                  <PackagesPanel
+                    packages={packages}
+                    sections={sections}
+                    sectionItems={sectionItems}
+                    eventCategories={eventCategories}
+                    onChanged={load}
+                  />
+                )}
+                {listTab === "categories" && (
+                  <CategoriesPanel categories={categories} onChanged={load} />
+                )}
+                {listTab === "event-categories" && (
+                  <EventCategoriesPanel categories={eventCategories} onChanged={load} />
+                )}
+                {listTab === "menu" && (
+                  <MenuPanel items={menuItems} categories={categories} onChanged={load} />
+                )}
+                {listTab === "add-ons" && (
+                  <AddOnsPanel
+                    addOns={addOns}
+                    eventCategories={eventCategories}
+                    packages={packages}
+                    onChanged={load}
+                  />
+                )}
+              </div>
+            ) : (
+              <TravelListingsPanel />
             )}
           </section>
         )}

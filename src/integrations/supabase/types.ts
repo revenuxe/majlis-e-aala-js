@@ -8,38 +8,194 @@ export type Database = {
   };
   public: {
     Tables: {
-      travel_hero_carousels: {
+      add_ons: {
         Row: {
-          id: string;
-          eyebrow: string;
-          title: string;
-          desktop_image_url: string;
-          mobile_image_url: string | null;
-          is_active: boolean;
-          sort_order: number;
           created_at: string;
+          description: string;
+          event_category_ids: string[];
+          id: string;
+          is_active: boolean;
+          name: string;
+          package_ids: string[];
+          sort_order: number;
           updated_at: string;
         };
         Insert: {
-          id?: string;
-          eyebrow?: string;
-          title: string;
-          desktop_image_url: string;
-          mobile_image_url?: string | null;
-          is_active?: boolean;
-          sort_order?: number;
           created_at?: string;
+          description?: string;
+          event_category_ids?: string[];
+          id?: string;
+          is_active?: boolean;
+          name: string;
+          package_ids?: string[];
+          sort_order?: number;
           updated_at?: string;
         };
         Update: {
-          id?: string;
-          eyebrow?: string;
-          title?: string;
-          desktop_image_url?: string;
-          mobile_image_url?: string | null;
-          is_active?: boolean;
-          sort_order?: number;
           created_at?: string;
+          description?: string;
+          event_category_ids?: string[];
+          id?: string;
+          is_active?: boolean;
+          name?: string;
+          package_ids?: string[];
+          sort_order?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      customer_addresses: {
+        Row: {
+          address: string;
+          area: string;
+          city: string;
+          created_at: string;
+          id: string;
+          is_default: boolean;
+          label: string;
+          landmark: string;
+          pincode: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          address?: string;
+          area?: string;
+          city?: string;
+          created_at?: string;
+          id?: string;
+          is_default?: boolean;
+          label?: string;
+          landmark?: string;
+          pincode?: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          address?: string;
+          area?: string;
+          city?: string;
+          created_at?: string;
+          id?: string;
+          is_default?: boolean;
+          label?: string;
+          landmark?: string;
+          pincode?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      customer_drafts: {
+        Row: {
+          plan: Json;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          plan?: Json;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          plan?: Json;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      customer_notifications: {
+        Row: {
+          created_at: string;
+          id: string;
+          is_read: boolean;
+          message: string;
+          title: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          is_read?: boolean;
+          message: string;
+          title: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          is_read?: boolean;
+          message?: string;
+          title?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+      event_categories: {
+        Row: {
+          created_at: string;
+          id: string;
+          image_url: string | null;
+          is_active: boolean;
+          name: string;
+          slug: string;
+          sort_order: number;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          image_url?: string | null;
+          is_active?: boolean;
+          name: string;
+          slug: string;
+          sort_order?: number;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          image_url?: string | null;
+          is_active?: boolean;
+          name?: string;
+          slug?: string;
+          sort_order?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      hero_carousels: {
+        Row: {
+          created_at: string;
+          desktop_image_url: string;
+          eyebrow: string;
+          id: string;
+          is_active: boolean;
+          mobile_image_url: string | null;
+          sort_order: number;
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          desktop_image_url: string;
+          eyebrow?: string;
+          id?: string;
+          is_active?: boolean;
+          mobile_image_url?: string | null;
+          sort_order?: number;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          desktop_image_url?: string;
+          eyebrow?: string;
+          id?: string;
+          is_active?: boolean;
+          mobile_image_url?: string | null;
+          sort_order?: number;
+          title?: string;
           updated_at?: string;
         };
         Relationships: [];
@@ -86,6 +242,7 @@ export type Database = {
           id: string;
           image_url: string | null;
           is_active: boolean;
+          is_addon: boolean;
           name: string;
           price: number;
           serves: string;
@@ -101,6 +258,7 @@ export type Database = {
           id?: string;
           image_url?: string | null;
           is_active?: boolean;
+          is_addon?: boolean;
           name: string;
           price?: number;
           serves?: string;
@@ -116,6 +274,7 @@ export type Database = {
           id?: string;
           image_url?: string | null;
           is_active?: boolean;
+          is_addon?: boolean;
           name?: string;
           price?: number;
           serves?: string;
@@ -142,6 +301,7 @@ export type Database = {
           email: string | null;
           estimated_total: number;
           event_date: string | null;
+          food_preference: string | null;
           guests: number;
           id: string;
           items: Json;
@@ -151,6 +311,7 @@ export type Database = {
           package_id: string | null;
           phone: string;
           services: Json;
+          serving_style: string | null;
           status: string;
           updated_at: string;
           venue: Json;
@@ -163,6 +324,7 @@ export type Database = {
           email?: string | null;
           estimated_total?: number;
           event_date?: string | null;
+          food_preference?: string | null;
           guests?: number;
           id?: string;
           items?: Json;
@@ -172,6 +334,7 @@ export type Database = {
           package_id?: string | null;
           phone: string;
           services?: Json;
+          serving_style?: string | null;
           status?: string;
           updated_at?: string;
           venue?: Json;
@@ -184,6 +347,7 @@ export type Database = {
           email?: string | null;
           estimated_total?: number;
           event_date?: string | null;
+          food_preference?: string | null;
           guests?: number;
           id?: string;
           items?: Json;
@@ -193,6 +357,7 @@ export type Database = {
           package_id?: string | null;
           phone?: string;
           services?: Json;
+          serving_style?: string | null;
           status?: string;
           updated_at?: string;
           venue?: Json;
@@ -200,6 +365,39 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "orders_package_id_fkey";
+            columns: ["package_id"];
+            isOneToOne: false;
+            referencedRelation: "packages";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      package_event_categories: {
+        Row: {
+          created_at: string;
+          event_category_id: string;
+          package_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          event_category_id: string;
+          package_id: string;
+        };
+        Update: {
+          created_at?: string;
+          event_category_id?: string;
+          package_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "package_event_categories_event_category_id_fkey";
+            columns: ["event_category_id"];
+            isOneToOne: false;
+            referencedRelation: "event_categories";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "package_event_categories_package_id_fkey";
             columns: ["package_id"];
             isOneToOne: false;
             referencedRelation: "packages";
@@ -280,9 +478,9 @@ export type Database = {
       packages: {
         Row: {
           created_at: string;
+          event_category_id: string | null;
           excluded_services: string[];
           food_preference: string;
-          event_category_id: string | null;
           guest_count_from: number;
           guest_count_to: number;
           guests_per_mann: number;
@@ -292,8 +490,8 @@ export type Database = {
           is_active: boolean;
           name: string;
           price_per_mann: number;
-          signature: boolean;
           service_options: string[];
+          signature: boolean;
           slug: string;
           sort_order: number;
           tagline: string;
@@ -301,11 +499,11 @@ export type Database = {
         };
         Insert: {
           created_at?: string;
+          event_category_id?: string | null;
           excluded_services?: string[];
           food_preference?: string;
-          event_category_id?: string | null;
-          guest_count_from?: number;
-          guest_count_to?: number;
+          guest_count_from: number;
+          guest_count_to: number;
           guests_per_mann?: number;
           id?: string;
           image_url?: string | null;
@@ -313,8 +511,8 @@ export type Database = {
           is_active?: boolean;
           name: string;
           price_per_mann?: number;
-          signature?: boolean;
           service_options?: string[];
+          signature?: boolean;
           slug: string;
           sort_order?: number;
           tagline?: string;
@@ -322,9 +520,9 @@ export type Database = {
         };
         Update: {
           created_at?: string;
+          event_category_id?: string | null;
           excluded_services?: string[];
           food_preference?: string;
-          event_category_id?: string | null;
           guest_count_from?: number;
           guest_count_to?: number;
           guests_per_mann?: number;
@@ -334,44 +532,273 @@ export type Database = {
           is_active?: boolean;
           name?: string;
           price_per_mann?: number;
-          signature?: boolean;
           service_options?: string[];
+          signature?: boolean;
           slug?: string;
           sort_order?: number;
           tagline?: string;
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: "packages_event_category_id_fkey";
+            columns: ["event_category_id"];
+            isOneToOne: false;
+            referencedRelation: "event_categories";
+            referencedColumns: ["id"];
+          },
+        ];
       };
-      event_categories: {
+      travel_booking_requests: {
+        Row: {
+          admin_notes: string;
+          adults: number;
+          booking_reference: string;
+          category: string;
+          child_ages: number[];
+          children: number;
+          contact_consent_at: string;
+          created_at: string;
+          customer_id: string | null;
+          customer_name: string;
+          dates_flexible: boolean;
+          departure_city: string;
+          departure_id: string | null;
+          email: string | null;
+          estimated_adult_total: number | null;
+          id: string;
+          notes: string;
+          package_id: string | null;
+          package_snapshot: Json;
+          phone: string;
+          preferences: Json;
+          preferred_date: string | null;
+          preferred_month: string | null;
+          quoted_total: number | null;
+          request_token: string;
+          status: string;
+          updated_at: string;
+        };
+        Insert: {
+          admin_notes?: string;
+          adults: number;
+          booking_reference?: string;
+          category: string;
+          child_ages?: number[];
+          children?: number;
+          contact_consent_at?: string;
+          created_at?: string;
+          customer_id?: string | null;
+          customer_name: string;
+          dates_flexible?: boolean;
+          departure_city: string;
+          departure_id?: string | null;
+          email?: string | null;
+          estimated_adult_total?: number | null;
+          id?: string;
+          notes?: string;
+          package_id?: string | null;
+          package_snapshot?: Json;
+          phone: string;
+          preferences?: Json;
+          preferred_date?: string | null;
+          preferred_month?: string | null;
+          quoted_total?: number | null;
+          request_token: string;
+          status?: string;
+          updated_at?: string;
+        };
+        Update: {
+          admin_notes?: string;
+          adults?: number;
+          booking_reference?: string;
+          category?: string;
+          child_ages?: number[];
+          children?: number;
+          contact_consent_at?: string;
+          created_at?: string;
+          customer_id?: string | null;
+          customer_name?: string;
+          dates_flexible?: boolean;
+          departure_city?: string;
+          departure_id?: string | null;
+          email?: string | null;
+          estimated_adult_total?: number | null;
+          id?: string;
+          notes?: string;
+          package_id?: string | null;
+          package_snapshot?: Json;
+          phone?: string;
+          preferences?: Json;
+          preferred_date?: string | null;
+          preferred_month?: string | null;
+          quoted_total?: number | null;
+          request_token?: string;
+          status?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "travel_booking_requests_departure_id_fkey";
+            columns: ["departure_id"];
+            isOneToOne: false;
+            referencedRelation: "travel_departures";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "travel_booking_requests_package_id_fkey";
+            columns: ["package_id"];
+            isOneToOne: false;
+            referencedRelation: "travel_packages";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      travel_departures: {
+        Row: {
+          capacity: number | null;
+          created_at: string;
+          departure_city: string;
+          end_date: string;
+          id: string;
+          is_active: boolean;
+          notes: string;
+          package_id: string;
+          start_date: string;
+          updated_at: string;
+        };
+        Insert: {
+          capacity?: number | null;
+          created_at?: string;
+          departure_city: string;
+          end_date: string;
+          id?: string;
+          is_active?: boolean;
+          notes?: string;
+          package_id: string;
+          start_date: string;
+          updated_at?: string;
+        };
+        Update: {
+          capacity?: number | null;
+          created_at?: string;
+          departure_city?: string;
+          end_date?: string;
+          id?: string;
+          is_active?: boolean;
+          notes?: string;
+          package_id?: string;
+          start_date?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "travel_departures_package_id_fkey";
+            columns: ["package_id"];
+            isOneToOne: false;
+            referencedRelation: "travel_packages";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      travel_hero_carousels: {
         Row: {
           created_at: string;
+          desktop_image_url: string;
+          eyebrow: string;
           id: string;
-          image_url: string | null;
           is_active: boolean;
-          name: string;
-          slug: string;
+          mobile_image_url: string | null;
           sort_order: number;
+          title: string;
           updated_at: string;
         };
         Insert: {
           created_at?: string;
+          desktop_image_url: string;
+          eyebrow?: string;
           id?: string;
-          image_url?: string | null;
           is_active?: boolean;
-          name: string;
-          slug: string;
+          mobile_image_url?: string | null;
           sort_order?: number;
+          title: string;
           updated_at?: string;
         };
         Update: {
           created_at?: string;
+          desktop_image_url?: string;
+          eyebrow?: string;
+          id?: string;
+          is_active?: boolean;
+          mobile_image_url?: string | null;
+          sort_order?: number;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      travel_packages: {
+        Row: {
+          cancellation_terms: string;
+          category: string;
+          created_at: string;
+          description: string;
+          duration: string;
+          exclusions: string[];
+          highlights: string[];
+          id: string;
+          image_url: string | null;
+          inclusions: string[];
+          is_active: boolean;
+          itinerary: Json;
+          name: string;
+          places: string;
+          price_per_adult: number | null;
+          slug: string;
+          sort_order: number;
+          tagline: string;
+          updated_at: string;
+        };
+        Insert: {
+          cancellation_terms?: string;
+          category: string;
+          created_at?: string;
+          description?: string;
+          duration?: string;
+          exclusions?: string[];
+          highlights?: string[];
           id?: string;
           image_url?: string | null;
+          inclusions?: string[];
           is_active?: boolean;
+          itinerary?: Json;
+          name: string;
+          places?: string;
+          price_per_adult?: number | null;
+          slug: string;
+          sort_order?: number;
+          tagline?: string;
+          updated_at?: string;
+        };
+        Update: {
+          cancellation_terms?: string;
+          category?: string;
+          created_at?: string;
+          description?: string;
+          duration?: string;
+          exclusions?: string[];
+          highlights?: string[];
+          id?: string;
+          image_url?: string | null;
+          inclusions?: string[];
+          is_active?: boolean;
+          itinerary?: Json;
           name?: string;
+          places?: string;
+          price_per_adult?: number | null;
           slug?: string;
           sort_order?: number;
+          tagline?: string;
           updated_at?: string;
         };
         Relationships: [];
@@ -406,12 +833,42 @@ export type Database = {
         Args: { p_booking_reference: string };
         Returns: boolean;
       };
+      get_my_travel_bookings: {
+        Args: { p_limit?: number; p_offset?: number };
+        Returns: {
+          adults: number;
+          booking_reference: string;
+          category: string;
+          children: number;
+          created_at: string;
+          dates_flexible: boolean;
+          departure_city: string;
+          estimated_adult_total: number;
+          package_name: string;
+          preferred_date: string;
+          preferred_month: string;
+          quoted_total: number;
+          status: string;
+        }[];
+      };
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"];
           _user_id: string;
         };
         Returns: boolean;
+      };
+      submit_booking: {
+        Args: { p_booking: Json };
+        Returns: {
+          booking_reference: string;
+        }[];
+      };
+      submit_travel_booking: {
+        Args: { p_booking: Json };
+        Returns: {
+          booking_reference: string;
+        }[];
       };
     };
     Enums: {

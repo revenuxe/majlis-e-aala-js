@@ -23,7 +23,11 @@ export function Providers({ children }: { children: ReactNode }) {
   );
   return (
     <QueryClientProvider client={queryClient}>
-      {pathname === "/travel" ? children : <PlanProvider>{children}</PlanProvider>}
+      {pathname === "/travel" || pathname.startsWith("/travel/") ? (
+        children
+      ) : (
+        <PlanProvider>{children}</PlanProvider>
+      )}
       <Toaster />
     </QueryClientProvider>
   );

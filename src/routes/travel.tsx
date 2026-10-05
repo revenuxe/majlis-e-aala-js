@@ -2,6 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTravelCatalog } from "@/hooks/use-travel-catalog";
+import { packageJourney, travelMoney } from "@/lib/travel-booking";
 import { useEffect, useState, type ReactNode } from "react";
 import {
   ArrowRight,
@@ -31,7 +34,6 @@ import { Button, QuantitySelector, SectionHeader, cx } from "@/components/ui-kit
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useTravelHero } from "@/hooks/use-travel-hero";
 import {
-  journeys,
   travelCategories,
   travelContact,
   travelFAQs,
@@ -68,16 +70,14 @@ function Section({
 }
 
 export default function TravelHome() {
+  const router = useRouter();
+  const catalog = useTravelCatalog();
+  const journeys = catalog.packages.map(packageJourney);
   const [category, setCategory] = useState<TravelCategory | "all">("all");
   const [selected, setSelected] = useState<Journey | null>(null);
   const [enquiryJourney, setEnquiryJourney] = useState("Umrah");
   const [mobileMenu, setMobileMenu] = useState(false);
-  const [departure, setDeparture] = useState("Bengaluru");
-  const [month, setMonth] = useState("");
   const [travellers, setTravellers] = useState(2);
-  const [name, setName] = useState("");
-  const [notes, setNotes] = useState("");
-  const [preparedMessage, setPreparedMessage] = useState<string | null>(null);
   const [heroIndex, setHeroIndex] = useState(0);
   const { slides: travelHeroSlides, loading: heroLoading, failed: heroFailed } = useTravelHero();
   const [heroPaused, setHeroPaused] = useState(false);
@@ -119,22 +119,15 @@ export default function TravelHome() {
         .toLowerCase()
         .includes(searchTerm.toLowerCase()),
   );
-  const today = new Date();
-  const earliestMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
-
   function planJourney(journeyName: string) {
-    setEnquiryJourney(journeyName);
-    setPreparedMessage(null);
-    setSelected(null);
-    window.setTimeout(
-      () =>
-        document.getElementById("travel-planner")?.scrollIntoView({
-          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-            ? "auto"
-            : "smooth",
-        }),
-      0,
-    );
+    const pkg = catalog.packages.find((item) => item.name === journeyName);
+    const chosenCategory =
+      pkg?.category ||
+      travelCategories.find((item) => item.name.toLowerCase() === journeyName.toLowerCase())?.id;
+    const params = new URLSearchParams({ travellers: String(travellers) });
+    if (chosenCategory) params.set("category", chosenCategory);
+    if (pkg) params.set("package", pkg.id);
+    router.push("/travel/plan?" + params.toString());
   }
 
   function selectCategory(value: TravelCategory) {
@@ -187,7 +180,7 @@ export default function TravelHome() {
           </nav>
           <div className="flex items-center gap-2">
             <div className="hidden sm:block">
-              <a href="#travel-planner" className={anchorClass}>
+              <a href="/travel/plan" className={anchorClass}>
                 PLAN YOUR TRIP <ArrowUpRight className="h-4 w-4" />
               </a>
             </div>
@@ -213,7 +206,7 @@ export default function TravelHome() {
               ["Explore journeys", "#explore"],
               ["Compare journeys", "#journeys"],
               ["Pilgrim guide", "#pilgrim-guide"],
-              ["Plan your trip", "#travel-planner"],
+              ["Plan your trip", "/travel/plan"],
               ["FAQs", "#travel-faqs"],
             ].map(([label, href]) => (
               <a
@@ -501,7 +494,6 @@ export default function TravelHome() {
                 suffix="Travellers"
                 onChange={(value) => {
                   setTravellers(Math.min(100, value));
-                  setPreparedMessage(null);
                 }}
               />
             </div>
@@ -512,7 +504,6 @@ export default function TravelHome() {
                   aria-pressed={travellers === count}
                   onClick={() => {
                     setTravellers(count);
-                    setPreparedMessage(null);
                   }}
                   className={cx(
                     "press flex h-14 flex-col items-center justify-center rounded-[14px] border text-[15px] font-semibold",
@@ -542,7 +533,6 @@ export default function TravelHome() {
                 value={enquiryJourney}
                 onChange={(event) => {
                   setEnquiryJourney(event.target.value);
-                  setPreparedMessage(null);
                 }}
                 className={fieldClass}
               >
@@ -572,6 +562,19 @@ export default function TravelHome() {
               title="Journeys worth looking forward to"
               subtitle="Starting points for your itinerary. Dates, hotels and prices are confirmed in your personal quotation."
             />
+            {catalog.loading && (
+              <p role="status" className="mt-5 text-sm text-muted-foreground">
+                Loading travel packages?
+              </p>
+            )}
+            {catalog.error && (
+              <div role="alert" className="mt-5 rounded-xl border border-border p-4">
+                <p>{catalog.error}</p>
+                <button className="mt-2 underline" onClick={() => void catalog.reload()}>
+                  Try again
+                </button>
+              </div>
+            )}
             <div role="group" aria-label="Filter journeys" className="mt-6 flex flex-wrap gap-2">
               {[{ id: "all", name: "All journeys" }, ...travelCategories].map((item) => (
                 <button
@@ -608,7 +611,7 @@ export default function TravelHome() {
                 </button>
               </p>
             )}
-            {visibleJourneys.length === 0 && (
+            {!catalog.loading && !catalog.error && visibleJourneys.length === 0 && (
               <div className="mt-6 rounded-[20px] border border-border bg-card p-6">
                 <h3 className="font-display text-[28px]">
                   Your journey can be a little different.
@@ -662,7 +665,12 @@ export default function TravelHome() {
                     </ul>
                     <div className="flex items-center justify-between gap-2 border-t border-border pt-4">
                       <span>
-                        <span className="block text-[14px] font-semibold">Tailored quotation</span>
+                        <span className="block text-[14px] font-semibold">
+                          {catalog.packages.find((p) => p.id === journey.id)?.price_per_adult ==
+                          null
+                            ? "Tailored quotation"
+                            : `From ${travelMoney(Number(catalog.packages.find((p) => p.id === journey.id)?.price_per_adult))} / adult`}
+                        </span>
                         <span className="text-[11px] text-muted-foreground">
                           Based on your dates & preferences
                         </span>
@@ -879,125 +887,31 @@ export default function TravelHome() {
                 <ArrowUpRight size={15} />
               </a>
             </div>
-            <form
-              onChange={() => setPreparedMessage(null)}
-              onSubmit={(event) => {
-                event.preventDefault();
-                setPreparedMessage(
-                  `Assalamu Alaikum! I would like to enquire about a travel itinerary.\nName: ${name.trim()}\nJourney: ${enquiryJourney}\nDeparture city: ${departure.trim()}\nPreferred month: ${month || "Flexible / to be discussed"}\nTravellers: ${travellers}\nPreferences: ${notes.trim() || "To be discussed"}\nPlease share availability, a written itinerary, inclusions, exclusions and quotation.`,
-                );
-              }}
-              className="rounded-[24px] border border-border bg-card p-5 shadow-card sm:p-7"
-            >
-              <h3 className="font-display text-[28px]">Let’s begin with you.</h3>
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <label className="grid gap-2 text-[13px] font-medium">
-                  Your name
-                  <input
-                    required
-                    autoComplete="name"
-                    pattern=".*\S.*"
-                    maxLength={100}
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                    className={fieldClass}
-                    placeholder="How should we address you?"
-                  />
-                </label>
-                <label className="grid gap-2 text-[13px] font-medium">
-                  Your journey
-                  <select
-                    value={enquiryJourney}
-                    onChange={(event) => setEnquiryJourney(event.target.value)}
-                    className={fieldClass}
-                  >
-                    {[
-                      ...travelCategories.map((item) => item.name),
-                      "Family holiday",
-                      "Custom journey",
-                      ...journeys.map((item) => item.name),
-                    ].map((item) => (
-                      <option key={item}>{item}</option>
-                    ))}
-                  </select>
-                </label>
-                <label className="grid gap-2 text-[13px] font-medium">
-                  Departure city
-                  <input
-                    required
-                    maxLength={80}
-                    pattern=".*\S.*"
-                    value={departure}
-                    onChange={(event) => setDeparture(event.target.value)}
-                    className={fieldClass}
-                    placeholder="Your preferred city"
-                  />
-                </label>
-                <label className="grid gap-2 text-[13px] font-medium">
-                  Travel month <span className="sr-only">(optional)</span>
-                  <input
-                    type="month"
-                    min={earliestMonth}
-                    value={month}
-                    onChange={(event) => setMonth(event.target.value)}
-                    className={fieldClass}
-                  />
-                  <span className="text-[11px] font-normal text-muted-foreground">
-                    Leave blank if your dates are flexible.
-                  </span>
-                </label>
-                <label className="grid gap-2 text-[13px] font-medium">
-                  Number of travellers
-                  <input
-                    type="number"
-                    required
-                    min={1}
-                    max={100}
-                    value={travellers}
-                    onChange={(event) => setTravellers(Number(event.target.value))}
-                    className={fieldClass}
-                  />
-                </label>
-                <label className="grid gap-2 text-[13px] font-medium sm:col-span-2">
-                  Anything we should know? <span className="sr-only">(optional)</span>
-                  <textarea
-                    maxLength={1000}
-                    rows={3}
-                    value={notes}
-                    onChange={(event) => setNotes(event.target.value)}
-                    className={cx(fieldClass, "h-auto py-3")}
-                    placeholder="Children’s ages, room preferences, budget or mobility needs…"
-                  />
-                </label>
+            <div className="rounded-[24px] border border-border bg-card p-5 shadow-card sm:p-7">
+              <h3 className="font-display text-[28px]">Your journey, one simple step at a time.</h3>
+              <div className="mt-6 grid grid-cols-2 gap-4">
+                {[
+                  "Choose your journey",
+                  "Dates & departure",
+                  "Your travellers",
+                  "Pick a package",
+                  "Personal preferences",
+                  "Review & contact",
+                ].map((label, index) => (
+                  <div key={label} className="rounded-xl bg-background p-4">
+                    <span className="text-gold text-sm">0{index + 1}</span>
+                    <p className="mt-2 text-sm font-semibold">{label}</p>
+                  </div>
+                ))}
               </div>
-              <Button type="submit" full className="mt-5">
-                PREPARE MY ENQUIRY <ArrowRight size={17} />
+              <Button full className="mt-6" onClick={() => planJourney(enquiryJourney)}>
+                PLAN MY JOURNEY <ArrowRight size={17} />
               </Button>
-              <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-                Review your message below, then open WhatsApp to send it. This form does not make a
-                booking or save your details.
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                No account or payment needed. Review everything before sending your request, then
+                receive a reference for your enquiry.
               </p>
-              {preparedMessage && (
-                <div
-                  aria-live="polite"
-                  className="mt-5 rounded-xl border border-gold/40 bg-background p-4"
-                >
-                  <p className="text-[14px] font-semibold">Your enquiry is ready to send</p>
-                  <p className="mt-3 whitespace-pre-line text-[12px] leading-relaxed text-muted-foreground">
-                    {preparedMessage}
-                  </p>
-                  <a
-                    href={travelWhatsApp(preparedMessage)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cx(anchorClass, "mt-4 w-full")}
-                  >
-                    <MessageCircle size={17} />
-                    OPEN WHATSAPP TO SEND<span className="sr-only"> (opens in a new tab)</span>
-                  </a>
-                </div>
-              )}
-            </form>
+            </div>
           </div>
         </Section>
 
@@ -1067,7 +981,7 @@ export default function TravelHome() {
               <a href={`tel:+${travelContact.phone}`} className="mt-4 block py-3 text-[14px]">
                 {travelContact.displayPhone}
               </a>
-              <a href="#travel-planner" className="flex min-h-11 items-center gap-2 text-[14px]">
+              <a href="/travel/plan" className="flex min-h-11 items-center gap-2 text-[14px]">
                 Plan your trip <ArrowUpRight size={15} />
               </a>
               <a href="#pilgrim-guide" className="block py-3 text-[14px]">
@@ -1105,7 +1019,7 @@ export default function TravelHome() {
             </a>
           ))}
           <a
-            href="#travel-planner"
+            href="/travel/plan"
             className="relative -top-3 flex h-[60px] w-[66px] shrink-0 flex-col items-center justify-center gap-1 rounded-[20px] border border-gold/70 bg-primary text-[10px] font-semibold"
           >
             <Plane size={23} />
@@ -1119,7 +1033,7 @@ export default function TravelHome() {
             Guide
           </a>
           <a
-            href="#travel-planner"
+            href="/travel/plan"
             className="flex h-full flex-1 flex-col items-center justify-center gap-1 text-[11px]"
           >
             <MessageCircle size={21} strokeWidth={1.6} />

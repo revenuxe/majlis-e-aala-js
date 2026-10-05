@@ -18,6 +18,7 @@ import type { User } from "@supabase/supabase-js";
 import { inr, packageSupportsOccasion, packageTotalFor } from "@/lib/data";
 import { recommendedTrays, usePlan } from "@/lib/plan-store";
 import { supabase } from "@/integrations/supabase/client";
+import { BookingAuth } from "@/components/BookingAuth";
 import { BrandMark } from "@/components/Brand";
 import {
   Button,
@@ -1061,137 +1062,19 @@ function StepAuth({
   customer: User | null;
   onAuthenticated: (user: User) => void;
 }) {
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-
-  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (busy) return;
-    setBusy(true);
-    setError(null);
-    setNotice(null);
-
-    const result =
-      mode === "signin"
-        ? await supabase.auth.signInWithPassword({ email, password })
-        : await supabase.auth.signUp({ email, password });
-
-    setBusy(false);
-    if (result.error) {
-      setError(result.error.message);
-      return;
-    }
-    if (!result.data.session) {
-      setNotice("Check your inbox to confirm your email, then return here to sign in.");
-      return;
-    }
-    if (result.data.user) onAuthenticated(result.data.user);
-  };
-
-  const signInWithGoogle = async () => {
-    if (busy) return;
-    setBusy(true);
-    setError(null);
-    const { error: oauthError } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/plan?step=7` },
-    });
-    if (oauthError) {
-      setError(oauthError.message);
-      setBusy(false);
-    }
-  };
-
-  if (customer) return null;
-
   return (
-    <>
-      <StepHeading
-        title={mode === "signin" ? "Welcome back" : "Save your booking details"}
-        note="Sign in once and we’ll securely remember your contact and venue details for your next booking."
-      />
-      <div className="rounded-[20px] border border-border bg-card p-5 shadow-card sm:p-6">
-        <div className="mb-6 grid grid-cols-2 rounded-[12px] bg-surface p-1">
-          {(["signin", "signup"] as const).map((option) => (
-            <button
-              key={option}
-              type="button"
-              onClick={() => {
-                setMode(option);
-                setError(null);
-                setNotice(null);
-              }}
-              className={cx(
-                "rounded-[9px] px-3 py-2.5 text-[13px] font-semibold transition-colors",
-                mode === option ? "bg-card text-foreground shadow-sm" : "text-muted-foreground",
-              )}
-            >
-              {option === "signin" ? "Sign in" : "Create account"}
-            </button>
-          ))}
-        </div>
-        <form className="grid gap-4" onSubmit={submit}>
-          <label className="block">
-            <span className="eyebrow">Email address</span>
-            <input
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder="you@example.com"
-              className="mt-2 h-14 w-full rounded-[12px] border border-border bg-background px-4 text-[16px] outline-none focus:border-gold"
-            />
-          </label>
-          <label className="block">
-            <span className="eyebrow">Password</span>
-            <input
-              type="password"
-              autoComplete={mode === "signin" ? "current-password" : "new-password"}
-              required
-              minLength={6}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="At least 6 characters"
-              className="mt-2 h-14 w-full rounded-[12px] border border-border bg-background px-4 text-[16px] outline-none focus:border-gold"
-            />
-          </label>
-          {error && <p className="text-[13px] text-destructive">{error}</p>}
-          {notice && <p className="text-[13px] text-muted-foreground">{notice}</p>}
-          <Button
-            type="button"
-            size="lg"
-            full
-            disabled={busy}
-            onClick={() => void signInWithGoogle()}
-          >
-            <img
-              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-              alt=""
-              className="h-5 w-5"
-            />
-            Continue with Google
-          </Button>
-          <div className="flex items-center gap-3 text-[11px] uppercase tracking-[.12em] text-muted-text">
-            <span className="h-px flex-1 bg-border" />
-            or
-            <span className="h-px flex-1 bg-border" />
-          </div>
-          <Button type="submit" size="lg" full disabled={busy}>
-            {busy ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <LockKeyhole className="h-4 w-4" />
-            )}
-            {busy ? "Please wait..." : mode === "signin" ? "Sign in" : "Create account"}
-          </Button>
-        </form>
-      </div>
-    </>
+    <BookingAuth
+      customer={customer}
+      onAuthenticated={onAuthenticated}
+      redirectPath="/plan?step=7"
+      note="Sign in once and we'll securely remember your contact and venue details for your next booking."
+      heading={(mode) => (
+        <StepHeading
+          title={mode === "signin" ? "Welcome back" : "Save your booking details"}
+          note="Sign in once and we'll securely remember your contact and venue details for your next booking."
+        />
+      )}
+    />
   );
 }
 

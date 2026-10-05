@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { usePlan } from "@/lib/plan-store";
 import { Button, SectionHeader } from "@/components/ui-kit";
+import { TravelBookingHistory } from "@/components/TravelBookingHistory";
 
 const timeline = [
   "Booking Received",
@@ -48,6 +49,12 @@ export default function ProfilePage() {
   const [authMessage, setAuthMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    if (new URLSearchParams(window.location.search).has("auth_error")) {
+      setShowAuth(true);
+      setAuthMessage(
+        "We couldn't complete Google sign-in. Please try again or sign in with your email.",
+      );
+    }
     void supabase.auth.getUser().then(({ data }) => setUser(data.user));
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) =>
       setUser(session?.user ?? null),
@@ -96,7 +103,7 @@ export default function ProfilePage() {
     setAuthMessage(null);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/profile` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?next=%2Fprofile` },
     });
     if (error) {
       setAuthMessage(error.message);
@@ -332,6 +339,7 @@ export default function ProfilePage() {
         </div>
       </section>
 
+      {user && <TravelBookingHistory key={user.id} userId={user.id} />}
       <section className="mt-8 divide-y divide-border overflow-hidden rounded-[16px] border border-border bg-card">
         {rows.map(({ icon: Icon, label, section }) => (
           <Link
