@@ -123,9 +123,15 @@ try {
   await setInput("input[autocomplete='address-level2']", "Hyderabad");
   await click("CONTINUE");
   assert((await body()).includes("Step 5 of 7"));
-  await click("Gentle & relaxed");
-  await click("Twin / double");
-  await click("Mobility assistance");
+  assert((await body()).includes("Any special requests?"));
+  assert.equal(await evaluate("document.querySelector('details:has(select)').open"), false);
+  assert.equal(await evaluate("JSON.parse(localStorage.getItem('ma-travel-draft-v1')).draft.room"), "package");
+  await evaluate("[...document.querySelectorAll('label')].find(l=>l.innerText.includes('Extra breaks or slower walking')).querySelector('input').click()");
+  await pause();
+  await evaluate("document.querySelector('details:has(select) summary').click()");
+  await setInput("details select", "twin", "HTMLSelectElement");
+  await evaluate("[...document.querySelectorAll('label')].find(l=>l.innerText.includes('Mobility assistance')).querySelector('input').click()");
+  await pause();
   await click("CONTINUE");
   assert((await body()).includes("Step 6 of 7"));
   assert((await body()).includes("Continue with Google"));
@@ -187,6 +193,7 @@ try {
   assert.equal(posts[1].p_booking.preferences.seniors, 1);
   assert.equal(posts[1].p_booking.preferences.pace, "relaxed");
   assert.equal(posts[1].p_booking.preferences.room, "twin");
+  assert.equal(posts[1].p_booking.preferences.stay, "package");
   assert.deepEqual(posts[1].p_booking.preferences.assistance, ["mobility"]);
   assert.equal(posts[1].p_booking.contact_consent, true);
   assert.equal(await evaluate("localStorage.getItem('ma-travel-draft-v1')"), null);

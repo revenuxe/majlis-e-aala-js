@@ -23,6 +23,9 @@ begin
   select booking_reference into ref from public.submit_travel_booking(payload);
   select * into strict result from public.travel_booking_requests where booking_reference = ref;
   if result.estimated_adult_total <> 269997 or result.package_snapshot->>'price_basis' <> pkg.price_basis or result.package_snapshot->>'pricing_mode' <> 'starting' or (result.package_snapshot->>'price_per_adult')::numeric <> 89999 then raise exception 'Server must use catalog prices and basis, not forged client rates'; end if;
+  select booking_reference into ref from public.submit_travel_booking(payload || jsonb_build_object('request_token',gen_random_uuid(),'preferences',jsonb_build_object('room','package','stay','package','seniors',2)));
+  select * into strict result from public.travel_booking_requests where booking_reference = ref;
+  if result.preferences->>'room' <> 'package' or result.preferences->>'stay' <> 'package' or result.estimated_adult_total <> 269997 then raise exception 'Keeping package arrangements must preserve preferences and catalogue pricing'; end if;
   update public.travel_packages set price_per_adult = 99999, price_basis = 'Updated basis' where id = pkg.id;
   if (select package_snapshot->>'price_basis' from public.travel_booking_requests where booking_reference = ref) <> pkg.price_basis then raise exception 'Historical pricing snapshot changed'; end if;
   denied := false;

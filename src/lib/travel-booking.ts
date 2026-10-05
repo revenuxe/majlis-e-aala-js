@@ -86,8 +86,8 @@ export type TravelDraft = {
   pace: "balanced" | "relaxed";
   packageId: string | null;
   departureId: string | null;
-  room: "shared" | "twin" | "private";
-  stay: "standard" | "comfort" | "premium";
+  room: "package" | "shared" | "twin" | "private";
+  stay: "package" | "standard" | "comfort" | "premium";
   assistance: string[];
   notes: string;
   name: string;
@@ -108,8 +108,8 @@ export const initialTravelDraft: TravelDraft = {
   pace: "balanced",
   packageId: null,
   departureId: null,
-  room: "shared",
-  stay: "comfort",
+  room: "package",
+  stay: "package",
   assistance: [],
   notes: "",
   name: "",

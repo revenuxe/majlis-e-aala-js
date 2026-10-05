@@ -681,7 +681,14 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
                 Senior travellers: {request.preferences.seniors ?? 0} (included in adults) - Pace:{" "}
                 {request.preferences.pace || "balanced"}
                 <br />
-                Room: {request.preferences.room} · Stay: {request.preferences.stay}
+                Room:{" "}
+                {request.preferences.room === "package"
+                  ? "As selected package"
+                  : request.preferences.room}{" "}
+                · Stay:{" "}
+                {request.preferences.stay === "package"
+                  ? "As selected package"
+                  : request.preferences.stay}
               </p>
               <p>
                 {request.preferences.assistance

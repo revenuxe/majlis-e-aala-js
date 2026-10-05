@@ -54,8 +54,8 @@ const savedDraftSchema = z.object({
   pace: z.enum(["balanced", "relaxed"]).default("balanced"),
   packageId: z.string().nullable(),
   departureId: z.string().nullable(),
-  room: z.enum(["shared", "twin", "private"]),
-  stay: z.enum(["standard", "comfort", "premium"]),
+  room: z.enum(["package", "shared", "twin", "private"]),
+  stay: z.enum(["package", "standard", "comfort", "premium"]),
   assistance: z.array(z.enum(["mobility", "nearby-hotel", "guidance", "child-seat"])),
 });
 function Field({ label, children, note }: { label: string; children: ReactNode; note?: string }) {
@@ -181,6 +181,10 @@ export default function TravelPlan() {
     }
     setDraft((d) => {
       const next = { ...d, ...patch };
+      if (patch.packageId !== undefined && patch.packageId !== d.packageId) {
+        next.room = "package";
+        next.stay = "package";
+      }
       return { ...next, seniors: Math.min(next.seniors, next.adults) };
     });
     setError(null);
@@ -578,7 +582,7 @@ export default function TravelPlan() {
               "Where would you like to go?",
               "Choose your package.",
               "When would you like to travel?",
-              "Make the journey comfortable.",
+              "Any special requests?",
               "Keep your journeys together.",
               "One last look. Then let us begin.",
             ][step]
@@ -591,7 +595,7 @@ export default function TravelPlan() {
               "Choose your journey, then compare packages for your group.",
               "Starting adult estimates use your traveller count. Children and extras are quoted separately.",
               "An approximate month is enough if your plans are still taking shape.",
-              "These are requests for your quotation. Availability and extra charges are confirmed.",
+              "Keep your package arrangements, or tell us what would help. This step is optional.",
               "Sign in once to keep your journeys together, or continue as a guest.",
               "Review your choices and tell us how to reach you. No payment required.",
             ][step]
@@ -872,80 +876,156 @@ export default function TravelPlan() {
           )}
           {step === 4 && (
             <>
-              <h2 className="text-[15px] font-semibold">Your travel pace</h2>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Choice
-                  selected={draft.pace === "balanced"}
-                  onClick={() => update({ pace: "balanced" })}
-                  title="A little of everything"
-                  note="Sightseeing with time to unwind."
-                />
-                <Choice
-                  selected={draft.pace === "relaxed"}
-                  onClick={() => update({ pace: "relaxed" })}
-                  title="Gentle & relaxed"
-                  note="Fewer stops, more breaks and comfortable transfers."
-                />
-              </div>
-              <h2 className="text-[15px] font-semibold">Room preference</h2>
-              <div className="grid gap-3 sm:grid-cols-3">
-                {(
-                  [
-                    ["shared", "Shared room", "Good for group travel"],
-                    ["twin", "Twin / double", "Two people sharing"],
-                    ["private", "Private room", "More personal space"],
-                  ] as const
-                ).map(([value, title, note]) => (
-                  <Choice
-                    key={value}
-                    selected={draft.room === value}
-                    onClick={() => update({ room: value })}
-                    title={title}
-                    note={note}
-                  />
-                ))}
-              </div>
-              <h2 className="pt-2 text-[15px] font-semibold">Stay preference</h2>
-              <div className="grid gap-3 sm:grid-cols-3">
-                {(["standard", "comfort", "premium"] as const).map((value) => (
-                  <Choice
-                    key={value}
-                    selected={draft.stay === value}
-                    onClick={() => update({ stay: value })}
-                    title={value.charAt(0).toUpperCase() + value.slice(1)}
-                  />
-                ))}
-              </div>
-              <h2 className="pt-2 text-[15px] font-semibold">
-                Anything that would help? (optional)
+              <section className="rounded-[20px] border border-border bg-card p-5">
+                <p className="eyebrow">Your package arrangements</p>
+                <h2 className="mt-2 font-display text-[25px]">
+                  {chosenPackage?.name || "Custom journey"}
+                </h2>
+                <p className="mt-2 text-[13px] text-muted-foreground">
+                  {chosenPackage?.price_basis ||
+                    "Room sharing and hotels will be agreed in your quote."}
+                </p>
+                {chosenPackage && (
+                  <ul className="mt-3 space-y-2 text-[12px] text-muted-foreground">
+                    {chosenPackage.inclusions
+                      .filter((item) => /hotel|accommodation|guidance|guide|assistance/i.test(item))
+                      .slice(0, 5)
+                      .map((item) => (
+                        <li key={item} className="flex gap-2">
+                          <Check size={14} className="mt-0.5 shrink-0 text-gold" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                  </ul>
+                )}
+              </section>
+              <h2 className="text-[15px] font-semibold">
+                Support needs <span className="font-normal text-muted-foreground">(optional)</span>
               </h2>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {assistanceOptions.map((option) => (
-                  <Choice
-                    key={option.id}
-                    selected={draft.assistance.includes(option.id)}
-                    onClick={() =>
-                      update({
-                        assistance: draft.assistance.includes(option.id)
-                          ? draft.assistance.filter((id) => id !== option.id)
-                          : [...draft.assistance, option.id],
-                      })
-                    }
-                    title={option.label}
-                    note={option.note}
+              <div className="space-y-3">
+                <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-4">
+                  <input
+                    type="checkbox"
+                    checked={draft.pace === "relaxed"}
+                    onChange={(e) => update({ pace: e.target.checked ? "relaxed" : "balanced" })}
+                    className="mt-1 h-5 w-5 shrink-0 accent-primary"
                   />
-                ))}
+                  <span>
+                    <span className="block text-[13px] font-semibold">
+                      {draft.category === "umrah" || draft.category === "hajj"
+                        ? "Extra breaks or slower walking"
+                        : "Gentle & relaxed"}
+                    </span>
+                    <span className="mt-1 block text-[12px] text-muted-foreground">
+                      Request a gentler pace where the itinerary allows.
+                    </span>
+                  </span>
+                </label>
+                {assistanceOptions
+                  .filter(
+                    (option) =>
+                      option.id === "mobility" ||
+                      (option.id === "child-seat" && draft.children > 0),
+                  )
+                  .map((option) => (
+                    <label
+                      key={option.id}
+                      className="flex cursor-pointer items-start gap-3 rounded-xl border border-border bg-card p-4"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={draft.assistance.includes(option.id)}
+                        onChange={(e) =>
+                          update({
+                            assistance: e.target.checked
+                              ? [...draft.assistance, option.id]
+                              : draft.assistance.filter((id) => id !== option.id),
+                          })
+                        }
+                        className="mt-1 h-5 w-5 shrink-0 accent-primary"
+                      />
+                      <span>
+                        <span className="block text-[13px] font-semibold">{option.label}</span>
+                        <span className="mt-1 block text-[12px] text-muted-foreground">
+                          {option.note}
+                        </span>
+                      </span>
+                    </label>
+                  ))}
               </div>
-              <Field label="Other preferences (optional)">
+              <details className="rounded-2xl border border-border bg-card">
+                <summary className="min-h-12 cursor-pointer px-4 py-3 text-[13px] font-semibold">
+                  Request a package change{" "}
+                  <span className="font-normal text-muted-foreground">(optional)</span>
+                </summary>
+                <div className="space-y-4 border-t border-border p-4">
+                  <Field label="Room sharing">
+                    <select
+                      value={draft.room}
+                      onChange={(e) => update({ room: e.target.value as TravelDraft["room"] })}
+                      className={inputClass}
+                    >
+                      <option value="package">Keep package arrangements</option>
+                      <option value="shared">Shared room</option>
+                      <option value="twin">Twin / double</option>
+                      <option value="private">Private room</option>
+                    </select>
+                  </Field>
+                  <Field label="Hotel request">
+                    <select
+                      value={draft.stay}
+                      onChange={(e) => update({ stay: e.target.value as TravelDraft["stay"] })}
+                      className={inputClass}
+                    >
+                      <option value="package">Keep package hotels</option>
+                      <option value="standard">Request standard hotels</option>
+                      <option value="comfort">Request comfort hotels</option>
+                      <option value="premium">Request premium hotels</option>
+                    </select>
+                  </Field>
+                  {assistanceOptions
+                    .filter(
+                      (option) =>
+                        option.id === "nearby-hotel" ||
+                        (option.id === "guidance" &&
+                          !chosenPackage?.inclusions.some((item) => /guidance|guide/i.test(item))),
+                    )
+                    .map((option) => (
+                      <label
+                        key={option.id}
+                        className="flex cursor-pointer items-start gap-3 text-[13px]"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={draft.assistance.includes(option.id)}
+                          onChange={(e) =>
+                            update({
+                              assistance: e.target.checked
+                                ? [...draft.assistance, option.id]
+                                : draft.assistance.filter((id) => id !== option.id),
+                            })
+                          }
+                          className="h-5 w-5 shrink-0 accent-primary"
+                        />
+                        <span>{option.label}</span>
+                      </label>
+                    ))}
+                </div>
+              </details>
+              <Field label="Other requests (optional)">
                 <textarea
-                  rows={3}
+                  rows={2}
                   maxLength={2000}
                   value={draft.notes}
                   onChange={(e) => update({ notes: e.target.value })}
                   className={cx(inputClass, "h-auto py-3")}
-                  placeholder="Budget, dietary preferences or a gentler pace…"
+                  placeholder="Dietary needs, hotel distance or anything else we should know"
                 />
               </Field>
+              <p className="text-[11px] leading-relaxed text-muted-foreground">
+                Requests are subject to availability. Any additional cost will be confirmed in your
+                quote.
+              </p>
             </>
           )}
           {step === AUTH_STEP && (
@@ -982,7 +1062,7 @@ export default function TravelPlan() {
                   ["Package", chosenPackage?.name || "Custom journey", 2],
                   [
                     "Preferences",
-                    `${draft.pace} pace - ${draft.room} room · ${draft.stay} stay${draft.assistance.length ? ` · ${draft.assistance.map((id) => assistanceOptions.find((a) => a.id === id)?.label).join(", ")}` : ""}`,
+                    `${draft.pace === "relaxed" ? "Gentler pace requested" : "Package itinerary"} · ${draft.room === "package" ? "Package room sharing" : `${draft.room} room requested`} · ${draft.stay === "package" ? "Package hotels" : `${draft.stay} hotels requested`}${draft.assistance.length ? ` · ${draft.assistance.map((id) => assistanceOptions.find((a) => a.id === id)?.label).join(", ")}` : ""}`,
                     4,
                   ],
                 ].map(([label, value, index]) => (
