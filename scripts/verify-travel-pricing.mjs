@@ -121,7 +121,7 @@ try {
   await click("Change");
   await evaluate("document.querySelector('button[aria-label=Increase]').click()");
   await pause();
-  assert((await body()).includes("3 adults"), "Traveller count updates");
+  assert((await body()).includes("3 travellers"), "Traveller count updates");
   assert((await body()).includes("59,997"), "Ooty estimate reflects three adults");
   await click("Done");
   await setInput("input[type=search]", "Ooty");

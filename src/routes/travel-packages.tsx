@@ -113,8 +113,12 @@ export default function TravelPackages({ category }: { category: TravelCategory 
             onChildren={setChildren}
           />
         </div>
-        <h1 className="mt-9 font-display text-[38px] leading-tight">Choose a package</h1>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{config.note}</p>
+        <h1 className="mt-9 font-display text-[32px] leading-tight sm:text-[38px]">
+          Choose a package
+        </h1>
+        <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
+          Select the package that suits your journey.
+        </p>
         <nav
           aria-label="Travel package categories"
           className="mt-6 flex gap-5 overflow-x-auto border-b border-border"

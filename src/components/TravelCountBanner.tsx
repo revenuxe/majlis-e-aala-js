@@ -22,42 +22,38 @@ export function TravelCountBanner({
 }) {
   const journey = travelCategories.find((item) => item.id === category);
   return (
-    <section className="relative overflow-hidden rounded-[32px] bg-primary p-6 text-white shadow-lg sm:p-9">
+    <section className="relative overflow-hidden rounded-[28px] bg-primary px-5 pb-8 pt-6 text-primary-foreground shadow-[0_18px_36px_rgba(41,32,20,0.18)] sm:px-7 sm:pt-8">
       {/* Decorative image mirrors the catering package banner. */}
       <img
         src={journey?.image || "/travel/makkah.jpg"}
         alt=""
-        className="absolute inset-0 h-full w-full object-cover opacity-25"
+        className="absolute inset-0 h-full w-full object-cover opacity-30"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/90 to-black/35" />
+      <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/85 to-primary/45" />
+      <span className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full border-[28px] border-gold/15" />
       <div className="relative">
-        <button onClick={onChange} className="min-h-11 text-left text-sm font-semibold text-gold">
+        <button onClick={onChange} className="press text-left text-[13px] font-semibold text-gold">
           ← Edit journey or travellers
         </button>
-        <h2 className="mt-2 font-display text-[36px] leading-tight">
+        <h2 className="mt-3 font-display text-[30px] leading-tight sm:text-[38px]">
           {journey?.name || "Travel"} Packages
         </h2>
-        <p className="mt-3 text-sm text-white/80">Journeys tailored to your group.</p>
-        <div className="mt-6 rounded-[22px] border border-gold/35 bg-card p-5 text-foreground">
+        <p className="mt-1 max-w-lg text-[13px] leading-relaxed text-primary-foreground/75">
+          Packages tailored for your journey.
+        </p>
+        <div className="mt-5 rounded-[18px] border border-gold/40 bg-card p-4 text-foreground shadow-[0_8px_20px_rgba(0,0,0,0.16)] sm:px-5">
           <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[.18em] text-muted-foreground">
-                Your traveller count
-              </p>
-              <p className="mt-2 text-[16px] font-semibold">
-                {adults + children} travellers{" "}
-                <span className="font-normal text-muted-foreground">
-                  · {adults} adults{children ? `, ${children} children` : ""}
-                </span>
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Adult estimates update instantly. Children are quoted separately.
+            <div className="min-w-0 flex-1">
+              <p className="eyebrow">Your traveller count</p>
+              <p className="mt-1 text-[15px] font-semibold">{adults + children} travellers </p>
+              <p className="mt-0.5 text-[10px] text-muted-foreground sm:text-[11px]">
+                All adult package estimates update instantly.
               </p>
             </div>
             <button
               onClick={onChange}
               aria-expanded={editing}
-              className="min-h-11 shrink-0 rounded-full border border-gold/50 bg-surface px-4 text-sm font-semibold"
+              className="press shrink-0 rounded-full border border-gold/60 bg-champagne/45 px-3 py-2 text-[13px] font-bold text-foreground hover:border-gold sm:px-4"
             >
               {editing ? "Done" : "Change"}
             </button>
