@@ -22,7 +22,6 @@ export function TravelPackageChoice({
   pkg,
   selected = false,
   adults,
-  children = 0,
   onSelect,
 }: {
   pkg: TravelPackage;
@@ -83,17 +82,6 @@ export function TravelPackageChoice({
             <ChevronDown size={22} />
           </span>
         </button>
-        <p className="mt-3 rounded-[16px] border border-gold/35 bg-surface/50 px-4 py-3 text-[13px] leading-relaxed text-muted-foreground">
-          <strong className="font-semibold text-foreground">
-            {adults} {adults === 1 ? "adult" : "adults"}
-            {children ? ` and ${children} ${children === 1 ? "child" : "children"}` : ""} selected.
-          </strong>{" "}
-          {price == null
-            ? "Our team will prepare your personal quotation."
-            : `Starting adult estimate: ${travelMoney(Number(price) * adults)} at the displayed sharing basis.`}{" "}
-          Children, room changes and extras are quoted separately. Final price is confirmed before
-          booking.
-        </p>
       </div>
       <div id={detailsId} hidden={!expanded} className="border-y border-border">
         <Section title="Journey overview">
@@ -143,6 +131,10 @@ export function TravelPackageChoice({
         <Section title="Pricing & room sharing">
           <p className="font-semibold text-foreground">{pkg.price_basis}</p>
           <p className="mt-3">{pkg.pricing_note}</p>
+          <p className="mt-3">
+            Children, room changes and extras are quoted separately. Final price is confirmed before
+            booking.
+          </p>
         </Section>
         <Section title="Payment & cancellation">
           <p>{pkg.cancellation_terms}</p>

@@ -89,7 +89,7 @@ try {
   await click("Umrah");
   await until(async () => (await body()).includes("2,69,997"), "Three adults priced at 89999 each");
   assert((await body()).includes("4 travellers"));
-  assert((await body()).includes("3 adults and 1 child selected"));
+  assert((await body()).includes("Starting estimate for 3 adults"));
   for (const [category, count] of [
     ["umrah", 17],
     ["hajj", 8],
