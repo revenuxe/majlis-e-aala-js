@@ -143,21 +143,6 @@ export default function TravelPackages({ category }: { category: TravelCategory 
         <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
           Select the package that suits your journey.
         </p>
-        <nav
-          aria-label="Travel package categories"
-          className="mt-6 flex gap-5 overflow-x-auto border-b border-border"
-        >
-          {travelCategories.map((item) => (
-            <Link
-              key={item.id}
-              href={`/travel/packages/${item.id}?travellers=${adults}&children=${children}&seniors=${seniorCount}`}
-              aria-current={item.id === category ? "page" : undefined}
-              className={`shrink-0 border-b-2 py-3 text-sm ${item.id === category ? "border-primary font-semibold" : "border-transparent text-muted-foreground"}`}
-            >
-              {item.name}
-            </Link>
-          ))}
-        </nav>
         <div className="mt-7 flex flex-wrap items-center gap-3">
           <label className="flex h-12 min-w-0 flex-1 items-center gap-2 rounded-xl border border-border bg-card px-3">
             <Search size={17} className="shrink-0 text-muted-foreground" />
