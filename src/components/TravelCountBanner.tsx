@@ -68,11 +68,6 @@ export function TravelCountBanner({
           </div>
           {editing && onAdults && onChildren && (
             <div className="mt-5 grid gap-5 border-t border-border pt-5 sm:grid-cols-2">
-              {onSeniors && (
-                <div className="sm:col-span-2">
-                  <TravelSeniorCount adults={adults} value={seniors} onChange={onSeniors} />
-                </div>
-              )}
               <div>
                 <p className="mb-2 text-sm font-semibold">Adults · 18+</p>
                 <QuantitySelector
@@ -91,6 +86,11 @@ export function TravelCountBanner({
                   onChange={(value) => onChildren(Math.max(0, Math.min(20, 100 - adults, value)))}
                 />
               </div>
+              {onSeniors && (
+                <div className="sm:col-span-2">
+                  <TravelSeniorCount adults={adults} value={seniors} onChange={onSeniors} />
+                </div>
+              )}
             </div>
           )}
         </div>
