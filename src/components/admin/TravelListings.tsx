@@ -578,6 +578,9 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
                 {request.children ? ` (ages ${request.child_ages.join(", ")})` : ""}
               </p>
               <p>
+                Senior travellers: {request.preferences.seniors ?? 0} (included in adults) ? Pace:{" "}
+                {request.preferences.pace || "balanced"}
+                <br />
                 Room: {request.preferences.room} · Stay: {request.preferences.stay}
               </p>
               <p>

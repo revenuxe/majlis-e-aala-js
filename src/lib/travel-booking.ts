@@ -45,7 +45,13 @@ export type TravelRequest = {
   adults: number;
   children: number;
   child_ages: number[];
-  preferences: { room: string; stay: string; assistance: string[] };
+  preferences: {
+    room: string;
+    stay: string;
+    assistance: string[];
+    seniors?: number;
+    pace?: string;
+  };
   package_snapshot: {
     name?: string;
     inclusions?: string[];
@@ -68,6 +74,8 @@ export type TravelDraft = {
   adults: number;
   children: number;
   childAges: number[];
+  seniors: number;
+  pace: "balanced" | "relaxed";
   packageId: string | null;
   departureId: string | null;
   room: "shared" | "twin" | "private";
@@ -88,6 +96,8 @@ export const initialTravelDraft: TravelDraft = {
   adults: 2,
   children: 0,
   childAges: [],
+  seniors: 0,
+  pace: "balanced",
   packageId: null,
   departureId: null,
   room: "shared",

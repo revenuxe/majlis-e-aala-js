@@ -25,7 +25,7 @@ begin
   payload := jsonb_build_object('request_token',token,'customer_name','Test traveller','phone','910000000001',
     'contact_consent',true,'category','umrah','departure_city','Bengaluru','dates_flexible',true,
     'adults',2,'children',1,'child_ages',jsonb_build_array(7),'package_id',pkg,'departure_id',dep,
-    'estimated_adult_total',999999,'preferences',jsonb_build_object('room','twin','stay','comfort','assistance',jsonb_build_array('mobility')));
+    'estimated_adult_total',999999,'preferences',jsonb_build_object('seniors',1,'pace','relaxed','room','twin','stay','comfort','assistance',jsonb_build_array('mobility')));
   select booking_reference into first_ref from public.submit_travel_booking(payload);
   select booking_reference into second_ref from public.submit_travel_booking(payload);
   if first_ref <> second_ref or (select count(*) from public.travel_booking_requests where request_token = token) <> 1 then
@@ -34,6 +34,7 @@ begin
   select * into strict result from public.travel_booking_requests where request_token = token;
   if result.estimated_adult_total <> 200 or result.package_snapshot->>'name' <> 'The Essential Umrah'
     or result.departure_city <> 'Test departure city' or result.preferred_date <> current_date + 30
+    or result.preferences->>'seniors' <> '1' or result.preferences->>'pace' <> 'relaxed'
     or result.dates_flexible or result.status <> 'new' or result.contact_consent_at is null then
     raise exception 'Server price, snapshot, departure or consent was incorrect';
   end if;
@@ -54,6 +55,10 @@ begin
   perform pg_temp.reject_travel(payload || jsonb_build_object('preferred_date',current_date-1));
   perform pg_temp.reject_travel(payload || '{"preferences":{"room":"invalid"}}');
   perform pg_temp.reject_travel(payload || '{"preferences":{"assistance":[null]}}');
+  perform pg_temp.reject_travel(payload || '{"preferences":{"seniors":3}}');
+  perform pg_temp.reject_travel(payload || '{"preferences":{"seniors":-1}}');
+  perform pg_temp.reject_travel(payload || '{"preferences":{"seniors":1.5}}');
+  perform pg_temp.reject_travel(payload || '{"preferences":{"pace":"invalid"}}');
   update public.travel_packages set is_active = false where id = pkg;
   perform pg_temp.reject_travel(payload);
   -- Hide a record to verify public catalogue policies below.

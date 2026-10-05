@@ -109,7 +109,7 @@ return realFetch(input,init);
   await click("CONTINUE");
   await click("CONTINUE");
   await until(async () => (await body()).includes("The Essential Umrah"), "Catalogue missing");
-  await click("The Essential Umrah");
+  await click("Choose this journey");
   await click("CONTINUE");
   await input("textarea", "A gentle pace for our family", "HTMLTextAreaElement");
   await click("CONTINUE");

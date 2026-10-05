@@ -116,14 +116,17 @@ try {
   await call("Page.reload");
   await until(async () => (await body()).includes("Step 3 of 7"), "Incomplete draft must restore");
   await setInput("main select", "7", "HTMLSelectElement");
+  await evaluate("document.querySelector('input[type=checkbox]').click()");
+  await pause();
   await click("CONTINUE");
   await until(
     async () => (await body()).includes("The Essential Umrah"),
     "Live packages must load",
   );
-  await click("The Essential Umrah");
+  await click("Choose this journey");
   await click("CONTINUE");
   assert((await body()).includes("Step 5 of 7"));
+  await click("Gentle & relaxed");
   await click("Twin / double");
   await click("Mobility assistance");
   await click("CONTINUE");
@@ -184,6 +187,8 @@ try {
   );
   assert.equal(posts[1].p_booking.adults, 2);
   assert.deepEqual(posts[1].p_booking.child_ages, [7]);
+  assert.equal(posts[1].p_booking.preferences.seniors, 1);
+  assert.equal(posts[1].p_booking.preferences.pace, "relaxed");
   assert.equal(posts[1].p_booking.preferences.room, "twin");
   assert.deepEqual(posts[1].p_booking.preferences.assistance, ["mobility"]);
   assert.equal(posts[1].p_booking.contact_consent, true);

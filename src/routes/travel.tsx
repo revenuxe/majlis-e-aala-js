@@ -19,7 +19,7 @@ import {
   Home,
   MapPin,
   Menu,
-  MessageCircle,
+  ClipboardList,
   Plane,
   Pause,
   Play,
@@ -668,7 +668,7 @@ export default function TravelHome() {
                         <span className="block text-[14px] font-semibold">
                           {catalog.packages.find((p) => p.id === journey.id)?.price_per_adult ==
                           null
-                            ? "Tailored quotation"
+                            ? "Request your price"
                             : `From ${travelMoney(Number(catalog.packages.find((p) => p.id === journey.id)?.price_per_adult))} / adult`}
                         </span>
                         <span className="text-[11px] text-muted-foreground">
@@ -682,6 +682,9 @@ export default function TravelHome() {
                         Details <ArrowUpRight size={16} />
                       </button>
                     </div>
+                    <Button full className="mt-4" onClick={() => planJourney(journey.name)}>
+                      CHOOSE THIS JOURNEY <ArrowUpRight size={16} />
+                    </Button>
                   </div>
                 </article>
               ))}
@@ -1033,11 +1036,11 @@ export default function TravelHome() {
             Guide
           </a>
           <a
-            href="/travel/plan"
+            href="/orders?service=travel"
             className="flex h-full flex-1 flex-col items-center justify-center gap-1 text-[11px]"
           >
-            <MessageCircle size={21} strokeWidth={1.6} />
-            Contact
+            <ClipboardList size={21} strokeWidth={1.6} />
+            Bookings
           </a>
         </div>
       </nav>

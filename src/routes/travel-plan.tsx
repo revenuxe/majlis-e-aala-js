@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Check, CheckCircle2, MapPin, Plane, Users } from
 import { z } from "zod";
 import type { User } from "@supabase/supabase-js";
 import { BrandMark } from "@/components/Brand";
+import { TravelPackageChoice } from "@/components/TravelPackageChoice";
 import { BookingAuth } from "@/components/BookingAuth";
 import { saveTravelProfile, travelProfileFromUser } from "@/lib/travel-profile";
 import { Button, QuantitySelector, cx } from "@/components/ui-kit";
@@ -43,6 +44,8 @@ const savedDraftSchema = z.object({
   adults: z.number().int().min(1).max(100),
   children: z.number().int().min(0).max(20),
   childAges: z.array(z.number().int().min(-1).max(17)).max(20),
+  seniors: z.number().int().min(0).max(100).default(0),
+  pace: z.enum(["balanced", "relaxed"]).default("balanced"),
   packageId: z.string().nullable(),
   departureId: z.string().nullable(),
   room: z.enum(["shared", "twin", "private"]),
@@ -145,7 +148,10 @@ export default function TravelPlan() {
   const categoryName =
     travelCategories.find((c) => c.id === draft.category)?.name || "Your journey";
   function update(patch: Partial<TravelDraft>) {
-    setDraft((d) => ({ ...d, ...patch }));
+    setDraft((d) => {
+      const next = { ...d, ...patch };
+      return { ...next, seniors: Math.min(next.seniors, next.adults) };
+    });
     setError(null);
   }
   useEffect(() => {
@@ -196,6 +202,7 @@ export default function TravelPlan() {
       restored.children = 0;
       restored.childAges = [];
     }
+    restored.seniors = Math.min(restored.seniors, restored.adults);
     setDraft(restored);
     let token = "";
     try {
@@ -292,6 +299,8 @@ export default function TravelPlan() {
     if (
       index === 2 &&
       (draft.adults < 1 ||
+        draft.seniors < 0 ||
+        draft.seniors > draft.adults ||
         draft.adults + draft.children > 100 ||
         draft.childAges.length !== draft.children ||
         draft.childAges.some((age) => age < 0 || age > 17))
@@ -374,7 +383,13 @@ export default function TravelPlan() {
           child_ages: draft.childAges,
           package_id: draft.packageId,
           departure_id: draft.departureId,
-          preferences: { room: draft.room, stay: draft.stay, assistance: draft.assistance },
+          preferences: {
+            room: draft.room,
+            stay: draft.stay,
+            assistance: draft.assistance,
+            seniors: draft.seniors,
+            pace: draft.pace,
+          },
           notes: draft.notes.trim(),
         },
       });
@@ -469,7 +484,7 @@ export default function TravelPlan() {
           </span>
         </div>
       </header>
-      <main className="mx-auto max-w-[760px] px-5 py-7 sm:py-10">
+      <main className="mx-auto max-w-[1000px] px-5 py-7 sm:py-10">
         <div className="flex items-center justify-between gap-3 text-[12px]">
           <p className="font-semibold">
             Step {step + 1} of {TOTAL_STEPS}{" "}
@@ -631,6 +646,38 @@ export default function TravelPlan() {
                   }}
                 />
               </div>
+              <div className="rounded-[20px] border border-gold/40 bg-champagne/20 p-5">
+                <label className="flex min-h-11 cursor-pointer items-center gap-3 text-[15px] font-semibold">
+                  <input
+                    type="checkbox"
+                    checked={draft.seniors > 0}
+                    onChange={(e) => update({ seniors: e.target.checked ? 1 : 0 })}
+                    className="h-5 w-5 accent-black"
+                  />
+                  Travelling with senior citizens (60+)
+                </label>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  Included in your adult count. Help us plan comfortable transfers, hotel access and
+                  a suitable pace.
+                </p>
+                {draft.seniors > 0 && (
+                  <div className="mt-4">
+                    <QuantitySelector
+                      size="lg"
+                      min={1}
+                      value={draft.seniors}
+                      suffix="Senior travellers"
+                      onChange={(value) =>
+                        update({ seniors: Math.max(1, Math.min(draft.adults, value)) })
+                      }
+                    />
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Up to {draft.adults} adults in your group. Assistance can be selected in
+                      preferences.
+                    </p>
+                  </div>
+                )}
+              </div>
               {draft.children > 0 && (
                 <div className="grid gap-4 sm:grid-cols-2">
                   {draft.childAges.map((age, index) => (
@@ -683,69 +730,17 @@ export default function TravelPlan() {
                   </Button>
                 </div>
               )}
-              {matchingPackages.map((pkg) => (
-                <div
-                  key={pkg.id}
-                  className={cx(
-                    "overflow-hidden rounded-[20px] border-2 bg-card",
-                    draft.packageId === pkg.id ? "border-primary" : "border-border",
-                  )}
-                >
-                  <button
-                    aria-pressed={draft.packageId === pkg.id}
-                    onClick={() => update({ packageId: pkg.id, departureId: null })}
-                    className="flex min-h-20 w-full items-start justify-between gap-3 p-5 text-left"
-                  >
-                    <span>
-                      <span className="font-display text-[27px]">{pkg.name}</span>
-                      <span className="mt-1 block text-[13px] text-muted-foreground">
-                        {pkg.places} · {pkg.duration}
-                      </span>
-                      <span className="mt-3 block text-[14px] font-semibold">
-                        {pkg.price_per_adult == null
-                          ? "Personal quotation"
-                          : `From ${travelMoney(Number(pkg.price_per_adult))} / adult`}
-                      </span>
-                    </span>
-                    <span
-                      className={cx(
-                        "grid h-6 w-6 shrink-0 place-items-center rounded-full border",
-                        draft.packageId === pkg.id ? "bg-primary text-white" : "border-border",
-                      )}
-                    >
-                      {draft.packageId === pkg.id && <Check size={14} />}
-                    </span>
-                  </button>
-                  <details className="border-t border-border px-5">
-                    <summary className="cursor-pointer py-3 text-[13px] font-semibold">
-                      Itinerary, inclusions & terms
-                    </summary>
-                    <p className="mb-4 text-[14px] leading-relaxed text-muted-foreground">
-                      {pkg.description}
-                    </p>
-                    {pkg.itinerary.map(([title, text], i) => (
-                      <p key={i} className="mb-3 text-[13px] leading-relaxed">
-                        <strong>
-                          {i + 1}. {title}
-                        </strong>
-                        <br />
-                        {text}
-                      </p>
-                    ))}
-                    <p className="mb-3 text-[13px]">
-                      <strong>Included:</strong>{" "}
-                      {pkg.inclusions.join(" · ") || "To be confirmed in your written quotation."}
-                    </p>
-                    <p className="mb-3 text-[13px]">
-                      <strong>Excluded:</strong>{" "}
-                      {pkg.exclusions.join(" · ") || "To be confirmed in your written quotation."}
-                    </p>
-                    <p className="mb-4 text-[12px] text-muted-foreground">
-                      {pkg.cancellation_terms}
-                    </p>
-                  </details>
-                </div>
-              ))}
+              <div className="grid items-start gap-5 sm:grid-cols-2">
+                {matchingPackages.map((pkg) => (
+                  <TravelPackageChoice
+                    key={pkg.id}
+                    pkg={pkg}
+                    selected={draft.packageId === pkg.id}
+                    adults={draft.adults}
+                    onSelect={() => update({ packageId: pkg.id, departureId: null })}
+                  />
+                ))}
+              </div>
               <Choice
                 selected={draft.packageId === null}
                 onClick={() => update({ packageId: null, departureId: null })}
@@ -778,6 +773,21 @@ export default function TravelPlan() {
           )}
           {step === 4 && (
             <>
+              <h2 className="text-[15px] font-semibold">Your travel pace</h2>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Choice
+                  selected={draft.pace === "balanced"}
+                  onClick={() => update({ pace: "balanced" })}
+                  title="A little of everything"
+                  note="Sightseeing with time to unwind."
+                />
+                <Choice
+                  selected={draft.pace === "relaxed"}
+                  onClick={() => update({ pace: "relaxed" })}
+                  title="Gentle & relaxed"
+                  note="Fewer stops, more breaks and comfortable transfers."
+                />
+              </div>
               <h2 className="text-[15px] font-semibold">Room preference</h2>
               <div className="grid gap-3 sm:grid-cols-3">
                 {(
@@ -867,13 +877,13 @@ export default function TravelPlan() {
                   ],
                   [
                     "Travellers",
-                    `${draft.adults} adults${draft.children ? ` · ${draft.children} children (${draft.childAges.join(", ")} years)` : ""}`,
+                    `${draft.adults} adults${draft.seniors ? ` (${draft.seniors} seniors)` : ""}${draft.children ? ` · ${draft.children} children (${draft.childAges.join(", ")} years)` : ""}`,
                     2,
                   ],
                   ["Package", chosenPackage?.name || "Custom journey", 3],
                   [
                     "Preferences",
-                    `${draft.room} room · ${draft.stay} stay${draft.assistance.length ? ` · ${draft.assistance.map((id) => assistanceOptions.find((a) => a.id === id)?.label).join(", ")}` : ""}`,
+                    `${draft.pace} pace - ${draft.room} room · ${draft.stay} stay${draft.assistance.length ? ` · ${draft.assistance.map((id) => assistanceOptions.find((a) => a.id === id)?.label).join(", ")}` : ""}`,
                     4,
                   ],
                 ].map(([label, value, index]) => (
