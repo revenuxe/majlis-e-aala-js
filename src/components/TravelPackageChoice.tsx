@@ -85,21 +85,20 @@ export function TravelPackageChoice({
             <ChevronDown size={22} />
           </span>
         </button>
-        <p className="mt-4 text-[13px] leading-relaxed text-muted-foreground">
-          <strong className="font-semibold text-foreground">
+        <p className="mt-4 text-[11px] leading-[1.6] text-muted-foreground">
+          <strong className="mb-1 block text-[12px] font-medium text-foreground">
             {adults} {adults === 1 ? "adult" : "adults"}
             {children > 0 ? ` and ${children} ${children === 1 ? "child" : "children"}` : ""}{" "}
             travelling
             {seniors > 0
-              ? `, including ${Math.min(seniors, adults)} senior ${Math.min(seniors, adults) === 1 ? "citizen" : "citizens"} within the adults`
+              ? ` · ${Math.min(seniors, adults)} senior ${Math.min(seniors, adults) === 1 ? "citizen" : "citizens"} included`
               : ""}
-            .
-          </strong>{" "}
+          </strong>
           {price == null
-            ? "Your quotation will be tailored to your group and room preferences."
-            : "The estimate covers adults at the stated room-sharing rate."}{" "}
-          Children and room upgrades are quoted separately. Your final price may vary with travel
-          dates and availability.
+            ? "Quote tailored to your group and room preferences."
+            : "Estimate based on your selected room sharing."}{" "}
+          Child fares and upgrades are quoted separately. Final pricing depends on travel dates and
+          availability.
         </p>
       </div>
       <div id={detailsId} hidden={!expanded} className="border-y border-border">
