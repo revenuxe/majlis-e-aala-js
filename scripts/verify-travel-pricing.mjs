@@ -93,6 +93,16 @@ try {
   assert((await body()).includes("4 travellers"));
   assert((await body()).includes("Starting estimate for 3 adults"));
   assert((await body()).includes("1 seniors included"), "Senior count carried to catalogue");
+  assert(!(await body()).includes("Travel home"), "Duplicate back link removed");
+  await click("Edit journey or travellers");
+  await until(
+    async () => (await body()).includes("4 travellers") &&
+      await evaluate("document.querySelectorAll('main button img').length===4"),
+    "Card back returns to journey selection with counts preserved",
+  );
+  await click("Umrah");
+  await until(async () => (await body()).includes("2,69,997"), "Back preserves adult pricing");
+  assert((await body()).includes("1 seniors included"), "Back preserves seniors");
   await evaluate("document.querySelector('article button[aria-pressed]').click()");
   await until(
     async () =>

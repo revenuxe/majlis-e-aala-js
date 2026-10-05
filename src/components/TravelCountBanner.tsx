@@ -11,6 +11,7 @@ export function TravelCountBanner({
   seniors = 0,
   onSeniors,
   onChange,
+  onBack,
   editing = false,
   onAdults,
   onChildren,
@@ -21,6 +22,7 @@ export function TravelCountBanner({
   seniors?: number;
   onSeniors?: (value: number) => void;
   onChange: () => void;
+  onBack?: () => void;
   editing?: boolean;
   onAdults?: (value: number) => void;
   onChildren?: (value: number) => void;
@@ -37,7 +39,10 @@ export function TravelCountBanner({
       <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/85 to-primary/45" />
       <span className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full border-[28px] border-gold/15" />
       <div className="relative">
-        <button onClick={onChange} className="press text-left text-[13px] font-semibold text-gold">
+        <button
+          onClick={onBack || onChange}
+          className="press text-left text-[13px] font-semibold text-gold"
+        >
           ← Edit journey or travellers
         </button>
         <h2 className="mt-3 font-display text-[30px] leading-tight sm:text-[38px]">

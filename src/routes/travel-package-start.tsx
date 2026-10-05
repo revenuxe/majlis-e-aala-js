@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { BrandLogo } from "@/components/Brand";
 import { Button, QuantitySelector, SectionHeader } from "@/components/ui-kit";
@@ -15,6 +15,25 @@ export default function TravelPackageStart() {
   const [seniors, setSeniors] = useState(0);
   const seniorCount = Math.min(seniors, adults);
   const [choosingJourney, setChoosingJourney] = useState(false);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const adultCount = Number(params.get("travellers"));
+    const childCount = Number(params.get("children"));
+    const seniorCount = Number(params.get("seniors"));
+    if (Number.isInteger(adultCount) && adultCount >= 1 && adultCount <= 100) {
+      setAdults(adultCount);
+      if (
+        Number.isInteger(childCount) &&
+        childCount >= 0 &&
+        childCount <= 20 &&
+        adultCount + childCount <= 100
+      )
+        setChildren(childCount);
+      if (Number.isInteger(seniorCount) && seniorCount >= 0 && seniorCount <= adultCount)
+        setSeniors(seniorCount);
+      if (params.get("step") === "journey") setChoosingJourney(true);
+    }
+  }, []);
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">

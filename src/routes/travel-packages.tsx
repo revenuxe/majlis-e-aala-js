@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Search, SlidersHorizontal, X } from "lucide-react";
+import { ArrowRight, Search, SlidersHorizontal, X } from "lucide-react";
 import { BrandLogo } from "@/components/Brand";
 import { TravelCountBanner } from "@/components/TravelCountBanner";
 import { TravelPackageChoice } from "@/components/TravelPackageChoice";
@@ -48,6 +49,7 @@ const settings = {
 const selectClass =
   "mt-2 h-12 w-full rounded-xl border border-border bg-card px-3 text-sm outline-none focus:border-gold";
 export default function TravelPackages({ category }: { category: TravelCategory }) {
+  const router = useRouter();
   const catalog = useTravelCatalog();
   const config = settings[category];
   const name = travelCategories.find((item) => item.id === category)!.name;
@@ -117,13 +119,6 @@ export default function TravelPackages({ category }: { category: TravelCategory 
         </div>
       </header>
       <main className="mx-auto max-w-[1200px] px-5 py-7 sm:px-8 sm:py-12">
-        <Link
-          href="/travel"
-          className="inline-flex min-h-11 items-center gap-2 text-sm text-muted-foreground"
-        >
-          <ArrowLeft size={16} />
-          Travel home
-        </Link>
         <div className="mt-5">
           <TravelCountBanner
             category={category}
@@ -132,6 +127,11 @@ export default function TravelPackages({ category }: { category: TravelCategory 
             seniors={seniorCount}
             onSeniors={setSeniors}
             editing={editingCount}
+            onBack={() =>
+              router.push(
+                `/travel/packages?step=journey&travellers=${adults}&children=${children}&seniors=${seniorCount}`,
+              )
+            }
             onChange={() => setEditingCount(!editingCount)}
             onAdults={setAdults}
             onChildren={setChildren}
