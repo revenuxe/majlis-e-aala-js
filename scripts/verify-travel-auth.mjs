@@ -76,9 +76,9 @@ if(url.includes('/user'))return json(testUser);
 return json({});
 }
 if(url.includes('/rpc/submit_travel_booking')){window.__bookings.push(JSON.parse(init.body));return json([{booking_reference:'MAT-SIGNED-IN-TEST'}]);}
-if(url.includes('/rpc/get_my_travel_booking'))return json([{booking_reference:'MAT-SIGNED-IN-TEST',category:'umrah',package_name:'The Essential Umrah',departure_city:'Hyderabad',preferred_date:null,preferred_month:null,dates_flexible:true,adults:2,children:0,status:window.__trackingStatus,estimated_adult_total:null,quoted_total:12345,created_at:new Date().toISOString()}]);
+if(url.includes('/rpc/get_my_travel_booking'))return json([{booking_reference:'MAT-SIGNED-IN-TEST',category:'umrah',package_name:'Umrah Economy',departure_city:'Hyderabad',preferred_date:null,preferred_month:null,dates_flexible:true,adults:2,children:0,status:window.__trackingStatus,estimated_adult_total:null,quoted_total:12345,created_at:new Date().toISOString()}]);
 if(url.includes('/rest/v1/orders'))return json([{id:'33333333-3333-4333-8333-333333333333',booking_reference:'CAT-TEST-ONLY',customer_name:'Catering Test Customer',phone:'910000000010',occasion:'Nikah',event_date:'2026-12-20',guests:100,estimated_total:45000,status:'confirmed',venue:{area:'Bengaluru'},created_at:new Date().toISOString()}]);
-if(url.includes('/rest/v1/travel_booking_requests'))return json([{id:'44444444-4444-4444-8444-444444444444',booking_reference:'MAT-SIGNED-IN-TEST',customer_name:'Travel Test Customer',phone:'910000000020',category:'umrah',departure_city:'Hyderabad',adults:2,children:0,child_ages:[],preferences:{room:'twin',stay:'comfort',assistance:[]},package_snapshot:{name:'The Essential Umrah'},estimated_adult_total:null,quoted_total:12345,notes:'',admin_notes:'',status:'quoted',created_at:new Date().toISOString()}]);
+if(url.includes('/rest/v1/travel_booking_requests'))return json([{id:'44444444-4444-4444-8444-444444444444',booking_reference:'MAT-SIGNED-IN-TEST',customer_name:'Travel Test Customer',phone:'910000000020',category:'umrah',departure_city:'Hyderabad',adults:2,children:0,child_ages:[],preferences:{room:'twin',stay:'comfort',assistance:[]},package_snapshot:{name:'Umrah Economy'},estimated_adult_total:null,quoted_total:12345,notes:'',admin_notes:'',status:'quoted',created_at:new Date().toISOString()}]);
 if(url.includes('/travel_packages')||url.includes('/travel_departures')||url.includes('/travel_hero_carousels')){const headers=new Headers(init?.headers);headers.delete('Authorization');return realFetch(input,{...init,headers});}
 if(url.includes('/rest/v1/')&&!url.includes('/travel_packages')&&!url.includes('/travel_departures')&&!url.includes('/travel_hero_carousels'))return json([]);
 return realFetch(input,init);
@@ -108,7 +108,7 @@ return realFetch(input,init);
   await input("input[autocomplete='address-level2']", "Hyderabad");
   await click("CONTINUE");
   await click("CONTINUE");
-  await until(async () => (await body()).includes("The Essential Umrah"), "Catalogue missing");
+  await until(async () => (await body()).includes("Umrah Economy"), "Catalogue missing");
   await click("Choose this journey");
   await click("CONTINUE");
   await input("textarea", "A gentle pace for our family", "HTMLTextAreaElement");
@@ -143,7 +143,7 @@ return realFetch(input,init);
   );
   assert((await body()).includes("Hyderabad"));
   await until(
-    async () => (await body()).includes("The Essential Umrah"),
+    async () => (await body()).includes("Umrah Economy"),
     "Selected package lost after authentication",
   );
   assert.equal(await evaluate("sessionStorage.getItem('ma-travel-request-token')"), tokenBefore);

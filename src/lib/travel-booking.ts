@@ -15,6 +15,10 @@ export type TravelPackage = {
   exclusions: string[];
   itinerary: [string, string][];
   price_per_adult: number | null;
+  pricing_mode: "starting" | "seasonal" | "on_request";
+  price_basis: string;
+  pricing_note: string;
+  collection: "core" | "combo" | "ramadan" | "ziyarat";
   cancellation_terms: string;
   is_active: boolean;
   sort_order: number;
@@ -57,6 +61,10 @@ export type TravelRequest = {
     inclusions?: string[];
     exclusions?: string[];
     cancellation_terms?: string;
+    price_per_adult?: number | null;
+    price_basis?: string;
+    pricing_mode?: string;
+    pricing_note?: string;
   };
   estimated_adult_total: number | null;
   quoted_total: number | null;
@@ -135,7 +143,8 @@ export const travelMoney = (value: number) =>
   new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+    maximumFractionDigits: 2,
   }).format(value);
 export const travelDate = (value: string) =>
   new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(
@@ -149,9 +158,41 @@ export function packageJourney(pkg: TravelPackage): Journey {
     label: pkg.tagline,
     places: pkg.places,
     duration: pkg.duration,
-    image: pkg.image_url || "/travel/makkah.jpg",
+    image: pkg.image_url || "/travel/journey-placeholder.svg",
     description: pkg.description,
     highlights: pkg.highlights,
     itinerary: pkg.itinerary,
   };
+}
+
+export type TravelCatalogueFilter = {
+  search: string;
+  collection: string;
+  budget: string;
+  sort: "recommended" | "price-low" | "price-high";
+};
+export const initialCatalogueFilter: TravelCatalogueFilter = {
+  search: "",
+  collection: "all",
+  budget: "",
+  sort: "recommended",
+};
+export function filterTravelPackages(packages: TravelPackage[], filter: TravelCatalogueFilter) {
+  const result = packages.filter(
+    (pkg) =>
+      `${pkg.name} ${pkg.places} ${pkg.description}`
+        .toLowerCase()
+        .includes(filter.search.trim().toLowerCase()) &&
+      (filter.collection === "all" || pkg.collection === filter.collection) &&
+      (!filter.budget ||
+        (pkg.price_per_adult != null && Number(pkg.price_per_adult) <= Number(filter.budget))),
+  );
+  if (filter.sort !== "recommended")
+    result.sort((a, b) => {
+      if (a.price_per_adult == null) return b.price_per_adult == null ? 0 : 1;
+      if (b.price_per_adult == null) return -1;
+      const difference = Number(a.price_per_adult) - Number(b.price_per_adult);
+      return filter.sort === "price-low" ? difference : -difference;
+    });
+  return result;
 }

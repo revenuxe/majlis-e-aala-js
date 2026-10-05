@@ -25,9 +25,11 @@ tab contains its packages, event categories, menu categories, menu items and add
   enter a final quotation and maintain internal notes. Quoted/confirmed statuses
   require a quotation total. Contact the customer and send written terms separately.
 
-The five existing itinerary ideas are migrated into editable, active packages
-with no invented prices or departures. Homepage cards and planner choices both
-read the same live catalogue. Contact details and FAQs remain in `src/lib/travel.ts`.
+The original five itinerary ideas retain their UUIDs in the owner-approved
+63-offer catalogue imported on 6 October 2026. Starting prices, sharing bases,
+seasonal guides and inclusions are documented in [travel-catalogue-import.md](travel-catalogue-import.md).
+Homepage cards and planner choices read the same live catalogue. Contact details
+and FAQs remain in `src/lib/travel.ts`.
 
 ## Service-specific orders and tracking
 

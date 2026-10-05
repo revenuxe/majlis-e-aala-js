@@ -21,4 +21,6 @@ The planner now uses image-led cards with highlights, prominent price or quotati
 
 Actual package prices are edited in Admin → Listings → Travels → Packages → Indicative adult price (INR). Blank prices intentionally remain quote-only. Competitor advertisements above have not been published as Majlis prices.
 
+The subsequent owner-supplied catalogue now provides Majlis starting rates. See [travel-catalogue-import.md](travel-catalogue-import.md) for the 63-offer import, pricing rules and preserved data.
+
 Migration: `20261006030000_travel_senior_preferences.sql`. Backend validation, retry semantics and private history protections are covered by the rollback-only `supabase/tests/travel_booking_flow.sql` checks. Browser checks mock submission and verify senior/pace values without creating requests.

@@ -1,0 +1,3220 @@
+{
+  "source": "Owner-supplied complete catalogue, 6 October 2026",
+  "packages": [
+    {
+      "slug": "umrah-economy",
+      "category": "umrah",
+      "name": "Umrah Economy",
+      "duration": "14 Days / 13 Nights",
+      "price_per_adult": 89999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult · 4/5 sharing",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Madinah",
+      "tagline": "Guided with care",
+      "description": "Explore Makkah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "4/5 sharing",
+        "Flights, visa & insurance",
+        "Makkah & Madinah stays",
+        "Guided ziyarat"
+      ],
+      "inclusions": [
+        "Return economy airfare from Bengaluru",
+        "Umrah visa",
+        "Travel insurance",
+        "Makkah accommodation",
+        "Madinah accommodation",
+        "Airport transfers",
+        "Makkah–Madinah transport",
+        "Return airport transfer",
+        "Makkah and Madinah ziyarat",
+        "Umrah guidance",
+        "Group coordinator",
+        "Zamzam where permitted by airline and Saudi regulations"
+      ],
+      "exclusions": [
+        "Personal expenses",
+        "Shopping",
+        "Laundry",
+        "Room service",
+        "Private taxi",
+        "Extra baggage",
+        "Room upgrade",
+        "Optional excursions",
+        "Meals unless specifically mentioned"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 0
+    },
+    {
+      "slug": "umrah-standard",
+      "category": "umrah",
+      "name": "Umrah Standard",
+      "duration": "14 Days / 13 Nights",
+      "price_per_adult": 104999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult · 4 sharing",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Madinah",
+      "tagline": "Guided with care",
+      "description": "Explore Makkah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "4 sharing",
+        "3/4-star hotel plan",
+        "Breakfast included",
+        "Guided ziyarat"
+      ],
+      "inclusions": [
+        "Return airfare",
+        "Umrah visa",
+        "Travel insurance",
+        "Makkah accommodation",
+        "Madinah accommodation",
+        "Airport transfers",
+        "Makkah–Madinah transport",
+        "Return airport transfer",
+        "Makkah and Madinah ziyarat",
+        "Umrah guidance",
+        "Group coordinator",
+        "Zamzam where permitted by airline and Saudi regulations",
+        "3/4-star hotels, exact names confirmed",
+        "Breakfast"
+      ],
+      "exclusions": [
+        "Lunch and dinner",
+        "Personal expenses",
+        "Shopping",
+        "Laundry",
+        "Room service",
+        "Private transportation",
+        "Extra baggage",
+        "Optional activities"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 10
+    },
+    {
+      "slug": "umrah-comfort",
+      "category": "umrah",
+      "name": "Umrah Comfort",
+      "duration": "14 Days / 13 Nights",
+      "price_per_adult": 119999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult · 4 sharing",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Madinah",
+      "tagline": "Guided with care",
+      "description": "Explore Makkah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "4 sharing",
+        "Closer hotel preferences",
+        "Breakfast & dinner",
+        "Basic laundry"
+      ],
+      "inclusions": [
+        "Return direct / selected economy airfare",
+        "Umrah visa",
+        "Travel insurance",
+        "Makkah accommodation",
+        "Madinah accommodation",
+        "Airport transfers",
+        "Makkah–Madinah transport",
+        "Return airport transfer",
+        "Makkah and Madinah ziyarat",
+        "Umrah guidance",
+        "Group coordinator",
+        "Zamzam where permitted by airline and Saudi regulations",
+        "4-star hotels, exact names confirmed",
+        "Closer Makkah and Madinah accommodation, distances confirmed",
+        "Breakfast and dinner",
+        "Basic laundry"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Lunch",
+        "Medical expenses"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 20
+    },
+    {
+      "slug": "umrah-premium",
+      "category": "umrah",
+      "name": "Umrah Premium",
+      "duration": "14 Days / 13 Nights",
+      "price_per_adult": 149999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult · Double/triple sharing",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Madinah",
+      "tagline": "Guided with care",
+      "description": "Explore Makkah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Double/triple sharing",
+        "4/5-star hotel plan",
+        "Breakfast & dinner",
+        "Elderly assistance"
+      ],
+      "inclusions": [
+        "Return airfare",
+        "Umrah visa",
+        "Travel insurance",
+        "Makkah accommodation",
+        "Madinah accommodation",
+        "Airport transfers",
+        "Makkah–Madinah transport",
+        "Return airport transfer",
+        "Makkah and Madinah ziyarat",
+        "Umrah guidance",
+        "Group coordinator",
+        "Zamzam where permitted by airline and Saudi regulations",
+        "Premium 4/5-star hotels, names and distances confirmed",
+        "Breakfast and dinner",
+        "Comfortable transfers",
+        "Dedicated group leader",
+        "Laundry",
+        "Elderly assistance, arrangements confirmed"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Lunch",
+        "Medical expenses"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 30
+    },
+    {
+      "slug": "umrah-luxury",
+      "category": "umrah",
+      "name": "Umrah Luxury",
+      "duration": "10–14 Days",
+      "price_per_adult": 189999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult · Double sharing",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Madinah",
+      "tagline": "Guided with care",
+      "description": "Explore Makkah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Double sharing",
+        "5-star hotel plan",
+        "Premium transfers",
+        "Family assistance"
+      ],
+      "inclusions": [
+        "Premium airline",
+        "5-star hotels",
+        "Haram-facing / near-Haram accommodation where available",
+        "Premium Madinah hotel",
+        "Private / premium transfers",
+        "Breakfast and dinner",
+        "Ziyarat",
+        "Dedicated coordinator",
+        "Umrah guide",
+        "Laundry",
+        "Zamzam where permitted",
+        "Elderly / family assistance, arrangements confirmed"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Visa and insurance scope to be confirmed",
+        "Lunch",
+        "Medical expenses"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 40
+    },
+    {
+      "slug": "short-umrah",
+      "category": "umrah",
+      "name": "Short Umrah",
+      "duration": "8 Days / 7 Nights",
+      "price_per_adult": 99999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Madinah",
+      "tagline": "Guided with care",
+      "description": "A focused journey for pilgrims who cannot take two weeks away. Spend meaningful time in Makkah and Madinah with the essentials arranged around your dates.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Flight",
+        "Visa",
+        "Hotels",
+        "Transfers"
+      ],
+      "inclusions": [
+        "Flight",
+        "Visa",
+        "Hotels",
+        "Transfers",
+        "Ziyarat",
+        "Umrah guidance",
+        "Insurance"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 50
+    },
+    {
+      "slug": "family-umrah",
+      "category": "umrah",
+      "name": "Family Umrah",
+      "duration": "14 Days",
+      "price_per_adult": 109999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Flight, visa, meals and full service scope must be confirmed for the chosen family arrangement. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Madinah",
+      "tagline": "Guided with care",
+      "description": "Explore Makkah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Family room options",
+        "Parents & children",
+        "Gentler pace",
+        "Assistance requests"
+      ],
+      "inclusions": [
+        "Family room options",
+        "Elderly assistance",
+        "Wheelchair assistance on request and subject to availability",
+        "Family-friendly hotel planning",
+        "Flexible transportation arrangements"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 60
+    },
+    {
+      "slug": "ramadan-umrah-first-ashra",
+      "category": "umrah",
+      "name": "Ramadan Umrah — First Ashra",
+      "duration": "12–15 Days",
+      "price_per_adult": 149999,
+      "pricing_mode": "seasonal",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Seasonal guide only; Ramadan dates, hotels and flights must be re-quoted. Last ten nights and Laylatul Qadr arrangements are subject to availability. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "ramadan",
+      "places": "Makkah → Madinah",
+      "tagline": "Seasonal Ramadan journey",
+      "description": "Explore Makkah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Ramadan itinerary planning",
+        "Makkah and Madinah accommodation planning",
+        "Transfer and guidance arrangements to be confirmed"
+      ],
+      "inclusions": [
+        "Ramadan itinerary planning",
+        "Makkah and Madinah accommodation planning",
+        "Transfer and guidance arrangements to be confirmed"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 70
+    },
+    {
+      "slug": "ramadan-umrah-second-ashra",
+      "category": "umrah",
+      "name": "Ramadan Umrah — Second Ashra",
+      "duration": "12–15 Days",
+      "price_per_adult": 169999,
+      "pricing_mode": "seasonal",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Seasonal guide only; Ramadan dates, hotels and flights must be re-quoted. Last ten nights and Laylatul Qadr arrangements are subject to availability. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "ramadan",
+      "places": "Makkah → Madinah",
+      "tagline": "Seasonal Ramadan journey",
+      "description": "Explore Makkah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Ramadan itinerary planning",
+        "Makkah and Madinah accommodation planning",
+        "Transfer and guidance arrangements to be confirmed"
+      ],
+      "inclusions": [
+        "Ramadan itinerary planning",
+        "Makkah and Madinah accommodation planning",
+        "Transfer and guidance arrangements to be confirmed"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 80
+    },
+    {
+      "slug": "ramadan-umrah-last-ashra",
+      "category": "umrah",
+      "name": "Ramadan Umrah — Last Ashra",
+      "duration": "12–15 Days",
+      "price_per_adult": 219999,
+      "pricing_mode": "seasonal",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Seasonal guide only; Ramadan dates, hotels and flights must be re-quoted. Last ten nights and Laylatul Qadr arrangements are subject to availability. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "ramadan",
+      "places": "Makkah → Madinah",
+      "tagline": "Seasonal Ramadan journey",
+      "description": "Explore Makkah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Ramadan itinerary planning",
+        "Makkah and Madinah accommodation planning",
+        "Transfer and guidance arrangements to be confirmed"
+      ],
+      "inclusions": [
+        "Ramadan itinerary planning",
+        "Makkah and Madinah accommodation planning",
+        "Transfer and guidance arrangements to be confirmed"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 90
+    },
+    {
+      "slug": "ramadan-umrah-last-10-nights",
+      "category": "umrah",
+      "name": "Ramadan Umrah — Last 10 Nights",
+      "duration": "12–15 Days",
+      "price_per_adult": 249999,
+      "pricing_mode": "seasonal",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Seasonal guide only; Ramadan dates, hotels and flights must be re-quoted. Last ten nights and Laylatul Qadr arrangements are subject to availability. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "ramadan",
+      "places": "Makkah → Madinah",
+      "tagline": "Seasonal Ramadan journey",
+      "description": "Explore Makkah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Ramadan itinerary planning",
+        "Makkah and Madinah accommodation planning",
+        "Transfer and guidance arrangements to be confirmed"
+      ],
+      "inclusions": [
+        "Ramadan itinerary planning",
+        "Makkah and Madinah accommodation planning",
+        "Transfer and guidance arrangements to be confirmed"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 100
+    },
+    {
+      "slug": "umrah-dubai",
+      "category": "umrah",
+      "name": "Umrah + Dubai",
+      "duration": "16 Days / 15 Nights",
+      "price_per_adult": 149999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "combo",
+      "places": "Makkah → Madinah → Dubai",
+      "tagline": "Umrah & beyond",
+      "description": "Explore Makkah → Madinah → Dubai with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Umrah package",
+        "Dubai hotel",
+        "Dubai visa",
+        "Dubai city tour"
+      ],
+      "inclusions": [
+        "Umrah package",
+        "Dubai hotel",
+        "Dubai visa",
+        "Dubai city tour",
+        "Desert safari",
+        "Burj Khalifa",
+        "Airport transfers",
+        "Dubai sightseeing"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Dubai",
+          "Continue your journey in Dubai. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 110
+    },
+    {
+      "slug": "umrah-turkey",
+      "category": "umrah",
+      "name": "Umrah + Turkey",
+      "duration": "18 Days / 17 Nights",
+      "price_per_adult": 219999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "combo",
+      "places": "Makkah → Madinah → Istanbul → Bursa",
+      "tagline": "Umrah & beyond",
+      "description": "Explore Makkah → Madinah → Istanbul → Bursa with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Umrah",
+        "Turkey visa assistance",
+        "Flights",
+        "Hotels"
+      ],
+      "inclusions": [
+        "Umrah",
+        "Turkey visa assistance",
+        "Flights",
+        "Hotels",
+        "Istanbul sightseeing",
+        "Bursa",
+        "Bosphorus",
+        "Halal meals",
+        "Muslim-friendly guide"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Istanbul",
+          "Continue your journey in Istanbul. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Bursa",
+          "Continue your journey in Bursa. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 120
+    },
+    {
+      "slug": "umrah-egypt",
+      "category": "umrah",
+      "name": "Umrah + Egypt",
+      "duration": "17 Days / 16 Nights",
+      "price_per_adult": 199999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Nile cruise is optional and quoted separately. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "combo",
+      "places": "Makkah → Madinah → Cairo",
+      "tagline": "Umrah & beyond",
+      "description": "Explore Makkah → Madinah → Cairo with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Umrah",
+        "Cairo and Islamic history sightseeing",
+        "Pyramids",
+        "Islamic Cairo"
+      ],
+      "inclusions": [
+        "Umrah",
+        "Cairo and Islamic history sightseeing",
+        "Pyramids",
+        "Islamic Cairo",
+        "Hotels",
+        "Transfers"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Cairo",
+          "Continue your journey in Cairo. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 130
+    },
+    {
+      "slug": "umrah-azerbaijan",
+      "category": "umrah",
+      "name": "Umrah + Azerbaijan",
+      "duration": "16 Days / 15 Nights",
+      "price_per_adult": 179999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "combo",
+      "places": "Makkah → Madinah → Baku",
+      "tagline": "Umrah & beyond",
+      "description": "Explore Makkah → Madinah → Baku with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Umrah and Baku itinerary planning; exact service scope confirmed in quotation"
+      ],
+      "inclusions": [
+        "Umrah and Baku itinerary planning; exact service scope confirmed in quotation"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Baku",
+          "Continue your journey in Baku. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 140
+    },
+    {
+      "slug": "umrah-iraq",
+      "category": "umrah",
+      "name": "Umrah + Iraq",
+      "duration": "18 Days / 17 Nights",
+      "price_per_adult": 199999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Specialist heritage enquiry; operation depends on confirmed visas, entry conditions and route arrangements. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "combo",
+      "places": "Makkah → Madinah → Baghdad → Karbala → Najaf",
+      "tagline": "Umrah & beyond",
+      "description": "Explore Makkah → Madinah → Baghdad → Karbala → Najaf with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Umrah and specialist ziyarat itinerary planning",
+        "Visa and security arrangements reviewed for each departure"
+      ],
+      "inclusions": [
+        "Umrah and specialist ziyarat itinerary planning",
+        "Visa and security arrangements reviewed for each departure"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Baghdad",
+          "Continue your journey in Baghdad. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Karbala",
+          "Continue your journey in Karbala. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Najaf",
+          "Continue your journey in Najaf. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 150
+    },
+    {
+      "slug": "umrah-al-aqsa-jordan",
+      "category": "umrah",
+      "name": "Umrah + Al-Aqsa + Jordan",
+      "duration": "20 Days / 19 Nights",
+      "price_per_adult": 229999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Specialist heritage enquiry; operation depends on confirmed visas, entry conditions and route arrangements. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "combo",
+      "places": "Makkah → Madinah → Amman → Jerusalem / Al-Aqsa",
+      "tagline": "Umrah & beyond",
+      "description": "Explore Makkah → Madinah → Amman → Jerusalem / Al-Aqsa with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Umrah and heritage itinerary planning",
+        "Visa, entry and route availability reviewed for each departure"
+      ],
+      "inclusions": [
+        "Umrah and heritage itinerary planning",
+        "Visa, entry and route availability reviewed for each departure"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Makkah",
+          "Begin your journey in Makkah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Amman",
+          "Continue your journey in Amman. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Jerusalem / Al-Aqsa",
+          "Continue your journey in Jerusalem / Al-Aqsa. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 160
+    },
+    {
+      "slug": "hajj-economy",
+      "category": "hajj",
+      "name": "Hajj Economy",
+      "duration": "21 / 25 / 30 / 35 Days — programme confirmed",
+      "price_per_adult": 499999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult · Programme and sharing confirmed",
+      "pricing_note": "Enquiry only. Subject to the applicable Saudi/Indian Hajj authorisation and approved operator arrangements; no place is reserved by this request. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Mina → Arafat → Muzdalifah → Madinah",
+      "tagline": "Guided with care",
+      "description": "Explore Makkah → Mina → Arafat → Muzdalifah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation"
+      ],
+      "inclusions": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation",
+        "Arafat and Muzdalifah arrangements",
+        "Mashaer transportation",
+        "Meals",
+        "Group coordinator",
+        "Moallim / religious guidance",
+        "Ziyarat",
+        "Airport transfers",
+        "Hajj kit",
+        "Zamzam where permitted",
+        "Emergency assistance"
+      ],
+      "exclusions": [
+        "Personal shopping",
+        "Personal expenses",
+        "Private transportation",
+        "Room upgrades",
+        "Optional excursions",
+        "Medical expenses",
+        "Excess baggage",
+        "Services outside package"
+      ],
+      "itinerary": [
+        [
+          "Prepare through the appropriate route",
+          "Verify eligibility, authorisation, visa processing and the approved operator arrangements."
+        ],
+        [
+          "Review your stay and pilgrimage arrangements",
+          "Confirm hotels, room occupancy, Mina, Arafat, Muzdalifah and Mashaer transport in writing."
+        ],
+        [
+          "Complete your guided pilgrimage",
+          "The exact sequence and schedule follow the approved Hajj programme."
+        ],
+        [
+          "Return arrangements",
+          "Confirm departure, transfers and baggage details with your coordinator."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 170
+    },
+    {
+      "slug": "hajj-comfort",
+      "category": "hajj",
+      "name": "Hajj Comfort",
+      "duration": "21 / 25 / 30 / 35 Days — programme confirmed",
+      "price_per_adult": 599999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult · Programme and sharing confirmed",
+      "pricing_note": "Enquiry only. Subject to the applicable Saudi/Indian Hajj authorisation and approved operator arrangements; no place is reserved by this request. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Mina → Arafat → Muzdalifah → Madinah",
+      "tagline": "Guided with care",
+      "description": "Explore Makkah → Mina → Arafat → Muzdalifah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation"
+      ],
+      "inclusions": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation",
+        "Arafat and Muzdalifah arrangements",
+        "Mashaer transportation",
+        "Meals",
+        "Group coordinator",
+        "Moallim / religious guidance",
+        "Ziyarat",
+        "Airport transfers",
+        "Hajj kit",
+        "Zamzam where permitted",
+        "Emergency assistance"
+      ],
+      "exclusions": [
+        "Personal shopping",
+        "Personal expenses",
+        "Private transportation",
+        "Room upgrades",
+        "Optional excursions",
+        "Medical expenses",
+        "Excess baggage",
+        "Services outside package"
+      ],
+      "itinerary": [
+        [
+          "Prepare through the appropriate route",
+          "Verify eligibility, authorisation, visa processing and the approved operator arrangements."
+        ],
+        [
+          "Review your stay and pilgrimage arrangements",
+          "Confirm hotels, room occupancy, Mina, Arafat, Muzdalifah and Mashaer transport in writing."
+        ],
+        [
+          "Complete your guided pilgrimage",
+          "The exact sequence and schedule follow the approved Hajj programme."
+        ],
+        [
+          "Return arrangements",
+          "Confirm departure, transfers and baggage details with your coordinator."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 180
+    },
+    {
+      "slug": "hajj-premium",
+      "category": "hajj",
+      "name": "Hajj Premium",
+      "duration": "21 / 25 / 30 / 35 Days — programme confirmed",
+      "price_per_adult": 749999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult · Programme and sharing confirmed",
+      "pricing_note": "Enquiry only. Subject to the applicable Saudi/Indian Hajj authorisation and approved operator arrangements; no place is reserved by this request. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Mina → Arafat → Muzdalifah → Madinah",
+      "tagline": "Guided with care",
+      "description": "Explore Makkah → Mina → Arafat → Muzdalifah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation"
+      ],
+      "inclusions": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation",
+        "Arafat and Muzdalifah arrangements",
+        "Mashaer transportation",
+        "Meals",
+        "Group coordinator",
+        "Moallim / religious guidance",
+        "Ziyarat",
+        "Airport transfers",
+        "Hajj kit",
+        "Zamzam where permitted",
+        "Emergency assistance"
+      ],
+      "exclusions": [
+        "Personal shopping",
+        "Personal expenses",
+        "Private transportation",
+        "Room upgrades",
+        "Optional excursions",
+        "Medical expenses",
+        "Excess baggage",
+        "Services outside package"
+      ],
+      "itinerary": [
+        [
+          "Prepare through the appropriate route",
+          "Verify eligibility, authorisation, visa processing and the approved operator arrangements."
+        ],
+        [
+          "Review your stay and pilgrimage arrangements",
+          "Confirm hotels, room occupancy, Mina, Arafat, Muzdalifah and Mashaer transport in writing."
+        ],
+        [
+          "Complete your guided pilgrimage",
+          "The exact sequence and schedule follow the approved Hajj programme."
+        ],
+        [
+          "Return arrangements",
+          "Confirm departure, transfers and baggage details with your coordinator."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 190
+    },
+    {
+      "slug": "hajj-vip",
+      "category": "hajj",
+      "name": "Hajj VIP",
+      "duration": "21 / 25 / 30 / 35 Days — programme confirmed",
+      "price_per_adult": 999999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult · Programme and sharing confirmed",
+      "pricing_note": "Enquiry only. Subject to the applicable Saudi/Indian Hajj authorisation and approved operator arrangements; no place is reserved by this request. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Mina → Arafat → Muzdalifah → Madinah",
+      "tagline": "Guided with care",
+      "description": "Explore Makkah → Mina → Arafat → Muzdalifah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation"
+      ],
+      "inclusions": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation",
+        "Arafat and Muzdalifah arrangements",
+        "Mashaer transportation",
+        "Meals",
+        "Group coordinator",
+        "Moallim / religious guidance",
+        "Ziyarat",
+        "Airport transfers",
+        "Hajj kit",
+        "Zamzam where permitted",
+        "Emergency assistance"
+      ],
+      "exclusions": [
+        "Personal shopping",
+        "Personal expenses",
+        "Private transportation",
+        "Room upgrades",
+        "Optional excursions",
+        "Medical expenses",
+        "Excess baggage",
+        "Services outside package"
+      ],
+      "itinerary": [
+        [
+          "Prepare through the appropriate route",
+          "Verify eligibility, authorisation, visa processing and the approved operator arrangements."
+        ],
+        [
+          "Review your stay and pilgrimage arrangements",
+          "Confirm hotels, room occupancy, Mina, Arafat, Muzdalifah and Mashaer transport in writing."
+        ],
+        [
+          "Complete your guided pilgrimage",
+          "The exact sequence and schedule follow the approved Hajj programme."
+        ],
+        [
+          "Return arrangements",
+          "Confirm departure, transfers and baggage details with your coordinator."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 200
+    },
+    {
+      "slug": "21-day-hajj",
+      "category": "hajj",
+      "name": "21-Day Hajj",
+      "duration": "21 Days",
+      "price_per_adult": null,
+      "pricing_mode": "on_request",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Select a preferred duration; category, authorised programme and price are confirmed individually. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Mina → Arafat → Muzdalifah → Madinah",
+      "tagline": "Guided with care",
+      "description": "Explore Makkah → Mina → Arafat → Muzdalifah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation"
+      ],
+      "inclusions": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation",
+        "Arafat and Muzdalifah arrangements",
+        "Mashaer transportation",
+        "Meals",
+        "Group coordinator",
+        "Moallim / religious guidance",
+        "Ziyarat",
+        "Airport transfers",
+        "Hajj kit",
+        "Zamzam where permitted",
+        "Emergency assistance"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Medical expenses"
+      ],
+      "itinerary": [
+        [
+          "Prepare through the appropriate route",
+          "Verify eligibility, authorisation, visa processing and the approved operator arrangements."
+        ],
+        [
+          "Review your stay and pilgrimage arrangements",
+          "Confirm hotels, room occupancy, Mina, Arafat, Muzdalifah and Mashaer transport in writing."
+        ],
+        [
+          "Complete your guided pilgrimage",
+          "The exact sequence and schedule follow the approved Hajj programme."
+        ],
+        [
+          "Return arrangements",
+          "Confirm departure, transfers and baggage details with your coordinator."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 210
+    },
+    {
+      "slug": "25-day-hajj",
+      "category": "hajj",
+      "name": "25-Day Hajj",
+      "duration": "25 Days",
+      "price_per_adult": null,
+      "pricing_mode": "on_request",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Select a preferred duration; category, authorised programme and price are confirmed individually. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Mina → Arafat → Muzdalifah → Madinah",
+      "tagline": "Guided with care",
+      "description": "Explore Makkah → Mina → Arafat → Muzdalifah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation"
+      ],
+      "inclusions": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation",
+        "Arafat and Muzdalifah arrangements",
+        "Mashaer transportation",
+        "Meals",
+        "Group coordinator",
+        "Moallim / religious guidance",
+        "Ziyarat",
+        "Airport transfers",
+        "Hajj kit",
+        "Zamzam where permitted",
+        "Emergency assistance"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Medical expenses"
+      ],
+      "itinerary": [
+        [
+          "Prepare through the appropriate route",
+          "Verify eligibility, authorisation, visa processing and the approved operator arrangements."
+        ],
+        [
+          "Review your stay and pilgrimage arrangements",
+          "Confirm hotels, room occupancy, Mina, Arafat, Muzdalifah and Mashaer transport in writing."
+        ],
+        [
+          "Complete your guided pilgrimage",
+          "The exact sequence and schedule follow the approved Hajj programme."
+        ],
+        [
+          "Return arrangements",
+          "Confirm departure, transfers and baggage details with your coordinator."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 220
+    },
+    {
+      "slug": "30-day-hajj",
+      "category": "hajj",
+      "name": "30-Day Hajj",
+      "duration": "30 Days",
+      "price_per_adult": null,
+      "pricing_mode": "on_request",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Select a preferred duration; category, authorised programme and price are confirmed individually. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Mina → Arafat → Muzdalifah → Madinah",
+      "tagline": "Guided with care",
+      "description": "Explore Makkah → Mina → Arafat → Muzdalifah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation"
+      ],
+      "inclusions": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation",
+        "Arafat and Muzdalifah arrangements",
+        "Mashaer transportation",
+        "Meals",
+        "Group coordinator",
+        "Moallim / religious guidance",
+        "Ziyarat",
+        "Airport transfers",
+        "Hajj kit",
+        "Zamzam where permitted",
+        "Emergency assistance"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Medical expenses"
+      ],
+      "itinerary": [
+        [
+          "Prepare through the appropriate route",
+          "Verify eligibility, authorisation, visa processing and the approved operator arrangements."
+        ],
+        [
+          "Review your stay and pilgrimage arrangements",
+          "Confirm hotels, room occupancy, Mina, Arafat, Muzdalifah and Mashaer transport in writing."
+        ],
+        [
+          "Complete your guided pilgrimage",
+          "The exact sequence and schedule follow the approved Hajj programme."
+        ],
+        [
+          "Return arrangements",
+          "Confirm departure, transfers and baggage details with your coordinator."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 230
+    },
+    {
+      "slug": "35-day-hajj",
+      "category": "hajj",
+      "name": "35-Day Hajj",
+      "duration": "35 Days",
+      "price_per_adult": null,
+      "pricing_mode": "on_request",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Select a preferred duration; category, authorised programme and price are confirmed individually. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Makkah → Mina → Arafat → Muzdalifah → Madinah",
+      "tagline": "Guided with care",
+      "description": "Explore Makkah → Mina → Arafat → Muzdalifah → Madinah with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/makkah.jpg",
+      "highlights": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation"
+      ],
+      "inclusions": [
+        "Return airfare",
+        "Hajj visa / approved processing",
+        "Makkah and Madinah accommodation",
+        "Mina accommodation",
+        "Arafat and Muzdalifah arrangements",
+        "Mashaer transportation",
+        "Meals",
+        "Group coordinator",
+        "Moallim / religious guidance",
+        "Ziyarat",
+        "Airport transfers",
+        "Hajj kit",
+        "Zamzam where permitted",
+        "Emergency assistance"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Medical expenses"
+      ],
+      "itinerary": [
+        [
+          "Prepare through the appropriate route",
+          "Verify eligibility, authorisation, visa processing and the approved operator arrangements."
+        ],
+        [
+          "Review your stay and pilgrimage arrangements",
+          "Confirm hotels, room occupancy, Mina, Arafat, Muzdalifah and Mashaer transport in writing."
+        ],
+        [
+          "Complete your guided pilgrimage",
+          "The exact sequence and schedule follow the approved Hajj programme."
+        ],
+        [
+          "Return arrangements",
+          "Confirm departure, transfers and baggage details with your coordinator."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 240
+    },
+    {
+      "slug": "dubai-essentials",
+      "category": "international",
+      "name": "Dubai Essentials",
+      "duration": "5 Days / 4 Nights",
+      "price_per_adult": 49999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Dubai",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Dubai with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/dubai.jpg",
+      "highlights": [
+        "Flight",
+        "Visa",
+        "Hotel",
+        "Breakfast"
+      ],
+      "inclusions": [
+        "Flight",
+        "Visa",
+        "Hotel",
+        "Breakfast",
+        "Airport transfer",
+        "Dubai city tour",
+        "Desert safari",
+        "Burj Khalifa"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Dubai",
+          "Begin your journey in Dubai. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 250
+    },
+    {
+      "slug": "dubai-premium",
+      "category": "international",
+      "name": "Dubai Premium",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 69999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Dubai",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Dubai with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/dubai.jpg",
+      "highlights": [
+        "Flight",
+        "Visa",
+        "Hotel",
+        "Breakfast"
+      ],
+      "inclusions": [
+        "Flight",
+        "Visa",
+        "Hotel",
+        "Breakfast",
+        "Airport transfer",
+        "Dubai city tour",
+        "Desert safari",
+        "Burj Khalifa"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Dubai",
+          "Begin your journey in Dubai. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 260
+    },
+    {
+      "slug": "istanbul",
+      "category": "international",
+      "name": "Istanbul",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 79999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Istanbul",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Istanbul with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Istanbul and Ottoman / Islamic heritage planning",
+        "Halal food options",
+        "Hotels",
+        "Transfers"
+      ],
+      "inclusions": [
+        "Istanbul and Ottoman / Islamic heritage planning",
+        "Halal food options",
+        "Hotels",
+        "Transfers"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Istanbul",
+          "Begin your journey in Istanbul. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 270
+    },
+    {
+      "slug": "turkey-highlights",
+      "category": "international",
+      "name": "Turkey Highlights",
+      "duration": "8 Days / 7 Nights",
+      "price_per_adult": 109999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Istanbul → Cappadocia → Bursa",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Istanbul → Cappadocia → Bursa with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Istanbul",
+        "Cappadocia",
+        "Bursa",
+        "Bosphorus"
+      ],
+      "inclusions": [
+        "Istanbul",
+        "Cappadocia",
+        "Bursa",
+        "Bosphorus",
+        "Ottoman / Islamic heritage",
+        "Halal food options",
+        "Hotels",
+        "Transfers"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Istanbul",
+          "Begin your journey in Istanbul. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Cappadocia",
+          "Continue your journey in Cappadocia. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Bursa",
+          "Continue your journey in Bursa. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 280
+    },
+    {
+      "slug": "baku",
+      "category": "international",
+      "name": "Baku",
+      "duration": "5 Days / 4 Nights",
+      "price_per_adult": 59999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Baku",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Baku with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Baku Old City",
+        "Mosque / Islamic heritage",
+        "Gobustan",
+        "Hotels"
+      ],
+      "inclusions": [
+        "Baku Old City",
+        "Mosque / Islamic heritage",
+        "Gobustan",
+        "Hotels",
+        "Breakfast",
+        "Transfers"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Baku",
+          "Begin your journey in Baku. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 290
+    },
+    {
+      "slug": "azerbaijan-explorer",
+      "category": "international",
+      "name": "Azerbaijan Explorer",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 69999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Baku → Gabala / Shahdag",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Baku → Gabala / Shahdag with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Baku Old City",
+        "Mosque / Islamic heritage",
+        "Gobustan",
+        "Gabala / Shahdag, route confirmed"
+      ],
+      "inclusions": [
+        "Baku Old City",
+        "Mosque / Islamic heritage",
+        "Gobustan",
+        "Gabala / Shahdag, route confirmed",
+        "Hotels",
+        "Breakfast",
+        "Transfers"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Baku",
+          "Begin your journey in Baku. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Gabala / Shahdag",
+          "Continue your journey in Gabala / Shahdag. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 300
+    },
+    {
+      "slug": "kuala-lumpur",
+      "category": "international",
+      "name": "Kuala Lumpur",
+      "duration": "5 Days / 4 Nights",
+      "price_per_adult": 49999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Kuala Lumpur → Genting Highlands → Putrajaya",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Kuala Lumpur → Genting Highlands → Putrajaya with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Kuala Lumpur",
+        "Genting Highlands",
+        "Putrajaya",
+        "Batu Caves"
+      ],
+      "inclusions": [
+        "Kuala Lumpur",
+        "Genting Highlands",
+        "Putrajaya",
+        "Batu Caves",
+        "Halal food options",
+        "Hotels",
+        "Transfers"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Kuala Lumpur",
+          "Begin your journey in Kuala Lumpur. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Genting Highlands",
+          "Continue your journey in Genting Highlands. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Putrajaya",
+          "Continue your journey in Putrajaya. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 310
+    },
+    {
+      "slug": "malaysia-family",
+      "category": "international",
+      "name": "Malaysia Family",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 59999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Kuala Lumpur → Genting Highlands → Putrajaya",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Kuala Lumpur → Genting Highlands → Putrajaya with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Kuala Lumpur",
+        "Genting Highlands",
+        "Putrajaya",
+        "Batu Caves"
+      ],
+      "inclusions": [
+        "Kuala Lumpur",
+        "Genting Highlands",
+        "Putrajaya",
+        "Batu Caves",
+        "Halal food options",
+        "Hotels",
+        "Transfers"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Kuala Lumpur",
+          "Begin your journey in Kuala Lumpur. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Genting Highlands",
+          "Continue your journey in Genting Highlands. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Putrajaya",
+          "Continue your journey in Putrajaya. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 320
+    },
+    {
+      "slug": "bali",
+      "category": "international",
+      "name": "Bali",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 59999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Bali",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Bali with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "inclusions": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Bali",
+          "Begin your journey in Bali. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 330
+    },
+    {
+      "slug": "bali-premium",
+      "category": "international",
+      "name": "Bali Premium",
+      "duration": "7 Days / 6 Nights",
+      "price_per_adult": 79999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Bali",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Bali with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "inclusions": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Bali",
+          "Begin your journey in Bali. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 340
+    },
+    {
+      "slug": "singapore",
+      "category": "international",
+      "name": "Singapore",
+      "duration": "5 Days / 4 Nights",
+      "price_per_adult": 69999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Singapore",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Singapore with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "inclusions": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Singapore",
+          "Begin your journey in Singapore. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 350
+    },
+    {
+      "slug": "singapore-family",
+      "category": "international",
+      "name": "Singapore Family",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 79999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Singapore",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Singapore with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "inclusions": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Singapore",
+          "Begin your journey in Singapore. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 360
+    },
+    {
+      "slug": "bangkok-pattaya",
+      "category": "international",
+      "name": "Bangkok + Pattaya",
+      "duration": "5 Days / 4 Nights",
+      "price_per_adult": 49999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Bangkok → Pattaya",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Bangkok → Pattaya with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "inclusions": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Bangkok",
+          "Begin your journey in Bangkok. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Pattaya",
+          "Continue your journey in Pattaya. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 370
+    },
+    {
+      "slug": "thailand-family",
+      "category": "international",
+      "name": "Thailand Family",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 59999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Bangkok → Pattaya",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Bangkok → Pattaya with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "inclusions": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Bangkok",
+          "Begin your journey in Bangkok. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Pattaya",
+          "Continue your journey in Pattaya. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 380
+    },
+    {
+      "slug": "cairo",
+      "category": "international",
+      "name": "Cairo",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 79999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Cairo",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Cairo with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Islamic Cairo",
+        "Al-Azhar and historic mosques",
+        "Pyramids",
+        "Nile and Muslim heritage itinerary planning"
+      ],
+      "inclusions": [
+        "Islamic Cairo",
+        "Al-Azhar and historic mosques",
+        "Pyramids",
+        "Nile and Muslim heritage itinerary planning"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Cairo",
+          "Begin your journey in Cairo. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 390
+    },
+    {
+      "slug": "egypt-heritage",
+      "category": "international",
+      "name": "Egypt Heritage",
+      "duration": "7 Days / 6 Nights",
+      "price_per_adult": 99999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Cairo → Nile heritage route",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Cairo → Nile heritage route with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Islamic Cairo",
+        "Al-Azhar and historic mosques",
+        "Pyramids",
+        "Nile and Muslim heritage itinerary planning"
+      ],
+      "inclusions": [
+        "Islamic Cairo",
+        "Al-Azhar and historic mosques",
+        "Pyramids",
+        "Nile and Muslim heritage itinerary planning"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Cairo",
+          "Begin your journey in Cairo. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Nile heritage route",
+          "Continue your journey in Nile heritage route. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 400
+    },
+    {
+      "slug": "jordan-heritage",
+      "category": "international",
+      "name": "Jordan Heritage",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 89999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Amman → Petra → Dead Sea",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Amman → Petra → Dead Sea with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Amman",
+        "Petra",
+        "Dead Sea",
+        "Islamic heritage"
+      ],
+      "inclusions": [
+        "Amman",
+        "Petra",
+        "Dead Sea",
+        "Islamic heritage",
+        "Aqaba where applicable"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Amman",
+          "Begin your journey in Amman. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Petra",
+          "Continue your journey in Petra. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Dead Sea",
+          "Continue your journey in Dead Sea. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 410
+    },
+    {
+      "slug": "tashkent-samarkand",
+      "category": "international",
+      "name": "Tashkent + Samarkand",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 69999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Tashkent → Samarkand → Bukhara",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Tashkent → Samarkand → Bukhara with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Tashkent",
+        "Samarkand",
+        "Bukhara",
+        "Islamic architecture"
+      ],
+      "inclusions": [
+        "Tashkent",
+        "Samarkand",
+        "Bukhara",
+        "Islamic architecture",
+        "Mosques and madrasas",
+        "Halal food"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Tashkent",
+          "Begin your journey in Tashkent. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Samarkand",
+          "Continue your journey in Samarkand. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Bukhara",
+          "Continue your journey in Bukhara. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 420
+    },
+    {
+      "slug": "morocco-heritage",
+      "category": "international",
+      "name": "Morocco Heritage",
+      "duration": "8 Days / 7 Nights",
+      "price_per_adult": 119999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Marrakech → Casablanca → Rabat → Fes",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Marrakech → Casablanca → Rabat → Fes with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Marrakech",
+        "Casablanca",
+        "Rabat",
+        "Fes"
+      ],
+      "inclusions": [
+        "Marrakech",
+        "Casablanca",
+        "Rabat",
+        "Fes",
+        "Islamic architecture and mosques",
+        "Halal food"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Marrakech",
+          "Begin your journey in Marrakech. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Casablanca",
+          "Continue your journey in Casablanca. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Rabat",
+          "Continue your journey in Rabat. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Fes",
+          "Continue your journey in Fes. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 430
+    },
+    {
+      "slug": "saudi-islamic-heritage",
+      "category": "international",
+      "name": "Saudi Islamic Heritage",
+      "duration": "7 Days / 6 Nights",
+      "price_per_adult": 89999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Jeddah → Madinah → AlUla → Riyadh",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Jeddah → Madinah → AlUla → Riyadh with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Saudi heritage itinerary planning; separate from Umrah"
+      ],
+      "inclusions": [
+        "Saudi heritage itinerary planning; separate from Umrah"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Jeddah",
+          "Begin your journey in Jeddah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Madinah",
+          "Continue your journey in Madinah. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "AlUla",
+          "Continue your journey in AlUla. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Riyadh",
+          "Continue your journey in Riyadh. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 440
+    },
+    {
+      "slug": "iraq-ziyarat",
+      "category": "international",
+      "name": "Iraq Ziyarat",
+      "duration": "8 Days / 7 Nights",
+      "price_per_adult": 99999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Specialist enquiry subject to confirmed visa, entry and operational arrangements. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "ziyarat",
+      "places": "Baghdad → Karbala → Najaf → Kadhimiya",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Baghdad → Karbala → Najaf → Kadhimiya with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Specialist ziyarat itinerary planning",
+        "Samarra visit where permitted and operationally available"
+      ],
+      "inclusions": [
+        "Specialist ziyarat itinerary planning",
+        "Samarra visit where permitted and operationally available"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Baghdad",
+          "Begin your journey in Baghdad. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Karbala",
+          "Continue your journey in Karbala. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Najaf",
+          "Continue your journey in Najaf. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Kadhimiya",
+          "Continue your journey in Kadhimiya. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 450
+    },
+    {
+      "slug": "al-aqsa-jordan",
+      "category": "international",
+      "name": "Al-Aqsa & Jordan",
+      "duration": "9 Days / 8 Nights",
+      "price_per_adult": 129999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Specialist enquiry subject to confirmed visa, entry and operational arrangements. Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "ziyarat",
+      "places": "Amman → Jerusalem / Al-Aqsa → Bethlehem → Dead Sea",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Amman → Jerusalem / Al-Aqsa → Bethlehem → Dead Sea with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Heritage itinerary planning",
+        "Entry and route availability checked for each departure"
+      ],
+      "inclusions": [
+        "Heritage itinerary planning",
+        "Entry and route availability checked for each departure"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Amman",
+          "Begin your journey in Amman. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Jerusalem / Al-Aqsa",
+          "Continue your journey in Jerusalem / Al-Aqsa. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Bethlehem",
+          "Continue your journey in Bethlehem. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Dead Sea",
+          "Continue your journey in Dead Sea. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 460
+    },
+    {
+      "slug": "muslim-friendly-europe",
+      "category": "international",
+      "name": "Muslim-Friendly Europe",
+      "duration": "8 Days / 7 Nights",
+      "price_per_adult": 139999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Paris → Switzerland → Milan",
+      "tagline": "Muslim-friendly travel",
+      "description": "Explore Paris → Switzerland → Milan with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Halal restaurant planning",
+        "Muslim-friendly hotel preferences",
+        "Prayer-friendly itinerary",
+        "Mosque visits where practical"
+      ],
+      "inclusions": [
+        "Halal restaurant planning",
+        "Muslim-friendly hotel preferences",
+        "Prayer-friendly itinerary",
+        "Mosque visits where practical"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Paris",
+          "Begin your journey in Paris. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Switzerland",
+          "Continue your journey in Switzerland. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Milan",
+          "Continue your journey in Milan. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 470
+    },
+    {
+      "slug": "kashmir-essentials",
+      "category": "domestic",
+      "name": "Kashmir Essentials",
+      "duration": "5 Days / 4 Nights",
+      "price_per_adult": 24999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Srinagar → Gulmarg → Pahalgam → Sonamarg",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Srinagar → Gulmarg → Pahalgam → Sonamarg with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Srinagar",
+        "Gulmarg",
+        "Pahalgam",
+        "Sonamarg"
+      ],
+      "inclusions": [
+        "Srinagar",
+        "Gulmarg",
+        "Pahalgam",
+        "Sonamarg",
+        "Dal Lake",
+        "Houseboat",
+        "Halal meals"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Srinagar",
+          "Begin your journey in Srinagar. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Gulmarg",
+          "Continue your journey in Gulmarg. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Pahalgam",
+          "Continue your journey in Pahalgam. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Sonamarg",
+          "Continue your journey in Sonamarg. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 480
+    },
+    {
+      "slug": "kashmir-premium",
+      "category": "domestic",
+      "name": "Kashmir Premium",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 34999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Srinagar → Gulmarg → Pahalgam → Sonamarg",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Srinagar → Gulmarg → Pahalgam → Sonamarg with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Srinagar",
+        "Gulmarg",
+        "Pahalgam",
+        "Sonamarg"
+      ],
+      "inclusions": [
+        "Srinagar",
+        "Gulmarg",
+        "Pahalgam",
+        "Sonamarg",
+        "Dal Lake",
+        "Houseboat",
+        "Halal meals"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Srinagar",
+          "Begin your journey in Srinagar. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Gulmarg",
+          "Continue your journey in Gulmarg. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Pahalgam",
+          "Continue your journey in Pahalgam. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Sonamarg",
+          "Continue your journey in Sonamarg. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 490
+    },
+    {
+      "slug": "kerala-highlights",
+      "category": "domestic",
+      "name": "Kerala Highlights",
+      "duration": "5 Days / 4 Nights",
+      "price_per_adult": 24999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Kochi → Munnar → Thekkady → Alleppey",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Kochi → Munnar → Thekkady → Alleppey with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/kerala.jpg",
+      "highlights": [
+        "Kochi",
+        "Munnar",
+        "Thekkady",
+        "Alleppey"
+      ],
+      "inclusions": [
+        "Kochi",
+        "Munnar",
+        "Thekkady",
+        "Alleppey",
+        "Halal food",
+        "Hotels",
+        "Transport"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Kochi",
+          "Begin your journey in Kochi. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Munnar",
+          "Continue your journey in Munnar. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Thekkady",
+          "Continue your journey in Thekkady. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Alleppey",
+          "Continue your journey in Alleppey. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 500
+    },
+    {
+      "slug": "kerala-family",
+      "category": "domestic",
+      "name": "Kerala Family",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 34999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Kochi → Munnar → Thekkady → Alleppey",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Kochi → Munnar → Thekkady → Alleppey with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": "/travel/kerala.jpg",
+      "highlights": [
+        "Kochi",
+        "Munnar",
+        "Thekkady",
+        "Alleppey"
+      ],
+      "inclusions": [
+        "Kochi",
+        "Munnar",
+        "Thekkady",
+        "Alleppey",
+        "Halal food",
+        "Hotels",
+        "Transport"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Kochi",
+          "Begin your journey in Kochi. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Munnar",
+          "Continue your journey in Munnar. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Thekkady",
+          "Continue your journey in Thekkady. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Alleppey",
+          "Continue your journey in Alleppey. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 510
+    },
+    {
+      "slug": "hyderabad-heritage",
+      "category": "domestic",
+      "name": "Hyderabad Heritage",
+      "duration": "4 Days / 3 Nights",
+      "price_per_adult": 19999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Hyderabad",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Hyderabad with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Charminar",
+        "Mecca Masjid",
+        "Golconda",
+        "Chowmahalla"
+      ],
+      "inclusions": [
+        "Charminar",
+        "Mecca Masjid",
+        "Golconda",
+        "Chowmahalla",
+        "Muslim heritage",
+        "Halal food tour"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Hyderabad",
+          "Begin your journey in Hyderabad. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 520
+    },
+    {
+      "slug": "lucknow-muslim-heritage",
+      "category": "domestic",
+      "name": "Lucknow Muslim Heritage",
+      "duration": "4 Days / 3 Nights",
+      "price_per_adult": 21999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Lucknow",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Lucknow with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Bara Imambara",
+        "Chota Imambara",
+        "Rumi Darwaza",
+        "Islamic architecture"
+      ],
+      "inclusions": [
+        "Bara Imambara",
+        "Chota Imambara",
+        "Rumi Darwaza",
+        "Islamic architecture",
+        "Halal food"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Lucknow",
+          "Begin your journey in Lucknow. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 530
+    },
+    {
+      "slug": "islamic-mughal-heritage",
+      "category": "domestic",
+      "name": "Islamic & Mughal Heritage",
+      "duration": "4 Days / 3 Nights",
+      "price_per_adult": 24999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Delhi → Agra",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Delhi → Agra with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Jama Masjid",
+        "Red Fort",
+        "Humayun's Tomb",
+        "Agra"
+      ],
+      "inclusions": [
+        "Jama Masjid",
+        "Red Fort",
+        "Humayun's Tomb",
+        "Agra",
+        "Taj Mahal",
+        "Muslim heritage"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Delhi",
+          "Begin your journey in Delhi. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Agra",
+          "Continue your journey in Agra. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 540
+    },
+    {
+      "slug": "goa-family",
+      "category": "domestic",
+      "name": "Goa Family",
+      "duration": "5 Days / 4 Nights",
+      "price_per_adult": 24999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Goa",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Goa with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Family-friendly hotels",
+        "Halal food",
+        "Beaches",
+        "Sightseeing"
+      ],
+      "inclusions": [
+        "Family-friendly hotels",
+        "Halal food",
+        "Beaches",
+        "Sightseeing",
+        "Private transport"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Goa",
+          "Begin your journey in Goa. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 550
+    },
+    {
+      "slug": "ooty-family-escape",
+      "category": "domestic",
+      "name": "Ooty Family Escape",
+      "duration": "4 Days / 3 Nights",
+      "price_per_adult": 19999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Ooty",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Ooty with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "inclusions": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Ooty",
+          "Begin your journey in Ooty. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 560
+    },
+    {
+      "slug": "andaman",
+      "category": "domestic",
+      "name": "Andaman",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 39999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Andaman",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Andaman with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "inclusions": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Andaman",
+          "Begin your journey in Andaman. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 570
+    },
+    {
+      "slug": "manali",
+      "category": "domestic",
+      "name": "Manali",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 29999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Manali",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Manali with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "inclusions": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Manali",
+          "Begin your journey in Manali. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 580
+    },
+    {
+      "slug": "shimla-manali",
+      "category": "domestic",
+      "name": "Shimla + Manali",
+      "duration": "7 Days / 6 Nights",
+      "price_per_adult": 34999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Shimla → Manali",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Shimla → Manali with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "inclusions": [
+        "Destination itinerary planning; exact inclusions confirmed in quotation"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Shimla",
+          "Begin your journey in Shimla. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Manali",
+          "Continue your journey in Manali. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 590
+    },
+    {
+      "slug": "rajasthan-heritage",
+      "category": "domestic",
+      "name": "Rajasthan Heritage",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 34999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "core",
+      "places": "Jaipur → Ajmer → Pushkar → Jodhpur",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Jaipur → Ajmer → Pushkar → Jodhpur with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Heritage itinerary planning across Jaipur, Ajmer, Pushkar and Jodhpur"
+      ],
+      "inclusions": [
+        "Heritage itinerary planning across Jaipur, Ajmer, Pushkar and Jodhpur"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Jaipur",
+          "Begin your journey in Jaipur. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Ajmer",
+          "Continue your journey in Ajmer. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Pushkar",
+          "Continue your journey in Pushkar. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Jodhpur",
+          "Continue your journey in Jodhpur. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 600
+    },
+    {
+      "slug": "ajmer-ziyarat",
+      "category": "domestic",
+      "name": "Ajmer Ziyarat",
+      "duration": "3 Days / 2 Nights",
+      "price_per_adult": 14999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "ziyarat",
+      "places": "Ajmer",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Ajmer with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Ajmer Sharif",
+        "Dargah assistance",
+        "Transport",
+        "Hotel"
+      ],
+      "inclusions": [
+        "Ajmer Sharif",
+        "Dargah assistance",
+        "Transport",
+        "Hotel",
+        "Meals",
+        "Local ziyarat"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Ajmer",
+          "Begin your journey in Ajmer. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 610
+    },
+    {
+      "slug": "multi-ziyarat-india",
+      "category": "domestic",
+      "name": "Multi-Ziyarat India",
+      "duration": "6 Days / 5 Nights",
+      "price_per_adult": 29999,
+      "pricing_mode": "starting",
+      "price_basis": "Per adult; room sharing confirmed in quotation",
+      "pricing_note": "Prices vary with travel dates, airline, hotel availability, room sharing, visa requirements and season. Final price is confirmed in your written quotation before booking.",
+      "collection": "ziyarat",
+      "places": "Delhi → Ajmer → Jaipur → Agra",
+      "tagline": "Muslim-friendly India",
+      "description": "Explore Delhi → Ajmer → Jaipur → Agra with a journey planned around your family, travel dates and preferred pace. Exact services and arrangements are confirmed in your written quotation.",
+      "image_url": null,
+      "highlights": [
+        "Multi-city ziyarat and heritage itinerary planning"
+      ],
+      "inclusions": [
+        "Multi-city ziyarat and heritage itinerary planning"
+      ],
+      "exclusions": [
+        "Personal expenses and shopping",
+        "Room upgrades and private transport unless listed",
+        "Extra baggage and optional activities",
+        "Services not listed in your written quotation",
+        "Meals, flights and visas unless explicitly listed"
+      ],
+      "itinerary": [
+        [
+          "Delhi",
+          "Begin your journey in Delhi. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Ajmer",
+          "Continue your journey in Ajmer. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Jaipur",
+          "Continue your journey in Jaipur. Activities, nights and transfers follow the final agreed itinerary."
+        ],
+        [
+          "Agra",
+          "Continue your journey in Agra. Activities, nights and transfers follow the final agreed itinerary."
+        ]
+      ],
+      "cancellation_terms": "Deposit, payment schedule, supplier cancellation charges and refund terms will be provided in your written quotation before confirmation.",
+      "is_active": true,
+      "sort_order": 620
+    }
+  ]
+}

@@ -30,6 +30,11 @@ const blankPackage: Omit<TravelPackage, "id"> = {
   exclusions: [],
   itinerary: [],
   price_per_adult: null,
+  pricing_mode: "on_request",
+  price_basis: "Per adult; room sharing confirmed in quotation",
+  pricing_note:
+    "Prices vary with travel dates, airline, hotel availability, room sharing and season. Final price is confirmed in your written quotation before booking.",
+  collection: "core",
   cancellation_terms: "Cancellation terms will be provided with your written quotation.",
   is_active: false,
   sort_order: 0,
@@ -46,6 +51,8 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
     mode === "orders" ? "requests" : "packages",
   );
   const [packages, setPackages] = useState<TravelPackage[]>([]);
+  const [packageSearch, setPackageSearch] = useState("");
+  const [packageCategory, setPackageCategory] = useState("");
   const [departures, setDepartures] = useState<TravelDeparture[]>([]);
   const [requests, setRequests] = useState<TravelRequest[]>([]);
   const [limit, setLimit] = useState(50);
@@ -110,6 +117,16 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
           (!Number.isFinite(pkg.price_per_adult) || pkg.price_per_adult < 0)
         )
           throw new Error("Enter a valid adult price or leave it blank for a quotation.");
+        if (pkg.pricing_mode !== "on_request" && pkg.price_per_adult == null)
+          throw new Error("Add a starting price or choose price on request.");
+        if (
+          !pkg.price_basis.trim() ||
+          pkg.price_basis.length > 200 ||
+          pkg.pricing_note.length > 1000
+        )
+          throw new Error(
+            "Add the price basis (up to 200 characters) and keep the pricing note under 1,000 characters.",
+          );
         if (!Number.isInteger(pkg.sort_order) || pkg.sort_order < 0)
           throw new Error("Display order must be a positive whole number or zero.");
         const stages = lines(itinerary).map((line) => {
@@ -121,6 +138,8 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
         const { id, ...data } = pkg as TravelPackage;
         const payload = {
           ...data,
+          price_per_adult: data.pricing_mode === "on_request" ? null : data.price_per_adult,
+          price_basis: data.price_basis.trim(),
           name: data.name.trim(),
           slug: data.slug.trim(),
           itinerary: stages,
@@ -237,28 +256,57 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
             Add travel package
           </Button>
           <div className="grid gap-3 sm:grid-cols-2">
-            {packages.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => {
-                  setPkg({ ...item });
-                  setItinerary(item.itinerary.map((stage) => stage.join(" | ")).join("\n"));
-                }}
-                className="rounded-2xl border bg-card p-5 text-left"
-              >
-                <p className="text-xs uppercase text-muted-foreground">
-                  {item.category} · {item.is_active ? "Visible" : "Hidden"}
-                </p>
-                <h3 className="mt-2 font-display text-2xl">{item.name}</h3>
-                <p className="mt-2 text-sm">
-                  {item.duration} ·{" "}
-                  {item.price_per_adult === null
-                    ? "Quotation required"
-                    : `${travelMoney(Number(item.price_per_adult))} / adult`}
-                </p>
-                <p className="mt-3 text-xs text-gold">Edit package →</p>
-              </button>
-            ))}
+            <Field label="Find a package">
+              <TextInput
+                type="search"
+                value={packageSearch}
+                onChange={(e) => setPackageSearch(e.target.value)}
+                placeholder="Package name or destination"
+              />
+            </Field>
+            <Field label="Package category">
+              <Select value={packageCategory} onChange={(e) => setPackageCategory(e.target.value)}>
+                <option value="">All categories</option>
+                {travelCategories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {packages
+              .filter(
+                (item) =>
+                  (!packageCategory || item.category === packageCategory) &&
+                  `${item.name} ${item.places}`
+                    .toLowerCase()
+                    .includes(packageSearch.trim().toLowerCase()),
+              )
+              .map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setPkg({ ...item });
+                    setItinerary(item.itinerary.map((stage) => stage.join(" | ")).join("\n"));
+                  }}
+                  className="rounded-2xl border bg-card p-5 text-left"
+                >
+                  <p className="text-xs uppercase text-muted-foreground">
+                    {item.category} · {item.is_active ? "Visible" : "Hidden"}
+                  </p>
+                  <h3 className="mt-2 font-display text-2xl">{item.name}</h3>
+                  <p className="mt-2 text-sm">
+                    {item.duration} ·{" "}
+                    {item.price_per_adult === null
+                      ? "Quotation required"
+                      : `${item.pricing_mode === "seasonal" ? "Seasonal guide from" : "From"} ${travelMoney(Number(item.price_per_adult))}`}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">{item.price_basis}</p>
+                  <p className="mt-3 text-xs text-gold">Edit package →</p>
+                </button>
+              ))}
           </div>
           {!loading && !packages.length && <p>No travel packages yet. Add your first journey.</p>}
         </>
@@ -452,9 +500,61 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
                   setPkg({
                     ...pkg,
                     price_per_adult: e.target.value === "" ? null : Number(e.target.value),
+                    pricing_mode:
+                      e.target.value === ""
+                        ? "on_request"
+                        : pkg.pricing_mode === "on_request"
+                          ? "starting"
+                          : pkg.pricing_mode,
                   })
                 }
               />
+            </Field>
+            <Field label="Price presentation">
+              <Select
+                value={pkg.pricing_mode}
+                onChange={(e) =>
+                  setPkg({
+                    ...pkg,
+                    pricing_mode: e.target.value as TravelPackage["pricing_mode"],
+                    price_per_adult: e.target.value === "on_request" ? null : pkg.price_per_adult,
+                  })
+                }
+              >
+                <option value="starting">Starting price</option>
+                <option value="seasonal">Seasonal starting guide</option>
+                <option value="on_request">Price on request</option>
+              </Select>
+            </Field>
+            <Field
+              label="Price basis"
+              hint="Include the adult rate and sharing basis, e.g. Per adult - 4 sharing."
+            >
+              <TextInput
+                maxLength={200}
+                value={pkg.price_basis}
+                onChange={(e) => setPkg({ ...pkg, price_basis: e.target.value })}
+              />
+            </Field>
+            <Field label="Pricing note">
+              <TextArea
+                maxLength={1000}
+                value={pkg.pricing_note}
+                onChange={(e) => setPkg({ ...pkg, pricing_note: e.target.value })}
+              />
+            </Field>
+            <Field label="Journey collection">
+              <Select
+                value={pkg.collection}
+                onChange={(e) =>
+                  setPkg({ ...pkg, collection: e.target.value as TravelPackage["collection"] })
+                }
+              >
+                <option value="core">Classic journeys</option>
+                <option value="combo">Umrah combos</option>
+                <option value="ramadan">Ramadan</option>
+                <option value="ziyarat">Ziyarat & heritage</option>
+              </Select>
             </Field>
             <Field label="Display order">
               <TextInput
@@ -578,7 +678,7 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
                 {request.children ? ` (ages ${request.child_ages.join(", ")})` : ""}
               </p>
               <p>
-                Senior travellers: {request.preferences.seniors ?? 0} (included in adults) ? Pace:{" "}
+                Senior travellers: {request.preferences.seniors ?? 0} (included in adults) - Pace:{" "}
                 {request.preferences.pace || "balanced"}
                 <br />
                 Room: {request.preferences.room} · Stay: {request.preferences.stay}
@@ -589,6 +689,8 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
                   .join(", ") || "No special assistance requested"}
               </p>
               <p className="whitespace-pre-wrap">{request.notes || "No additional notes"}</p>
+              <p>Price basis: {request.package_snapshot.price_basis || "Confirmed in quotation"}</p>
+              <p className="text-xs">{request.package_snapshot.pricing_note}</p>
               <p>
                 Adult estimate:{" "}
                 {request.estimated_adult_total === null

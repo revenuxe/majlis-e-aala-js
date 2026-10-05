@@ -1,4 +1,4 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+﻿export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
@@ -654,6 +654,27 @@ export type Database = {
           },
         ];
       };
+      travel_catalogue_imports: {
+        Row: {
+          import_key: string;
+          imported_at: string;
+          previous_catalogue: Json;
+          source_name: string;
+        };
+        Insert: {
+          import_key: string;
+          imported_at?: string;
+          previous_catalogue: Json;
+          source_name: string;
+        };
+        Update: {
+          import_key?: string;
+          imported_at?: string;
+          previous_catalogue?: Json;
+          source_name?: string;
+        };
+        Relationships: [];
+      };
       travel_departures: {
         Row: {
           capacity: number | null;
@@ -741,6 +762,7 @@ export type Database = {
         Row: {
           cancellation_terms: string;
           category: string;
+          collection: string;
           created_at: string;
           description: string;
           duration: string;
@@ -753,7 +775,10 @@ export type Database = {
           itinerary: Json;
           name: string;
           places: string;
+          price_basis: string;
           price_per_adult: number | null;
+          pricing_mode: string;
+          pricing_note: string;
           slug: string;
           sort_order: number;
           tagline: string;
@@ -762,6 +787,7 @@ export type Database = {
         Insert: {
           cancellation_terms?: string;
           category: string;
+          collection?: string;
           created_at?: string;
           description?: string;
           duration?: string;
@@ -774,7 +800,10 @@ export type Database = {
           itinerary?: Json;
           name: string;
           places?: string;
+          price_basis?: string;
           price_per_adult?: number | null;
+          pricing_mode?: string;
+          pricing_note?: string;
           slug: string;
           sort_order?: number;
           tagline?: string;
@@ -783,6 +812,7 @@ export type Database = {
         Update: {
           cancellation_terms?: string;
           category?: string;
+          collection?: string;
           created_at?: string;
           description?: string;
           duration?: string;
@@ -795,7 +825,10 @@ export type Database = {
           itinerary?: Json;
           name?: string;
           places?: string;
+          price_basis?: string;
           price_per_adult?: number | null;
+          pricing_mode?: string;
+          pricing_note?: string;
           slug?: string;
           sort_order?: number;
           tagline?: string;

@@ -4,7 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTravelCatalog } from "@/hooks/use-travel-catalog";
-import { packageJourney, travelMoney } from "@/lib/travel-booking";
+import { TravelPrice } from "@/components/TravelPrice";
+import { TravelCatalogueControls } from "@/components/TravelCatalogueControls";
+import { packageJourney, filterTravelPackages, initialCatalogueFilter } from "@/lib/travel-booking";
 import { useEffect, useState, type ReactNode } from "react";
 import {
   ArrowRight,
@@ -72,9 +74,12 @@ function Section({
 export default function TravelHome() {
   const router = useRouter();
   const catalog = useTravelCatalog();
-  const journeys = catalog.packages.map(packageJourney);
+  const [catalogueFilter, setCatalogueFilter] = useState(initialCatalogueFilter);
+  const [journeyLimit, setJourneyLimit] = useState(6);
+  const journeys = filterTravelPackages(catalog.packages, catalogueFilter).map(packageJourney);
   const [category, setCategory] = useState<TravelCategory | "all">("all");
   const [selected, setSelected] = useState<Journey | null>(null);
+  const selectedPackage = catalog.packages.find((pkg) => pkg.id === selected?.id);
   const [enquiryJourney, setEnquiryJourney] = useState("Umrah");
   const [mobileMenu, setMobileMenu] = useState(false);
   const [travellers, setTravellers] = useState(2);
@@ -132,6 +137,8 @@ export default function TravelHome() {
 
   function selectCategory(value: TravelCategory) {
     setCategory(value);
+    setJourneyLimit(6);
+    setCatalogueFilter(initialCatalogueFilter);
     setSearchTerm("");
     setSearchQuery("");
     document.getElementById("journeys")?.scrollIntoView({
@@ -359,6 +366,8 @@ export default function TravelHome() {
                       event.preventDefault();
                       setSearchTerm(searchQuery.trim());
                       setCategory("all");
+                      setCatalogueFilter(initialCatalogueFilter);
+                      setJourneyLimit(6);
                       document.getElementById("journeys")?.scrollIntoView({
                         behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
                           ? "auto"
@@ -582,6 +591,8 @@ export default function TravelHome() {
                   aria-pressed={category === item.id}
                   onClick={() => {
                     setCategory(item.id as TravelCategory | "all");
+                    setCatalogueFilter(initialCatalogueFilter);
+                    setJourneyLimit(6);
                     setSearchTerm("");
                     setSearchQuery("");
                   }}
@@ -593,6 +604,17 @@ export default function TravelHome() {
                   {item.name}
                 </button>
               ))}
+            </div>
+            <div className="mt-5">
+              <TravelCatalogueControls
+                value={catalogueFilter}
+                onChange={(value) => {
+                  setCatalogueFilter(value);
+                  setJourneyLimit(6);
+                }}
+                count={visibleJourneys.length}
+                search={false}
+              />
             </div>
             <p className="sr-only" aria-live="polite">
               {visibleJourneys.length} journey ideas displayed
@@ -625,7 +647,7 @@ export default function TravelHome() {
               </div>
             )}
             <div className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {visibleJourneys.map((journey) => (
+              {visibleJourneys.slice(0, journeyLimit).map((journey) => (
                 <article
                   key={journey.id}
                   className="overflow-hidden rounded-[20px] border border-border bg-card shadow-card"
@@ -663,17 +685,15 @@ export default function TravelHome() {
                         </li>
                       ))}
                     </ul>
-                    <div className="flex items-center justify-between gap-2 border-t border-border pt-4">
-                      <span>
-                        <span className="block text-[14px] font-semibold">
-                          {catalog.packages.find((p) => p.id === journey.id)?.price_per_adult ==
-                          null
-                            ? "Request your price"
-                            : `From ${travelMoney(Number(catalog.packages.find((p) => p.id === journey.id)?.price_per_adult))} / adult`}
-                        </span>
-                        <span className="text-[11px] text-muted-foreground">
-                          Based on your dates & preferences
-                        </span>
+                    {catalog.packages.find((p) => p.id === journey.id) && (
+                      <TravelPrice
+                        pkg={catalog.packages.find((p) => p.id === journey.id)!}
+                        compact
+                      />
+                    )}
+                    <div className="mt-4 flex items-center justify-between gap-2 border-t border-border pt-4">
+                      <span className="text-xs text-muted-foreground">
+                        Explore the itinerary & inclusions
                       </span>
                       <button
                         onClick={() => setSelected(journey)}
@@ -689,6 +709,16 @@ export default function TravelHome() {
                 </article>
               ))}
             </div>
+            {visibleJourneys.length > journeyLimit && (
+              <Button
+                full
+                variant="outline"
+                className="mt-6"
+                onClick={() => setJourneyLimit((count) => count + 6)}
+              >
+                SHOW MORE JOURNEYS ({visibleJourneys.length - journeyLimit} remaining)
+              </Button>
+            )}
           </Section>
         </div>
 
@@ -1065,6 +1095,27 @@ export default function TravelHome() {
                 <MapPin size={14} />
                 {selected.places} · {selected.duration}
               </p>
+              {selectedPackage && <TravelPrice pkg={selectedPackage} />}
+              {selectedPackage && (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <h3 className="text-sm font-semibold">Included in the package plan</h3>
+                    <ul className="mt-2 space-y-2 text-xs leading-relaxed text-muted-foreground">
+                      {selectedPackage.inclusions.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold">Not included</h3>
+                    <ul className="mt-2 space-y-2 text-xs leading-relaxed text-muted-foreground">
+                      {selectedPackage.exclusions.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
               <h3 className="mt-2 text-[14px] font-semibold">How your journey could look</h3>
               <ol className="grid gap-4">
                 {selected.itinerary.map(([title, text], index) => (

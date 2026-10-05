@@ -120,7 +120,7 @@ try {
   await pause();
   await click("CONTINUE");
   await until(
-    async () => (await body()).includes("The Essential Umrah"),
+    async () => (await body()).includes("Umrah Economy"),
     "Live packages must load",
   );
   await click("Choose this journey");

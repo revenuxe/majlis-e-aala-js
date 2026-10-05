@@ -6,6 +6,8 @@ import { ArrowLeft, ArrowRight, Check, CheckCircle2, MapPin, Plane, Users } from
 import { z } from "zod";
 import type { User } from "@supabase/supabase-js";
 import { BrandMark } from "@/components/Brand";
+import { TravelPrice } from "@/components/TravelPrice";
+import { TravelCatalogueControls } from "@/components/TravelCatalogueControls";
 import { TravelPackageChoice } from "@/components/TravelPackageChoice";
 import { BookingAuth } from "@/components/BookingAuth";
 import { saveTravelProfile, travelProfileFromUser } from "@/lib/travel-profile";
@@ -14,6 +16,8 @@ import { useTravelCatalog } from "@/hooks/use-travel-catalog";
 import { supabase } from "@/integrations/supabase/client";
 import { travelCategories, travelContact, travelWhatsApp } from "@/lib/travel";
 import {
+  filterTravelPackages,
+  initialCatalogueFilter,
   assistanceOptions,
   initialTravelDraft,
   travelDate,
@@ -131,9 +135,12 @@ export default function TravelPlan() {
     }
   };
   const catalog = useTravelCatalog();
+  const [packageFilter, setPackageFilter] = useState(initialCatalogueFilter);
+  const [packageLimit, setPackageLimit] = useState(6);
   const chosenPackage = catalog.packages.find((p) => p.id === draft.packageId);
   const chosenDeparture = catalog.departures.find((d) => d.id === draft.departureId);
   const matchingPackages = catalog.packages.filter((p) => p.category === draft.category);
+  const filteredPackages = filterTravelPackages(matchingPackages, packageFilter);
   const matchingDepartures = catalog.departures.filter(
     (d) =>
       d.package_id === draft.packageId &&
@@ -148,6 +155,10 @@ export default function TravelPlan() {
   const categoryName =
     travelCategories.find((c) => c.id === draft.category)?.name || "Your journey";
   function update(patch: Partial<TravelDraft>) {
+    if (patch.category && patch.category !== draft.category) {
+      setPackageFilter(initialCatalogueFilter);
+      setPackageLimit(6);
+    }
     setDraft((d) => {
       const next = { ...d, ...patch };
       return { ...next, seniors: Math.min(next.seniors, next.adults) };
@@ -730,8 +741,28 @@ export default function TravelPlan() {
                   </Button>
                 </div>
               )}
+              <TravelCatalogueControls
+                value={packageFilter}
+                count={filteredPackages.length}
+                onChange={(value) => {
+                  setPackageFilter(value);
+                  setPackageLimit(6);
+                }}
+              />
+              {chosenPackage && (
+                <div className="rounded-xl border border-gold/40 p-4">
+                  <p className="text-xs text-muted-foreground">Your selected journey</p>
+                  <p className="mt-1 font-semibold">{chosenPackage.name}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{chosenPackage.price_basis}</p>
+                </div>
+              )}
+              {!catalog.loading && !catalog.error && !filteredPackages.length && (
+                <p className="rounded-xl bg-surface p-4 text-sm">
+                  No matching packages. Adjust your filters or choose a custom journey below.
+                </p>
+              )}
               <div className="grid items-start gap-5 sm:grid-cols-2">
-                {matchingPackages.map((pkg) => (
+                {filteredPackages.slice(0, packageLimit).map((pkg) => (
                   <TravelPackageChoice
                     key={pkg.id}
                     pkg={pkg}
@@ -741,6 +772,15 @@ export default function TravelPlan() {
                   />
                 ))}
               </div>
+              {filteredPackages.length > packageLimit && (
+                <Button
+                  variant="outline"
+                  full
+                  onClick={() => setPackageLimit((count) => count + 6)}
+                >
+                  SHOW MORE JOURNEYS ({filteredPackages.length - packageLimit} remaining)
+                </Button>
+              )}
               <Choice
                 selected={draft.packageId === null}
                 onClick={() => update({ packageId: null, departureId: null })}
@@ -908,10 +948,15 @@ export default function TravelPlan() {
                     </button>
                   </div>
                 ))}
+                {chosenPackage && (
+                  <div className="mt-4">
+                    <TravelPrice pkg={chosenPackage} adults={draft.adults} />
+                  </div>
+                )}
                 <p className="mt-4 text-[15px] font-semibold">
                   {estimate === null
                     ? "Your team will prepare a personal quotation."
-                    : `Indicative adult total: ${travelMoney(estimate)}`}
+                    : `Starting adult estimate: ${travelMoney(estimate)}`}
                 </p>
                 <p className="mt-2 text-[12px] leading-relaxed text-muted-foreground">
                   {draft.children > 0 && "Children are quoted separately. "}Final availability,

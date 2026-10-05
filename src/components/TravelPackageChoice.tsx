@@ -1,7 +1,8 @@
 "use client";
 import { Check, Clock3, MapPin, ArrowRight } from "lucide-react";
 import { cx } from "@/components/ui-kit";
-import { travelMoney, type TravelPackage } from "@/lib/travel-booking";
+import { TravelPrice } from "@/components/TravelPrice";
+import { type TravelPackage } from "@/lib/travel-booking";
 
 export function TravelPackageChoice({
   pkg,
@@ -24,8 +25,9 @@ export function TravelPackageChoice({
       <div className="relative h-52 overflow-hidden sm:h-60">
         {/* Catalog images can be managed by the administrator. */}
         <img
-          src={pkg.image_url || "/travel/makkah.jpg"}
+          src={pkg.image_url || "/travel/journey-placeholder.svg"}
           alt={pkg.places}
+          loading="lazy"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
@@ -58,22 +60,8 @@ export function TravelPackageChoice({
             </span>
           ))}
         </div>
-        <div className="mt-5 rounded-2xl bg-surface p-4">
-          <p className="text-xs text-muted-foreground">
-            {pkg.price_per_adult == null
-              ? "A quotation shaped around your journey"
-              : "Starting price per adult"}
-          </p>
-          <p className="mt-1 text-[24px] font-semibold">
-            {pkg.price_per_adult == null
-              ? "Request your price"
-              : travelMoney(Number(pkg.price_per_adult))}
-          </p>
-          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            {pkg.price_per_adult == null
-              ? "Share your dates and room choice for a written quotation."
-              : `${travelMoney(Number(pkg.price_per_adult) * adults)} starting estimate for ${adults} adults. Children and final arrangements quoted separately.`}
-          </p>
+        <div className="mt-5">
+          <TravelPrice pkg={pkg} adults={selected ? adults : undefined} compact />
         </div>
         <button
           type="button"

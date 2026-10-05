@@ -18,7 +18,7 @@ declare
   second_ref text;
   result public.travel_booking_requests%rowtype;
 begin
-  select id into strict pkg from public.travel_packages where slug = 'classic-umrah';
+  select id into strict pkg from public.travel_packages where slug = 'umrah-economy';
   update public.travel_packages set price_per_adult = 100, inclusions = array['Test transfer'] where id = pkg;
   insert into public.travel_departures(package_id, departure_city, start_date, end_date, capacity)
     values(pkg, 'Test departure city', current_date + 30, current_date + 40, 3) returning id into dep;
@@ -32,14 +32,14 @@ begin
     raise exception 'Retries must create exactly one request with the same reference';
   end if;
   select * into strict result from public.travel_booking_requests where request_token = token;
-  if result.estimated_adult_total <> 200 or result.package_snapshot->>'name' <> 'The Essential Umrah'
+  if result.estimated_adult_total <> 200 or result.package_snapshot->>'name' <> 'Umrah Economy'
     or result.departure_city <> 'Test departure city' or result.preferred_date <> current_date + 30
     or result.preferences->>'seniors' <> '1' or result.preferences->>'pace' <> 'relaxed'
     or result.dates_flexible or result.status <> 'new' or result.contact_consent_at is null then
     raise exception 'Server price, snapshot, departure or consent was incorrect';
   end if;
   update public.travel_packages set name = 'Changed after request', price_per_adult = 999 where id = pkg;
-  if (select package_snapshot->>'name' from public.travel_booking_requests where request_token = token) <> 'The Essential Umrah' then
+  if (select package_snapshot->>'name' from public.travel_booking_requests where request_token = token) <> 'Umrah Economy' then
     raise exception 'Historical snapshots must not change with the catalogue';
   end if;
   payload := payload || jsonb_build_object('request_token',gen_random_uuid());
