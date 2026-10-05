@@ -61,7 +61,7 @@ export function TravelPackageChoice({
               </span>
             )}
             {price != null && (
-              <span className="mt-2 block text-xs text-muted-foreground">
+              <span className="mt-3 inline-flex flex-wrap items-center gap-x-1 rounded-lg border border-gold/40 bg-champagne/50 px-2.5 py-1.5 text-[12px] font-semibold leading-relaxed text-foreground">
                 From {travelMoney(Number(price))} per adult
               </span>
             )}
