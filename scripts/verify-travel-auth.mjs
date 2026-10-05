@@ -105,11 +105,10 @@ return realFetch(input,init);
     "Homepage presets consumed once",
   );
   await click("CONTINUE");
-  await input("input[autocomplete='address-level2']", "Hyderabad");
-  await click("CONTINUE");
-  await click("CONTINUE");
   await until(async () => (await body()).includes("Umrah Economy"), "Catalogue missing");
   await click("Select package");
+  await click("CONTINUE");
+  await input("input[autocomplete='address-level2']", "Hyderabad");
   await click("CONTINUE");
   await input("textarea", "A gentle pace for our family", "HTMLTextAreaElement");
   await click("CONTINUE");

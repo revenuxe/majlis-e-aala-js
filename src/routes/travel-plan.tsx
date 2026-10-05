@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Check, CheckCircle2, MapPin, Plane, Users } from
 import { z } from "zod";
 import type { User } from "@supabase/supabase-js";
 import { BrandMark } from "@/components/Brand";
+import { TravelCountBanner } from "@/components/TravelCountBanner";
 import { TravelPrice } from "@/components/TravelPrice";
 import { TravelCatalogueControls } from "@/components/TravelCatalogueControls";
 import { TravelPackageChoice } from "@/components/TravelPackageChoice";
@@ -26,10 +27,10 @@ import {
 } from "@/lib/travel-booking";
 
 const steps = [
-  "Your journey",
-  "Dates & departure",
   "Your travellers",
+  "Your journey",
   "Your package",
+  "Dates & departure",
   "Your preferences",
   "Sign in",
   "Review & contact",
@@ -172,7 +173,8 @@ export default function TravelPlan() {
       const parsed = savedDraftSchema.safeParse(saved?.draft);
       if (parsed.success) {
         restored = { ...restored, ...parsed.data };
-        setStep(Math.max(0, Math.min(REVIEW_STEP, Number(saved.step) || 0)));
+        const oldStep = Math.max(0, Math.min(REVIEW_STEP, Number(saved.step) || 0));
+        setStep(saved.flowVersion === 2 ? oldStep : [1, 3, 0, 2, 4, 5, 6][oldStep]!);
       }
     } catch {
       /* Draft storage is optional. */
@@ -213,6 +215,20 @@ export default function TravelPlan() {
       restored.children = 0;
       restored.childAges = [];
     }
+    const requestedChildren = Number(params.get("children"));
+    if (
+      params.has("children") &&
+      Number.isInteger(requestedChildren) &&
+      requestedChildren >= 0 &&
+      requestedChildren <= 20 &&
+      requestedChildren + restored.adults <= 100
+    ) {
+      restored.children = requestedChildren;
+      restored.childAges = Array.from(
+        { length: requestedChildren },
+        (_, index) => restored.childAges[index] ?? -1,
+      );
+    }
     restored.seniors = Math.min(restored.seniors, restored.adults);
     setDraft(restored);
     let token = "";
@@ -234,7 +250,7 @@ export default function TravelPlan() {
   useEffect(() => {
     if (!ready) return;
     const params = new URLSearchParams(window.location.search);
-    if (["category", "package", "travellers"].some((key) => params.has(key))) {
+    if (["category", "package", "travellers", "children"].some((key) => params.has(key))) {
       ["category", "package", "travellers"].forEach((key) => params.delete(key));
       window.history.replaceState(
         null,
@@ -284,7 +300,10 @@ export default function TravelPlan() {
         notes: _notes,
         ...choices
       } = draft;
-      window.localStorage.setItem("ma-travel-draft-v1", JSON.stringify({ draft: choices, step }));
+      window.localStorage.setItem(
+        "ma-travel-draft-v1",
+        JSON.stringify({ draft: choices, step, flowVersion: 2 }),
+      );
       window.sessionStorage.setItem(
         "ma-travel-notes-session",
         JSON.stringify({ notes: draft.notes, savedAt: Date.now() }),
@@ -298,8 +317,8 @@ export default function TravelPlan() {
   }, [step]);
 
   function stepError(index: number): string | null {
-    if (index === 0 && !draft.category) return "Choose the kind of journey you’re planning.";
-    if (index === 1) {
+    if (index === 1 && !draft.category) return "Choose the kind of journey you’re planning.";
+    if (index === 3) {
       if (draft.departureCity.trim().length < 2)
         return "Tell us which city you’d like to depart from.";
       if (!draft.datesFlexible && (!draft.date || draft.date < minimumDate))
@@ -308,7 +327,7 @@ export default function TravelPlan() {
         return "Choose a current or future travel month.";
     }
     if (
-      index === 2 &&
+      index === 0 &&
       (draft.adults < 1 ||
         draft.seniors < 0 ||
         draft.seniors > draft.adults ||
@@ -317,7 +336,7 @@ export default function TravelPlan() {
         draft.childAges.some((age) => age < 0 || age > 17))
     )
       return "Check your group size and tell us each child’s age.";
-    if (index === 3) {
+    if (index === 2) {
       if (catalog.loading) return "We’re loading the latest packages. Please wait a moment.";
       if (draft.packageId && (!chosenPackage || chosenPackage.category !== draft.category))
         return "This package is no longer available. Choose another or a custom journey.";
@@ -352,6 +371,10 @@ export default function TravelPlan() {
     const problem = stepError(step);
     if (problem) {
       showError(problem);
+      return;
+    }
+    if (step === 0 && draft.category) {
+      setStep(2);
       return;
     }
     // Advancing from preferences step: skip auth if already logged in
@@ -516,35 +539,35 @@ export default function TravelPlan() {
             style={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
           />
         </div>
-        <p className="eyebrow mt-7">{step === 0 ? "A journey that’s yours" : categoryName}</p>
+        <p className="eyebrow mt-7">{step === 1 ? "A journey that’s yours" : categoryName}</p>
         <h1 className="mt-2 font-display text-[36px] leading-tight sm:text-[44px]">
           {
             [
+              "Who is joining your journey?",
               "Where would you like to go?",
+              "Choose your package.",
               "When would you like to travel?",
-              "Who’s coming along?",
-              "How would you like to travel?",
               "Make the journey comfortable.",
               "Keep your journeys together.",
-              "One last look. Then let’s begin.",
+              "One last look. Then let us begin.",
             ][step]
           }
         </h1>
         <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
           {
             [
-              "Choose a pilgrimage or a holiday. You can change your mind later.",
+              "Include adults, children and senior travellers. Your count sets the package estimates.",
+              "Choose your journey, then compare packages for your group.",
+              "Starting adult estimates use your traveller count. Children and extras are quoted separately.",
               "An approximate month is enough if your plans are still taking shape.",
-              "Include everyone in your group. Ages help the team prepare a suitable quotation.",
-              "Choose a starting itinerary, or ask us to create something personal.",
-              "These are requests for your quotation. Availability and any extra charges will be confirmed.",
-              "Sign in once and we'll remember your contact details for your next journey.",
+              "These are requests for your quotation. Availability and extra charges are confirmed.",
+              "Sign in once to keep your journeys together, or continue as a guest.",
               "Review your choices and tell us how to reach you. No payment required.",
             ][step]
           }
         </p>
         <div className="mt-7 space-y-5">
-          {step === 0 && (
+          {step === 1 && (
             <>
               <div className="grid gap-3 sm:grid-cols-2">
                 {travelCategories.map((c) => (
@@ -563,7 +586,7 @@ export default function TravelPlan() {
               </p>
             </>
           )}
-          {step === 1 && (
+          {step === 3 && (
             <>
               <Field label="Departure city">
                 <input
@@ -615,7 +638,7 @@ export default function TravelPlan() {
               )}
             </>
           )}
-          {step === 2 && (
+          {step === 0 && (
             <>
               <div className="rounded-[20px] border border-border bg-card p-5">
                 <p className="mb-3 text-[15px] font-semibold">
@@ -726,8 +749,14 @@ export default function TravelPlan() {
               </p>
             </>
           )}
-          {step === 3 && (
+          {step === 2 && (
             <>
+              <TravelCountBanner
+                category={draft.category}
+                adults={draft.adults}
+                children={draft.children}
+                onChange={() => setStep(0)}
+              />
               {catalog.loading && (
                 <div role="status" className="h-24 animate-pulse rounded-xl bg-surface">
                   <span className="sr-only">Loading packages</span>
@@ -911,18 +940,18 @@ export default function TravelPlan() {
                   <Plane size={21} className="text-gold" />
                 </div>
                 {[
-                  ["Journey", categoryName, 0],
+                  ["Journey", categoryName, 1],
                   [
                     "Dates & departure",
                     `${chosenDeparture ? travelDate(chosenDeparture.start_date) : draft.datesFlexible ? draft.month || "Flexible dates" : draft.date ? travelDate(draft.date) : "Flexible dates"} · ${chosenDeparture?.departure_city || draft.departureCity}`,
-                    1,
+                    3,
                   ],
                   [
                     "Travellers",
                     `${draft.adults} adults${draft.seniors ? ` (${draft.seniors} seniors)` : ""}${draft.children ? ` · ${draft.children} children (${draft.childAges.join(", ")} years)` : ""}`,
-                    2,
+                    0,
                   ],
-                  ["Package", chosenPackage?.name || "Custom journey", 3],
+                  ["Package", chosenPackage?.name || "Custom journey", 2],
                   [
                     "Preferences",
                     `${draft.pace} pace - ${draft.room} room · ${draft.stay} stay${draft.assistance.length ? ` · ${draft.assistance.map((id) => assistanceOptions.find((a) => a.id === id)?.label).join(", ")}` : ""}`,

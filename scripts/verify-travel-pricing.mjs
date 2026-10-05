@@ -118,11 +118,17 @@ try {
       "true",
     );
   }
+  await click("Change");
+  await evaluate("document.querySelector('button[aria-label=Increase]').click()");
+  await pause();
+  assert((await body()).includes("3 adults"), "Traveller count updates");
+  assert((await body()).includes("59,997"), "Ooty estimate reflects three adults");
+  await click("Done");
   await setInput("input[type=search]", "Ooty");
   assert((await body()).includes("1 packages"));
   await evaluate("document.querySelector('article button[aria-pressed]').click()");
   await until(
-    async () => (await body()).includes("Where would you like to go?"),
+    async () => (await body()).includes("Who is joining your journey?"),
     "Selected package must enter planner",
   );
   await until(
@@ -131,6 +137,11 @@ try {
         "JSON.parse(localStorage.getItem('ma-travel-draft-v1'))?.draft.category==='domestic'",
       ),
     "Domestic preset restored",
+  );
+  assert.equal(
+    await evaluate("JSON.parse(localStorage.getItem('ma-travel-draft-v1')).draft.adults"),
+    3,
+    "Count carries into booking",
   );
   console.log(
     "PASS: homepage without catalogue, four specific package pages, relevant filters, closed mobile filter panels, responsive cards and package-to-planner selection. No booking writes.",

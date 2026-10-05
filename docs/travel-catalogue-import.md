@@ -40,3 +40,7 @@ For restoration, an authorised administrator can use the stored before-image to 
 ## Dedicated category pages
 
 The homepage now links to `/travel/packages/umrah`, `/travel/packages/hajj`, `/travel/packages/international` and `/travel/packages/domestic` instead of rendering the catalogue. Each page has category-specific SEO metadata and a sitemap entry. Search and sorting remain visible; additional filters open on demand. Umrah offers style and duration, Hajj offers duration with appropriate budget ranges, and international/domestic offer destination and relevant holiday/ziyarat styles. Booking filters also collapse and show only relevant collections and budgets. Browser checks cover all four pages, 320/390/1280px layouts and package selection into the planner.
+
+## Traveller-first planning
+
+Package pages and the planner package step now share a catering-style image banner with a white traveller count panel. Change edits adult/child counts on the catalogue and recalculates adult estimates immediately. Counts pass into the planner, where child ages are required before proceeding. Seniors remain within the adult count. The seven steps are travellers, journey category (skipped when already selected), package, dates/departure, preferences, optional sign-in and review. Legacy saved step indices are mapped into the new order; newly saved drafts carry flowVersion 2. The server retains authoritative adult-rate multiplication and quotes children and changes separately.

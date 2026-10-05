@@ -83,7 +83,7 @@ try {
   );
   await call("Page.navigate", { url: "http://localhost:3000/travel/plan" });
   await until(
-    async () => (await body()).includes("Where would you like to go?"),
+    async () => (await body()).includes("Who is joining your journey?"),
     "Planner did not load",
   );
   await evaluate(
@@ -91,7 +91,7 @@ try {
   );
   await call("Page.reload");
   await until(
-    async () => (await body()).includes("Where would you like to go?"),
+    async () => (await body()).includes("Who is joining your journey?"),
     "Planner did not reload",
   );
   await until(
@@ -101,29 +101,26 @@ try {
       ),
     "Planner did not become interactive",
   );
-  await click("CONTINUE");
-  assert((await body()).includes("Choose the kind of journey"), "Journey validation");
-  await click("Umrah");
-  await click("CONTINUE");
-  assert((await body()).includes("Step 2 of 7"));
-  await setInput("input[autocomplete='address-level2']", "Hyderabad");
-  await click("CONTINUE");
-  assert((await body()).includes("Step 3 of 7"));
   await evaluate("document.querySelectorAll('button[aria-label=Increase]')[1].click()");
   await pause();
   await click("CONTINUE");
   assert((await body()).includes("tell us each child’s age"), "Child ages required");
   await call("Page.reload");
-  await until(async () => (await body()).includes("Step 3 of 7"), "Incomplete draft must restore");
+  await until(async () => (await body()).includes("Step 1 of 7"), "Incomplete draft must restore");
+  await until(async () => await evaluate("Boolean(document.querySelector('main select'))"), "Child age control restored");
   await setInput("main select", "7", "HTMLSelectElement");
   await evaluate("document.querySelector('input[type=checkbox]').click()");
   await pause();
+  await click("CONTINUE");
+  await click("Umrah");
   await click("CONTINUE");
   await until(
     async () => (await body()).includes("Umrah Economy"),
     "Live packages must load",
   );
   await click("Select package");
+  await click("CONTINUE");
+  await setInput("input[autocomplete='address-level2']", "Hyderabad");
   await click("CONTINUE");
   assert((await body()).includes("Step 5 of 7"));
   await click("Gentle & relaxed");

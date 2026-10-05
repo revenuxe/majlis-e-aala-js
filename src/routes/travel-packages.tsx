@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Search, SlidersHorizontal, X } from "lucide-react";
 import { BrandLogo } from "@/components/Brand";
+import { TravelCountBanner } from "@/components/TravelCountBanner";
 import { TravelPackageChoice } from "@/components/TravelPackageChoice";
 import { useTravelCatalog } from "@/hooks/use-travel-catalog";
 import { filterTravelPackages, initialCatalogueFilter, travelMoney } from "@/lib/travel-booking";
@@ -55,6 +56,9 @@ export default function TravelPackages({ category }: { category: TravelCategory 
   const [destination, setDestination] = useState("");
   const [duration, setDuration] = useState("");
   const [limit, setLimit] = useState(6);
+  const [adults, setAdults] = useState(2);
+  const [children, setChildren] = useState(0);
+  const [editingCount, setEditingCount] = useState(false);
   useEffect(() => {
     const query = new URLSearchParams(window.location.search).get("q");
     if (query) setFilter((current) => ({ ...current, search: query.slice(0, 150) }));
@@ -98,13 +102,19 @@ export default function TravelPackages({ category }: { category: TravelCategory 
           <ArrowLeft size={16} />
           Travel home
         </Link>
-        <p className="eyebrow mt-5">{name} packages</p>
-        <h1 className="mt-3 max-w-3xl font-display text-[38px] leading-tight sm:text-[54px]">
-          {config.title}
-        </h1>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          {config.note}
-        </p>
+        <div className="mt-5">
+          <TravelCountBanner
+            category={category}
+            adults={adults}
+            children={children}
+            editing={editingCount}
+            onChange={() => setEditingCount(!editingCount)}
+            onAdults={setAdults}
+            onChildren={setChildren}
+          />
+        </div>
+        <h1 className="mt-9 font-display text-[38px] leading-tight">Choose a package</h1>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{config.note}</p>
         <nav
           aria-label="Travel package categories"
           className="mt-6 flex gap-5 overflow-x-auto border-b border-border"
@@ -307,9 +317,12 @@ export default function TravelPackages({ category }: { category: TravelCategory 
             <TravelPackageChoice
               key={pkg.id}
               pkg={pkg}
-              adults={2}
+              adults={adults}
+              children={children}
               onSelect={() =>
-                window.location.assign(`/travel/plan?category=${category}&package=${pkg.id}`)
+                window.location.assign(
+                  `/travel/plan?category=${category}&package=${pkg.id}&travellers=${adults}&children=${children}`,
+                )
               }
             />
           ))}
@@ -325,7 +338,7 @@ export default function TravelPackages({ category }: { category: TravelCategory 
         <div className="mt-10 rounded-2xl bg-surface p-6">
           <h2 className="font-display text-2xl">Prefer a journey made for you?</h2>
           <Link
-            href={`/travel/plan?category=${category}`}
+            href={`/travel/plan?category=${category}&travellers=${adults}&children=${children}`}
             className="mt-3 inline-flex min-h-11 items-center gap-2 text-sm font-semibold"
           >
             Plan a custom journey
