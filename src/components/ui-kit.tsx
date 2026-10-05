@@ -123,6 +123,7 @@ export function QuantitySelector({
   step = 1,
   min = 0,
   size = "md",
+  compact = false,
 }: {
   value: number;
   onChange: (v: number) => void;
@@ -130,6 +131,7 @@ export function QuantitySelector({
   step?: number;
   min?: number;
   size?: "sm" | "md" | "lg";
+  compact?: boolean;
 }) {
   const h = size === "lg" ? "h-14" : size === "sm" ? "h-10" : "h-12";
   const btn = size === "lg" ? "w-14" : size === "sm" ? "w-10" : "w-12";
@@ -154,14 +156,17 @@ export function QuantitySelector({
       className={cx(
         "inline-flex items-center justify-between rounded-[12px] border border-border bg-card",
         h,
-        size === "lg" && "w-full",
+        (size === "lg" || compact) && "w-full min-w-0",
       )}
     >
       <button
         type="button"
         aria-label="Decrease"
         onClick={() => onChange(Math.max(min, value - step))}
-        className={cx("press grid h-full place-items-center text-foreground", btn)}
+        className={cx(
+          "press grid h-full shrink-0 place-items-center text-foreground",
+          compact ? "w-11" : btn,
+        )}
       >
         <Minus className="h-4 w-4" strokeWidth={2} />
       </button>
@@ -178,15 +183,21 @@ export function QuantitySelector({
             if (event.key === "Enter") event.currentTarget.blur();
           }}
           aria-label={suffix ? `${suffix} quantity` : "Quantity"}
-          className="w-16 bg-transparent text-right outline-none"
+          className={cx(
+            "bg-transparent outline-none",
+            compact ? "w-12 text-center" : "w-16 text-right",
+          )}
         />
-        {suffix && <span className="ml-1 whitespace-nowrap">{suffix}</span>}
+        {suffix && !compact && <span className="ml-1 whitespace-nowrap">{suffix}</span>}
       </label>
       <button
         type="button"
         aria-label="Increase"
         onClick={() => onChange(value + step)}
-        className={cx("press grid h-full place-items-center text-foreground", btn)}
+        className={cx(
+          "press grid h-full shrink-0 place-items-center text-foreground",
+          compact ? "w-11" : btn,
+        )}
       >
         <Plus className="h-4 w-4" strokeWidth={2} />
       </button>
