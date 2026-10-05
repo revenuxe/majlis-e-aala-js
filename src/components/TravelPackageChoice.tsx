@@ -53,8 +53,18 @@ export function TravelPackageChoice({
         >
           <span>
             <span className="block text-[25px] font-bold leading-tight">
-              {price == null ? "Price on request" : `From ${travelMoney(Number(price))}`}
+              {price == null ? "Price on request" : `From ${travelMoney(Number(price) * adults)}`}
             </span>
+            {price != null && (
+              <span className="mt-1 block text-[13px] font-semibold">
+                Starting estimate for {adults} {adults === 1 ? "adult" : "adults"}
+              </span>
+            )}
+            {price != null && (
+              <span className="mt-2 block text-xs text-muted-foreground">
+                From {travelMoney(Number(price))} per adult
+              </span>
+            )}
             <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
               {pkg.price_basis}
             </span>
