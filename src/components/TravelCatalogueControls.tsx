@@ -1,5 +1,6 @@
 "use client";
 import type { TravelCatalogueFilter } from "@/lib/travel-booking";
+import type { TravelCategory } from "@/lib/travel";
 
 const inputClass =
   "mt-1 h-11 w-full rounded-xl border border-border bg-card px-3 text-sm outline-none focus:border-gold";
@@ -8,11 +9,13 @@ export function TravelCatalogueControls({
   onChange,
   count,
   search = true,
+  category,
 }: {
   value: TravelCatalogueFilter;
   onChange: (value: TravelCatalogueFilter) => void;
   count: number;
   search?: boolean;
+  category?: TravelCategory | "";
 }) {
   return (
     <div className="rounded-2xl border border-border bg-background p-4">
@@ -29,35 +32,59 @@ export function TravelCatalogueControls({
             />
           </label>
         )}
-        <label className="text-xs font-semibold">
-          Journey collection
-          <select
-            value={value.collection}
-            onChange={(e) => onChange({ ...value, collection: e.target.value })}
-            className={inputClass}
-          >
-            <option value="all">All collections</option>
-            <option value="core">Classic journeys</option>
-            <option value="combo">Umrah combos</option>
-            <option value="ramadan">Ramadan</option>
-            <option value="ziyarat">Ziyarat & heritage</option>
-          </select>
-        </label>
-        <label className="text-xs font-semibold">
-          Starting budget per adult
-          <select
-            value={value.budget}
-            onChange={(e) => onChange({ ...value, budget: e.target.value })}
-            className={inputClass}
-          >
-            <option value="">Any budget</option>
-            <option value="50000">Up to ₹50,000</option>
-            <option value="100000">Up to ₹1,00,000</option>
-            <option value="150000">Up to ₹1,50,000</option>
-            <option value="250000">Up to ₹2,50,000</option>
-            <option value="500000">Up to ₹5,00,000</option>
-          </select>
-        </label>
+        <details className="sm:col-span-3">
+          <summary className="min-h-11 cursor-pointer py-3 text-sm font-semibold">
+            Filter & sort packages
+          </summary>
+          <div className="grid gap-4 pt-3 sm:grid-cols-3">
+            {category !== "hajj" && (
+              <label className="text-xs font-semibold">
+                Journey collection
+                <select
+                  value={value.collection}
+                  onChange={(e) => onChange({ ...value, collection: e.target.value })}
+                  className={inputClass}
+                >
+                  <option value="all">All collections</option>
+                  <option value="core">Classic journeys</option>
+                  {category === "umrah" && <option value="combo">Umrah combos</option>}
+                  {category === "umrah" && <option value="ramadan">Ramadan</option>}
+                  {category !== "umrah" && <option value="ziyarat">Ziyarat & heritage</option>}
+                </select>
+              </label>
+            )}
+            <label className="text-xs font-semibold">
+              Starting budget per adult
+              <select
+                value={value.budget}
+                onChange={(e) => onChange({ ...value, budget: e.target.value })}
+                className={inputClass}
+              >
+                <option value="">Any budget</option>
+                {category === "hajj" ? (
+                  <>
+                    <option value="500000">Up to ₹5,00,000</option>
+                    <option value="750000">Up to ₹7,50,000</option>
+                    <option value="1000000">Up to ₹10,00,000</option>
+                  </>
+                ) : category === "domestic" ? (
+                  <>
+                    <option value="20000">Up to ₹20,000</option>
+                    <option value="30000">Up to ₹30,000</option>
+                    <option value="50000">Up to ₹50,000</option>
+                  </>
+                ) : (
+                  <>
+                    <option value="50000">Up to ₹50,000</option>
+                    <option value="100000">Up to ₹1,00,000</option>
+                    <option value="150000">Up to ₹1,50,000</option>
+                    <option value="250000">Up to ₹2,50,000</option>
+                  </>
+                )}
+              </select>
+            </label>
+          </div>
+        </details>
         <label className="text-xs font-semibold">
           Sort by
           <select

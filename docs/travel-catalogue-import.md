@@ -36,3 +36,7 @@ Admin → Listings → Travels → Packages allows editing the starting amount, 
 For restoration, an authorised administrator can use the stored before-image to restore the original five records by UUID and hide imported offers. Keep any imported package already referenced by a request/departure; do not delete linked records or rewrite booking snapshots. The before-image is deliberately not exposed in the customer application.
 
 `node scripts/build-travel-catalogue.mjs` recreates the local reviewed seed/migration from the owner catalogue definitions. Once the migration is deployed, future commercial edits belong in admin or in a new migration; do not edit/reapply an already published migration.
+
+## Dedicated category pages
+
+The homepage now links to `/travel/packages/umrah`, `/travel/packages/hajj`, `/travel/packages/international` and `/travel/packages/domestic` instead of rendering the catalogue. Each page has category-specific SEO metadata and a sitemap entry. Search and sorting remain visible; additional filters open on demand. Umrah offers style and duration, Hajj offers duration with appropriate budget ranges, and international/domestic offer destination and relevant holiday/ziyarat styles. Booking filters also collapse and show only relevant collections and budgets. Browser checks cover all four pages, 320/390/1280px layouts and package selection into the planner.

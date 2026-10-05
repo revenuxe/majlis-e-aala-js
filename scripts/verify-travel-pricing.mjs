@@ -59,156 +59,81 @@ const setInput = async (selector, value, prototype = "HTMLInputElement") => {
 try {
   await call("Page.enable");
   await call("Runtime.enable");
-  await call("Emulation.setDeviceMetricsOverride", {
-    width: 390,
-    height: 844,
-    deviceScaleFactor: 1,
-    mobile: true,
-  });
   await call("Page.navigate", { url: "http://localhost:3000/travel" });
-  await until(async () => (await body()).includes("63 journeys found"), "Full catalogue must load");
-  const cards = () =>
-    evaluate("[...document.querySelectorAll('#journeys article h3')].map(e=>e.innerText)");
-  assert.equal((await cards()).length, 6, "Initial catalogue must stay manageable");
-  assert((await body()).includes("From") && (await body()).includes("89,999"));
-  assert((await body()).includes("4/5 sharing"), "Sharing basis must be visible");
-  await click("SHOW MORE JOURNEYS");
-  assert.equal((await cards()).length, 12);
-  await setInput("#journeys select:nth-of-type(1)", "all", "HTMLSelectElement");
-  const select = async (index, value) => {
-    await evaluate(
-      "(()=>{const e=document.querySelectorAll('#journeys select')[" +
-        index +
-        "];Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value').set.call(e," +
-        JSON.stringify(value) +
-        ");e.dispatchEvent(new Event('change',{bubbles:true}));})()",
-    );
-    await pause();
-  };
-  await select(1, "50000");
-  await select(2, "price-low");
+  await until(async () => (await body()).includes("Sacred beginnings"), "Homepage load");
   assert.equal(
-    (await cards())[0],
-    "Ajmer Ziyarat",
-    "Budget sorting must use numeric starting prices",
+    await evaluate("document.querySelectorAll('article').length"),
+    0,
+    "Homepage must not contain the package catalogue",
   );
-  await evaluate(
-    "[...document.querySelectorAll('[aria-label=\"Filter journeys\"] button')].find(b=>b.innerText==='Hajj').click()",
-  );
-  await pause();
-  assert(
-    (await body()).includes("8 journeys found"),
-    "Changing categories resets incompatible filters",
-  );
-  assert((await body()).includes("Price on request"), "Duration-only Hajj must stay quote-only");
-  for (const width of [320, 390, 1280]) {
-    await call("Emulation.setDeviceMetricsOverride", {
-      width,
-      height: 844,
-      deviceScaleFactor: 1,
-      mobile: width < 600,
-    });
+  for (const [category, count] of [
+    ["umrah", 17],
+    ["hajj", 8],
+    ["international", 23],
+    ["domestic", 15],
+  ]) {
+    await call("Page.navigate", { url: "http://localhost:3000/travel/packages/" + category });
+    await until(
+      async () => (await body()).includes(count + " packages"),
+      category + " catalogue load",
+    );
+    assert.equal(await evaluate("document.querySelectorAll('article').length"), 6);
     assert.equal(
-      await evaluate("document.documentElement.scrollWidth>innerWidth"),
-      false,
-      "Price cards must fit " + width + "px",
+      await evaluate("document.getElementById('package-filters')===null"),
+      true,
+      "Filters must start closed",
+    );
+    await click("Filters");
+    assert.equal(
+      await evaluate(
+        "document.querySelector('button[aria-controls=package-filters]').getAttribute('aria-expanded')",
+      ),
+      "true",
+    );
+    if (category === "hajj") assert(!(await body()).includes("Journey style"));
+    if (category === "international" || category === "domestic")
+      assert((await body()).includes("Destination"));
+    if (category === "umrah") assert((await body()).includes("Umrah journey type"));
+    await evaluate("document.querySelector('button[aria-label=\"Close filters\"]').click()");
+    await pause();
+    for (const width of [320, 390, 1280]) {
+      await call("Emulation.setDeviceMetricsOverride", {
+        width,
+        height: 844,
+        deviceScaleFactor: 1,
+        mobile: width < 600,
+      });
+      assert.equal(
+        await evaluate("document.documentElement.scrollWidth>innerWidth"),
+        false,
+        category + " fits " + width,
+      );
+    }
+    await evaluate("document.querySelector('article button[aria-expanded]').click()");
+    await pause();
+    assert.equal(
+      await evaluate(
+        "document.querySelector('article button[aria-expanded]').getAttribute('aria-expanded')",
+      ),
+      "true",
     );
   }
-  await evaluate(
-    "[...document.querySelectorAll('[aria-label=\"Filter journeys\"] button')].find(b=>b.innerText==='Umrah').click()",
+  await setInput("input[type=search]", "Ooty");
+  assert((await body()).includes("1 packages"));
+  await evaluate("document.querySelector('article button[aria-pressed]').click()");
+  await until(
+    async () => (await body()).includes("Where would you like to go?"),
+    "Selected package must enter planner",
   );
-  await pause();
-  await select(0, "ramadan");
-  assert.equal((await cards()).length, 4);
-  assert((await body()).toLowerCase().includes("seasonal starting guide"));
-  assert.equal(
-    await evaluate(
-      "document.querySelector('#journeys article button[aria-expanded]').getAttribute('aria-expanded')",
-    ),
-    "false",
-    "Cards start collapsed",
-  );
-  await evaluate(
-    "document.querySelector('#journeys article button[aria-expanded]').focus();document.querySelector('#journeys article button[aria-expanded]').click()",
-  );
-  await pause();
-  assert((await body()).includes("Included in the package plan"));
-  await evaluate(
-    "[...document.querySelectorAll('#journeys article summary')].find(e=>e.innerText.includes('Pricing & room sharing')).click()",
-  );
-  await pause();
-  assert((await body()).includes("Ramadan dates, hotels and flights must be re-quoted"));
-  await evaluate(
-    "document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))",
-  );
-  await pause();
-  await evaluate(
-    "[...document.querySelectorAll('[aria-label=\"Filter journeys\"] button')].find(b=>b.innerText==='Domestic').click()",
-  );
-  await pause();
-  await select(0, "ziyarat");
-  assert.deepEqual(await cards(), ["Ajmer Ziyarat", "Multi-Ziyarat India"]);
-  await evaluate(
-    "if(location.hostname==='localhost'){localStorage.removeItem('ma-travel-draft-v1');sessionStorage.clear()}",
-  );
-  await call("Page.navigate", { url: "http://localhost:3000/travel/plan?category=umrah" });
-  await until(async () => (await body()).includes("Where would you like to go?"), "Planner load");
   await until(
     async () =>
       await evaluate(
-        "[...document.querySelectorAll('button')].some(b=>b.innerText==='CONTINUE'&&!b.disabled)",
+        "JSON.parse(localStorage.getItem('ma-travel-draft-v1'))?.draft.category==='domestic'",
       ),
-    "Planner interactive",
+    "Domestic preset restored",
   );
-  for (const step of [2, 3, 4]) {
-    await click("CONTINUE");
-    await until(async () => (await body()).includes("Step " + step + " of 7"), "Step " + step);
-  }
-  await until(async () => (await body()).includes("Umrah Economy"), "Planner catalogue load");
-  await click("Select package");
-  assert((await body()).includes("1,79,998"), "Adult estimate must be twice the saved adult rate");
-  assert((await body()).includes("Children, room changes and extras are quoted separately"));
-  await evaluate("document.querySelector('main article button[aria-expanded]').click()");
-  await pause();
-  assert.equal(
-    await evaluate(
-      "document.querySelector('main article button[aria-expanded]').getAttribute('aria-expanded')",
-    ),
-    "true",
-  );
-  assert.equal(
-    await evaluate("document.querySelectorAll('main article details[open]').length"),
-    0,
-    "Nested sections start collapsed",
-  );
-  await evaluate(
-    "[...document.querySelectorAll('main article summary')].find(e=>e.innerText==='Itinerary').click()",
-  );
-  await pause();
-  await evaluate("document.querySelector('main article details[open] details summary').click()");
-  await pause();
-  assert.equal(
-    await evaluate("document.querySelectorAll('main article details[open]').length"),
-    2,
-    "Itinerary and individual stage expand independently",
-  );
-  await evaluate("document.querySelector('main article button[aria-expanded]').click()");
-  await pause();
-  assert.equal(
-    await evaluate(
-      "document.getElementById(document.querySelector('main article button[aria-expanded]').getAttribute('aria-controls')).hidden",
-    ),
-    true,
-    "Collapse hides nested content",
-  );
-  await setInput("input[type=search]", "Turkey");
-  assert(
-    (await body()).includes("Your selected journey") && (await body()).includes("Umrah Economy"),
-    "Selection must remain identified after filtering",
-  );
-  assert((await body()).includes("Umrah + Turkey"));
   console.log(
-    "PASS: 63 live offers, pagination, numeric budget sorting, filter resets, seasonal guides, quote-only Hajj, Ziyarat collections, mobile price layout and adult estimates. No booking writes.",
+    "PASS: homepage without catalogue, four specific package pages, relevant filters, closed mobile filter panels, responsive cards and package-to-planner selection. No booking writes.",
   );
 } finally {
   ws.close();

@@ -4,9 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTravelCatalog } from "@/hooks/use-travel-catalog";
-import { TravelPackageChoice } from "@/components/TravelPackageChoice";
-import { TravelCatalogueControls } from "@/components/TravelCatalogueControls";
-import { packageJourney, filterTravelPackages, initialCatalogueFilter } from "@/lib/travel-booking";
+import { packageJourney } from "@/lib/travel-booking";
 import { useEffect, useState, type ReactNode } from "react";
 import {
   ArrowRight,
@@ -72,10 +70,8 @@ function Section({
 export default function TravelHome() {
   const router = useRouter();
   const catalog = useTravelCatalog();
-  const [catalogueFilter, setCatalogueFilter] = useState(initialCatalogueFilter);
-  const [journeyLimit, setJourneyLimit] = useState(6);
-  const journeys = filterTravelPackages(catalog.packages, catalogueFilter).map(packageJourney);
-  const [category, setCategory] = useState<TravelCategory | "all">("all");
+  const journeys = catalog.packages.map(packageJourney);
+  const [category] = useState<TravelCategory | "all">("all");
   const [enquiryJourney, setEnquiryJourney] = useState("Umrah");
   const [mobileMenu, setMobileMenu] = useState(false);
   const [travellers, setTravellers] = useState(2);
@@ -112,14 +108,6 @@ export default function TravelHome() {
     return () => mobile.removeEventListener("change", preload);
   }, [activeHeroIndex, travelHeroSlides]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const visibleJourneys = journeys.filter(
-    (journey) =>
-      (category === "all" || journey.category === category) &&
-      `${journey.name} ${journey.category} ${journey.places} ${journey.description}`
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()),
-  );
   function planJourney(journeyName: string) {
     const pkg = catalog.packages.find((item) => item.name === journeyName);
     const chosenCategory =
@@ -132,14 +120,7 @@ export default function TravelHome() {
   }
 
   function selectCategory(value: TravelCategory) {
-    setCategory(value);
-    setJourneyLimit(6);
-    setCatalogueFilter(initialCatalogueFilter);
-    setSearchTerm("");
-    setSearchQuery("");
-    document.getElementById("journeys")?.scrollIntoView({
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-    });
+    router.push(`/travel/packages/${value}`);
   }
 
   return (
@@ -177,7 +158,7 @@ export default function TravelHome() {
             className="hidden items-center gap-6 text-[14px] lg:flex"
           >
             <a href="#explore">Explore</a>
-            <a href="#journeys">Journeys</a>
+            <a href="#explore">Journeys</a>
             <a href="#pilgrim-guide">Pilgrim guide</a>
             <a href="#travel-faqs">FAQs</a>
           </nav>
@@ -207,7 +188,7 @@ export default function TravelHome() {
           >
             {[
               ["Explore journeys", "#explore"],
-              ["Compare journeys", "#journeys"],
+              ["Browse packages", "#explore"],
               ["Pilgrim guide", "#pilgrim-guide"],
               ["Plan your trip", "/travel/plan"],
               ["FAQs", "#travel-faqs"],
@@ -360,15 +341,13 @@ export default function TravelHome() {
                   <form
                     onSubmit={(event) => {
                       event.preventDefault();
-                      setSearchTerm(searchQuery.trim());
-                      setCategory("all");
-                      setCatalogueFilter(initialCatalogueFilter);
-                      setJourneyLimit(6);
-                      document.getElementById("journeys")?.scrollIntoView({
-                        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-                          ? "auto"
-                          : "smooth",
-                      });
+                      const query = searchQuery.trim().toLowerCase();
+                      const match = catalog.packages.find((pkg) =>
+                        `${pkg.name} ${pkg.places}`.toLowerCase().includes(query),
+                      );
+                      router.push(
+                        `/travel/packages/${match?.category || "umrah"}?q=${encodeURIComponent(searchQuery.trim())}`,
+                      );
                     }}
                     className="mt-5 flex max-w-md items-center gap-3 rounded-[14px] bg-white px-4 py-3 text-foreground shadow-lg transition-shadow focus-within:shadow-[0_0_0_3px_rgba(202,164,93,0.6),0_12px_24px_rgba(0,0,0,0.2)]"
                   >
@@ -559,114 +538,6 @@ export default function TravelHome() {
             </p>
           </div>
         </Section>
-
-        <div className="border-y border-border bg-surface/60">
-          <Section id="journeys">
-            <SectionHeader
-              eyebrow="A little inspiration"
-              title="Journeys worth looking forward to"
-              subtitle="Starting points for your itinerary. Dates, hotels and prices are confirmed in your personal quotation."
-            />
-            {catalog.loading && (
-              <p role="status" className="mt-5 text-sm text-muted-foreground">
-                Loading travel packages?
-              </p>
-            )}
-            {catalog.error && (
-              <div role="alert" className="mt-5 rounded-xl border border-border p-4">
-                <p>{catalog.error}</p>
-                <button className="mt-2 underline" onClick={() => void catalog.reload()}>
-                  Try again
-                </button>
-              </div>
-            )}
-            <div role="group" aria-label="Filter journeys" className="mt-6 flex flex-wrap gap-2">
-              {[{ id: "all", name: "All journeys" }, ...travelCategories].map((item) => (
-                <button
-                  key={item.id}
-                  aria-pressed={category === item.id}
-                  onClick={() => {
-                    setCategory(item.id as TravelCategory | "all");
-                    setCatalogueFilter(initialCatalogueFilter);
-                    setJourneyLimit(6);
-                    setSearchTerm("");
-                    setSearchQuery("");
-                  }}
-                  className={cx(
-                    "press min-h-11 rounded-full px-5 text-[14px] font-medium",
-                    category === item.id ? "bg-primary text-white" : "border border-border bg-card",
-                  )}
-                >
-                  {item.name}
-                </button>
-              ))}
-            </div>
-            <div className="mt-5">
-              <TravelCatalogueControls
-                value={catalogueFilter}
-                onChange={(value) => {
-                  setCatalogueFilter(value);
-                  setJourneyLimit(6);
-                }}
-                count={visibleJourneys.length}
-                search={false}
-              />
-            </div>
-            <p className="sr-only" aria-live="polite">
-              {visibleJourneys.length} journey ideas displayed
-            </p>
-            {searchTerm && (
-              <p className="mt-4 text-[14px] text-muted-foreground">
-                Results for “{searchTerm}”{" "}
-                <button
-                  className="ml-3 min-h-11 font-semibold text-foreground underline"
-                  onClick={() => {
-                    setSearchTerm("");
-                    setSearchQuery("");
-                  }}
-                >
-                  Clear search
-                </button>
-              </p>
-            )}
-            {!catalog.loading && !catalog.error && visibleJourneys.length === 0 && (
-              <div className="mt-6 rounded-[20px] border border-border bg-card p-6">
-                <h3 className="font-display text-[28px]">
-                  Your journey can be a little different.
-                </h3>
-                <p className="mt-2 text-[14px] text-muted-foreground">
-                  We couldn’t find a matching itinerary. Tell us what you have in mind.
-                </p>
-                <Button className="mt-4" onClick={() => planJourney("Custom journey")}>
-                  PLAN A CUSTOM JOURNEY <ArrowRight size={16} />
-                </Button>
-              </div>
-            )}
-            <div className="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {visibleJourneys.slice(0, journeyLimit).map((journey) => {
-                const pkg = catalog.packages.find((item) => item.id === journey.id);
-                return pkg ? (
-                  <TravelPackageChoice
-                    key={pkg.id}
-                    pkg={pkg}
-                    adults={travellers}
-                    onSelect={() => planJourney(pkg.name)}
-                  />
-                ) : null;
-              })}
-            </div>
-            {visibleJourneys.length > journeyLimit && (
-              <Button
-                full
-                variant="outline"
-                className="mt-6"
-                onClick={() => setJourneyLimit((count) => count + 6)}
-              >
-                SHOW MORE JOURNEYS ({visibleJourneys.length - journeyLimit} remaining)
-              </Button>
-            )}
-          </Section>
-        </div>
 
         <Section>
           <div className="grid overflow-hidden rounded-[24px] bg-primary text-primary-foreground lg:grid-cols-2">

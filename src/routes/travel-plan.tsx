@@ -742,6 +742,7 @@ export default function TravelPlan() {
                 </div>
               )}
               <TravelCatalogueControls
+                category={draft.category}
                 value={packageFilter}
                 count={filteredPackages.length}
                 onChange={(value) => {
