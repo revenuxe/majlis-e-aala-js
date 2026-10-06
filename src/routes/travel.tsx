@@ -348,7 +348,7 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
         <Section id="explore">
           <SectionHeader
             eyebrow="Find your kind of journey"
-            title="Sacred beginnings. Beautiful escapes."
+            title="Find your next journey."
             subtitle="Choose what brings you here. We’ll help you take the next step."
           />
           <TravelJourneyCards onSelect={selectCategory} />
