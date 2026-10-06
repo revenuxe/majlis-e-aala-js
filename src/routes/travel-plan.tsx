@@ -716,6 +716,34 @@ export default function TravelPlan() {
                   }}
                 />
               </div>
+              {draft.children > 0 && (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {draft.childAges.map((age, index) => (
+                    <Field key={index} label={`Child ${index + 1} — age at travel`}>
+                      <select
+                        value={age < 0 ? "" : age}
+                        onChange={(e) =>
+                          update({
+                            childAges: draft.childAges.map((value, i) =>
+                              i === index ? Number(e.target.value) : value,
+                            ),
+                          })
+                        }
+                        className={inputClass}
+                      >
+                        <option value="" disabled>
+                          Choose age
+                        </option>
+                        {Array.from({ length: 18 }, (_, i) => (
+                          <option key={i} value={i}>
+                            {i === 0 ? "Under 1 year" : `${i} ${i === 1 ? "year" : "years"}`}
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+                  ))}
+                </div>
+              )}
               <div className="rounded-[20px] border border-gold/40 bg-champagne/20 p-5">
                 <label className="flex min-h-11 cursor-pointer items-center gap-3 text-[15px] font-semibold">
                   <input
@@ -748,34 +776,6 @@ export default function TravelPlan() {
                   </div>
                 )}
               </div>
-              {draft.children > 0 && (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {draft.childAges.map((age, index) => (
-                    <Field key={index} label={`Child ${index + 1} — age at travel`}>
-                      <select
-                        value={age < 0 ? "" : age}
-                        onChange={(e) =>
-                          update({
-                            childAges: draft.childAges.map((value, i) =>
-                              i === index ? Number(e.target.value) : value,
-                            ),
-                          })
-                        }
-                        className={inputClass}
-                      >
-                        <option value="" disabled>
-                          Choose age
-                        </option>
-                        {Array.from({ length: 18 }, (_, i) => (
-                          <option key={i} value={i}>
-                            {i === 0 ? "Under 1 year" : `${i} ${i === 1 ? "year" : "years"}`}
-                          </option>
-                        ))}
-                      </select>
-                    </Field>
-                  ))}
-                </div>
-              )}
               <p className="text-[13px] text-muted-foreground">
                 Planning for more than 100 people?{" "}
                 <a className="underline" href={`tel:+${travelContact.phone}`}>
