@@ -98,22 +98,22 @@ function AdminWorkspace() {
   const navigate = useRouter();
   const [ready, setReady] = useState(false);
   const [overviewService, setOverviewService] = useAdminState<"catering" | "travel">(
-    "AdminWorkspace:overviewService",
-    "catering",
+    "AdminWorkspace:overviewService:travel-default",
+    "travel",
   );
   const [tab, setTab] = useAdminState<MainTab>("AdminWorkspace:tab", "dashboard");
   const [listingService, setListingService] = useAdminState<ListingService>(
-    "AdminWorkspace:listingService",
-    "catering",
+    "AdminWorkspace:listingService:travel-default",
+    "travels",
   );
   const [orderService, setOrderService] = useAdminState<"catering" | "travel">(
-    "AdminWorkspace:orderService",
-    "catering",
+    "AdminWorkspace:orderService:travel-default",
+    "travel",
   );
   const [listTab, setListTab] = useAdminState<ListTab>("AdminWorkspace:listTab", "packages");
   const [homepageTab, setHomepageTab] = useAdminState<HomepageTab>(
-    "AdminWorkspace:homepageTab",
-    "catering",
+    "AdminWorkspace:homepageTab:travel-default",
+    "travels",
   );
 
   const [packages, setPackages] = useState<PackageRow[]>([]);
