@@ -48,8 +48,8 @@ export function TravelPackageChoice({
   return (
     <article
       className={cx(
-        "self-start overflow-hidden rounded-[28px] border bg-card shadow-card",
-        selected ? "border-primary ring-1 ring-primary/20" : "border-border",
+        "package-card self-start overflow-hidden rounded-[28px] border bg-card",
+        selected ? "package-card-featured border-gold ring-2 ring-gold/30" : "border-border",
       )}
     >
       <div className="p-4 pb-3 sm:p-5 sm:pb-3">
@@ -69,18 +69,18 @@ export function TravelPackageChoice({
         {pkg.inclusions.length > 0 && (
           <ul
             aria-label="Key package inclusions"
-            className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface/40 text-sm leading-snug"
+            className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface/40 text-[12px] leading-relaxed"
           >
             {pkg.inclusions.slice(0, 3).map((item, index) => (
-              <li key={index} className="flex min-h-11 items-start gap-2 px-3 py-2.5">
-                <Check size={16} className="mt-0.5 shrink-0 text-gold" aria-hidden="true" />
+              <li key={index} className="flex min-h-10 items-start gap-2 px-3 py-2">
+                <Check size={14} className="mt-0.5 shrink-0 text-gold" aria-hidden="true" />
                 <span>{item}</span>
               </li>
             ))}
           </ul>
         )}
         <div className="relative mt-4">
-          <div className="w-full rounded-[16px] bg-surface px-4 py-3 text-left">
+          <div className="w-full rounded-[16px] border border-gold/25 bg-surface px-4 py-3 text-left">
             <div>
               {price != null && (
                 <span className="mb-1 block text-sm font-semibold text-muted-foreground">

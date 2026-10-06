@@ -62,7 +62,7 @@ export function TravelCountBanner({
     );
   }
   return (
-    <section className="relative overflow-hidden rounded-[28px] bg-primary px-5 pb-8 pt-6 text-primary-foreground shadow-[0_18px_36px_rgba(41,32,20,0.18)] sm:px-7 sm:pt-8">
+    <section className="relative overflow-hidden rounded-[28px] bg-primary px-5 py-5 text-primary-foreground shadow-[0_18px_36px_rgba(41,32,20,0.18)] sm:px-7 sm:py-6">
       {/* Decorative image mirrors the catering package banner. */}
       <img
         src={journey?.image || "/travel/makkah.jpg"}
@@ -81,10 +81,7 @@ export function TravelCountBanner({
         <h2 className="mt-3 font-display text-[30px] leading-tight sm:text-[38px]">
           {journey?.name || "Travel"} Packages
         </h2>
-        <p className="mt-1 max-w-lg text-[13px] leading-relaxed text-primary-foreground/75">
-          Packages tailored for your journey.
-        </p>
-        <div className="mt-5 rounded-[18px] border border-gold/40 bg-card p-4 text-foreground shadow-[0_8px_20px_rgba(0,0,0,0.16)] sm:px-5">
+        <div className="mt-3 rounded-[18px] border border-gold/40 bg-card p-4 text-foreground shadow-[0_8px_20px_rgba(0,0,0,0.16)] sm:px-5">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
               <p className="eyebrow">Your traveller count</p>

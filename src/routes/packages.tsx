@@ -132,7 +132,7 @@ export default function PackagesPage() {
                   update({ occasion: event.id, packageId: null, mode: "package" });
                   navigate.push(`/packages/${slug}?view=packages`);
                 }}
-                className="press rounded-[20px] border border-border bg-card p-5 text-left shadow-card transition-colors hover:border-gold/60"
+                className="package-card rounded-[20px] border border-border bg-card p-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-4"
               >
                 <p className="eyebrow text-gold">{event?.name ?? "Catering package"}</p>
                 <h2 className="mt-2 font-display text-[27px] leading-tight">{pkg.name}</h2>
@@ -403,13 +403,13 @@ export default function PackagesPage() {
           </span>
         </div>
       )}
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-6 grid items-start gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {eventPackages.map((p) => (
           <article
             key={p.id}
             className={cx(
-              "flex flex-col rounded-[22px] border p-5 shadow-card",
-              p.signature ? "border-gold bg-champagne/35" : "border-border bg-card",
+              "package-card flex flex-col rounded-[22px] border p-5",
+              p.signature ? "package-card-featured border-gold bg-card" : "border-border bg-card",
             )}
           >
             <div className="flex items-start justify-between gap-3">
@@ -418,7 +418,7 @@ export default function PackagesPage() {
                 <p className="mt-1 text-[13px] text-muted-foreground">{p.tagline}</p>
               </div>
               {p.signature && (
-                <span className="rounded-full bg-gold px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.1em] text-primary">
+                <span className="shrink-0 rounded-full bg-gold px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.1em] text-primary shadow-sm">
                   Popular
                 </span>
               )}
@@ -428,7 +428,7 @@ export default function PackagesPage() {
               onClick={() => setExpandedPackageId((current) => (current === p.id ? null : p.id))}
               aria-expanded={expandedPackageId === p.id}
               aria-label={expandedPackageId === p.id ? "Hide included menu" : "Show included menu"}
-              className="press mt-5 grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[14px] bg-surface px-4 py-3 text-left"
+              className="press mt-5 grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[14px] border border-gold/25 bg-surface px-4 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
             >
               <span>
                 <span className="block text-[22px] font-bold leading-none">
