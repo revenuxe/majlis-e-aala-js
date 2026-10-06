@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { Check, ArrowRight, MapPin, MoonStar } from "lucide-react";
@@ -78,7 +78,7 @@ export function TravelPackageGroups({
               aria-pressed={isActive}
               onClick={() => onChange(group.id)}
               className={cx(
-                "group relative min-h-[222px] w-[min(190px,75%)] shrink-0 snap-start overflow-hidden rounded-[22px] border-2 bg-primary text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-card motion-reduce:transition-none",
+                "group relative min-h-[222px] w-48 min-w-48 flex-none snap-start overflow-hidden rounded-[22px] border-2 bg-primary text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-card motion-reduce:transition-none",
                 isActive ? "border-gold shadow-sm" : "border-gold/35 hover:border-gold",
               )}
             >
