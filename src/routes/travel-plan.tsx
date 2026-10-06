@@ -402,6 +402,16 @@ export default function TravelPlan() {
     setError(message);
     window.setTimeout(() => document.getElementById("travel-step-error")?.focus(), 0);
   }
+  function back() {
+    if (busy) return;
+    if (step === 0) {
+      router.push("/travel");
+      return;
+    }
+    setStep(step === REVIEW_STEP && customer ? AUTH_STEP - 1 : step - 1);
+    setError(null);
+    window.scrollTo(0, 0);
+  }
   async function next() {
     if (busy) return;
     const problem = stepError(step);
@@ -532,12 +542,7 @@ export default function TravelPlan() {
         <div className="mx-auto flex h-18 max-w-[1000px] items-center justify-between gap-3 px-5">
           <button
             disabled={busy}
-            onClick={() =>
-              step === 0
-                ? router.push("/travel")
-                : (setStep(step === REVIEW_STEP && customer ? AUTH_STEP - 1 : step - 1),
-                  setError(null))
-            }
+            onClick={back}
             className="flex min-h-11 items-center gap-2 text-[14px] font-semibold"
           >
             <ArrowLeft size={18} />
@@ -787,6 +792,7 @@ export default function TravelPlan() {
                 category={draft.category}
                 adults={draft.adults}
                 children={draft.children}
+                onBack={back}
                 onChange={() => setStep(0)}
               />
               {catalog.loading && (
