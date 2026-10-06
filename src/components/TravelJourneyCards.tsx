@@ -6,29 +6,18 @@ import { travelCategories, type TravelCategory } from "@/lib/travel";
 export function TravelJourneyCards({
   onSelect,
   selected,
-  scrollable = false,
 }: {
   onSelect: (category: TravelCategory) => void;
   selected?: TravelCategory;
-  scrollable?: boolean;
 }) {
   return (
-    <div
-      className={cx(
-        "mt-4 gap-3 sm:gap-4",
-        scrollable
-          ? "flex snap-x snap-proximity overflow-x-auto overscroll-x-contain px-1 pb-3 pt-1"
-          : "grid grid-cols-2 lg:grid-cols-4",
-      )}
-    >
+    <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       {travelCategories.map((item) => (
         <button
           key={item.id}
           onClick={() => onSelect(item.id)}
           aria-pressed={selected === item.id}
-          style={scrollable ? { width: 192, minWidth: 192, flex: "0 0 192px" } : undefined}
           className={cx(
-            scrollable && "w-48 min-w-48 flex-none snap-start",
             "group relative min-h-[222px] cursor-pointer overflow-hidden rounded-[22px] border-2 bg-soft-black text-left shadow-[0_14px_30px_rgba(55,42,25,0.18)] transition-all duration-300 motion-safe:hover:-translate-y-1.5 hover:shadow-[0_24px_42px_rgba(55,42,25,0.28)] active:translate-y-0 active:scale-[0.975] sm:min-h-[280px] sm:rounded-[26px]",
             selected === item.id
               ? "border-gold ring-2 ring-gold/60"

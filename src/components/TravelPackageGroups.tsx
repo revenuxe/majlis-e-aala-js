@@ -1,8 +1,6 @@
-"use client";
-
+﻿"use client";
 import { useState } from "react";
-import { Check, ArrowRight, MapPin, MoonStar } from "lucide-react";
-import { travelCategories } from "@/lib/travel";
+import { Check, Grid2X2, MapPin, MoonStar } from "lucide-react";
 import type { TravelPackage } from "@/lib/travel-booking";
 import { travelPackageGroups } from "@/lib/travel-package-groups";
 import { cx } from "./ui-kit";
@@ -36,17 +34,13 @@ export function TravelPackageGroups({
   loading?: boolean;
 }) {
   const groups = travelPackageGroups(packages);
+  const destination =
+    packages[0]?.category === "domestic" || packages[0]?.category === "international";
   const active = groups.some((group) => group.id === value) ? value : "all";
   const items = [
-    {
-      id: "all",
-      label: "All packages",
-      image: travelCategories.find((item) => item.id === packages[0]?.category)?.image || null,
-      count: packages.length,
-    },
+    { id: "all", label: "All packages", image: null as string | null, count: packages.length },
     ...groups,
   ];
-
   return (
     <section
       aria-label="Package categories"
@@ -55,13 +49,12 @@ export function TravelPackageGroups({
     >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-base font-semibold tracking-tight text-foreground">
-          Choose your journey
+          {destination ? "Choose a destination" : "Choose your journey"}
         </h2>
         <span className="rounded-full bg-surface px-2.5 py-1 text-xs tabular-nums text-muted-foreground">
           {loading ? "Loading…" : `${packages.length} packages`}
         </span>
       </div>
-
       <div
         className="flex snap-x snap-proximity gap-3 overflow-x-auto overscroll-x-contain scroll-px-1 px-1 pb-3 pt-1"
         role="group"
@@ -75,51 +68,43 @@ export function TravelPackageGroups({
               type="button"
               aria-pressed={isActive}
               onClick={() => onChange(group.id)}
-              style={{ width: 192, minWidth: 192, minHeight: 222, flex: "0 0 192px" }}
               className={cx(
-                "group relative min-h-[222px] w-48 min-w-48 flex-none snap-start overflow-hidden rounded-[22px] border-2 bg-primary text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-card motion-reduce:transition-none",
-                isActive ? "border-gold shadow-sm" : "border-gold/35 hover:border-gold",
+                "relative flex min-h-[100px] w-[min(220px,80%)] shrink-0 snap-start items-center gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-card motion-reduce:transition-none",
+                isActive
+                  ? "border-gold bg-gold/10 shadow-sm"
+                  : "border-border bg-card hover:border-gold/50 hover:bg-surface",
               )}
             >
               <span
                 className={cx(
-                  "absolute inset-0 grid place-items-center overflow-hidden text-gold",
+                  "grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-lg sm:h-12 sm:w-12",
                   group.id === "all"
                     ? "bg-primary text-primary-foreground"
                     : "bg-surface text-gold",
                 )}
               >
-                <GroupImage key={group.image} src={group.image} label={group.label} />
-              </span>
-              <span
-                aria-hidden="true"
-                className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20"
-              />
-              <span
-                className={cx(
-                  "absolute inset-x-3 bottom-3 rounded-2xl px-3 py-3",
-                  isActive ? "bg-primary text-primary-foreground" : "bg-card text-foreground",
+                {group.id === "all" ? (
+                  <Grid2X2 size={22} />
+                ) : (
+                  <GroupImage key={group.image} src={group.image} label={group.label} />
                 )}
-              >
-                <span className="block break-words font-display text-lg leading-tight">
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block break-words text-[13px] font-semibold leading-5 text-foreground sm:text-sm">
                   {group.label}
                 </span>
-                <span className="mt-1 block text-xs leading-4 tabular-nums opacity-75">
+                <span className="mt-1 block text-xs leading-4 tabular-nums text-muted-foreground">
                   {group.count} {group.count === 1 ? "package" : "packages"}
                 </span>
               </span>
-              <span className="absolute left-3 top-3 rounded-full bg-card px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-foreground">
-                {isActive ? "Selected" : "Choose"}
-              </span>
-              <span
-                className={cx(
-                  "absolute right-3 top-3 grid h-11 w-11 place-items-center rounded-full",
-                  isActive ? "bg-gold text-primary" : "bg-card text-foreground",
-                )}
-                aria-hidden="true"
-              >
-                {isActive ? <Check size={18} /> : <ArrowRight size={18} />}
-              </span>
+              {isActive && (
+                <span
+                  className="absolute right-1.5 top-1.5 grid h-4 w-4 place-items-center rounded-full bg-gold text-primary"
+                  aria-hidden="true"
+                >
+                  <Check size={11} strokeWidth={3} />
+                </span>
+              )}
             </button>
           );
         })}

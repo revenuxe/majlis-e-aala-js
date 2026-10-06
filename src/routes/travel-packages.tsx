@@ -8,7 +8,6 @@ import { TravelNavigation } from "@/components/TravelNavigation";
 import { TravelCountBanner } from "@/components/TravelCountBanner";
 import { TravelPackageChoice } from "@/components/TravelPackageChoice";
 import { TravelPackageGroups } from "@/components/TravelPackageGroups";
-import { TravelJourneyCards } from "@/components/TravelJourneyCards";
 import { packageGroupKeys } from "@/lib/travel-package-groups";
 import { useTravelCatalog } from "@/hooks/use-travel-catalog";
 import {
@@ -160,20 +159,12 @@ export default function TravelPackages({
             onChildren={setChildren}
           />
         </div>
-        <section aria-label="Journey categories" className="mt-4 min-w-0">
-          <h2 className="text-base font-semibold">Choose your journey</h2>
-          <TravelJourneyCards
-            scrollable
-            selected={category}
-            onSelect={(nextCategory) => {
-              if (nextCategory !== category)
-                router.push(
-                  `/travel/packages/${nextCategory}?travellers=${adults}&children=${children}&seniors=${seniorCount}`,
-                );
-            }}
-          />
-        </section>
-        <h1 className="sr-only">Choose a package</h1>
+        <h1 className="mt-5 font-display text-[32px] leading-tight sm:text-[38px]">
+          Choose a package
+        </h1>
+        <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
+          Select the package that suits your journey.
+        </p>
         <div className="mt-4">
           <TravelPackageGroups
             packages={packages}
