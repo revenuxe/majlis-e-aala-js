@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTravelCatalog } from "@/hooks/use-travel-catalog";
 import { packageJourney } from "@/lib/travel-booking";
 import { useEffect, useState, type ReactNode } from "react";
+import { useTravelTravellers } from "@/hooks/use-travel-travellers";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -75,7 +76,7 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
   const journeys = catalog.packages.map(packageJourney);
   const [enquiryJourney, setEnquiryJourney] = useState("Umrah");
   const [mobileMenu, setMobileMenu] = useState(false);
-  const [travellers, setTravellers] = useState(2);
+  const { adults: travellers, children, seniors, setAdults: setTravellers } = useTravelTravellers();
   const [heroIndex, setHeroIndex] = useState(0);
   const { slides: travelHeroSlides } = useTravelHero(initialContent?.slides);
   const [heroPaused, setHeroPaused] = useState(false);
@@ -113,7 +114,11 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
     const chosenCategory =
       pkg?.category ||
       travelCategories.find((item) => item.name.toLowerCase() === journeyName.toLowerCase())?.id;
-    const params = new URLSearchParams({ travellers: String(travellers) });
+    const params = new URLSearchParams({
+      travellers: String(travellers),
+      children: String(children),
+      seniors: String(seniors),
+    });
     if (chosenCategory) params.set("category", chosenCategory);
     if (pkg) params.set("package", pkg.id);
     router.push("/travel/plan?" + params.toString());

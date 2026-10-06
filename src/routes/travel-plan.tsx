@@ -17,6 +17,11 @@ import { BookingAuth } from "@/components/BookingAuth";
 import { saveTravelProfile, travelProfileFromUser } from "@/lib/travel-profile";
 import { Button, QuantitySelector, cx } from "@/components/ui-kit";
 import { useTravelCatalog } from "@/hooks/use-travel-catalog";
+import {
+  readTravelTravellers,
+  saveTravelTravellers,
+  syncTravellerUrl,
+} from "@/lib/travel-travellers";
 import { supabase } from "@/integrations/supabase/client";
 import { travelCategories, travelContact, travelWhatsApp } from "@/lib/travel";
 import {
@@ -195,7 +200,7 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
     setError(null);
   }
   useEffect(() => {
-    let restored: TravelDraft = { ...initialTravelDraft };
+    let restored: TravelDraft = { ...initialTravelDraft, ...readTravelTravellers() };
     try {
       const saved = JSON.parse(window.localStorage.getItem("ma-travel-draft-v1") || "null");
       const parsed = savedDraftSchema.safeParse(saved?.draft);
@@ -259,7 +264,10 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
         (_, index) => restored.childAges[index] ?? -1,
       );
     }
-    if (restored.children === 0) restored.childAges = [];
+    restored.childAges = Array.from(
+      { length: restored.children },
+      (_, index) => restored.childAges[index] ?? -1,
+    );
     const requestedSeniors = Number(params.get("seniors"));
     if (
       params.has("seniors") &&
@@ -289,14 +297,10 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
   useEffect(() => {
     if (!ready) return;
     const params = new URLSearchParams(window.location.search);
-    if (
-      ["category", "package", "travellers", "children", "seniors"].some((key) => params.has(key))
-    ) {
-      ["category", "package", "travellers", "children", "seniors"].forEach((key) =>
-        params.delete(key),
-      );
+    if (["category", "package"].some((key) => params.has(key))) {
+      ["category", "package"].forEach((key) => params.delete(key));
       window.history.replaceState(
-        null,
+        window.history.state,
         "",
         `${window.location.pathname}${params.size ? `?${params}` : ""}`,
       );
@@ -334,6 +338,12 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
 
   useEffect(() => {
     if (!ready || reference) return;
+    saveTravelTravellers({
+      adults: draft.adults,
+      children: draft.children,
+      seniors: draft.seniors,
+    });
+    syncTravellerUrl({ adults: draft.adults, children: draft.children, seniors: draft.seniors });
     try {
       const {
         name: _name,

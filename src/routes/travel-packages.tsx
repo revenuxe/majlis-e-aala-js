@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useTravelTravellers } from "@/hooks/use-travel-travellers";
 import { ArrowRight, Search, SlidersHorizontal, X } from "lucide-react";
 import { BrandLogo } from "@/components/Brand";
 import { TravelNavigation } from "@/components/TravelNavigation";
@@ -73,33 +74,12 @@ export default function TravelPackages({
   const [destination, setDestination] = useState("");
   const [duration, setDuration] = useState("");
   const [limit, setLimit] = useState(6);
-  const [adults, setAdults] = useState(2);
-  const [children, setChildren] = useState(0);
-  const [seniors, setSeniors] = useState(0);
+  const { adults, children, seniors, setAdults, setChildren, setSeniors } = useTravelTravellers();
   const seniorCount = Math.min(seniors, adults);
   const [editingCount, setEditingCount] = useState(false);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const query = params.get("q");
-    const requestedAdults = Number(params.get("travellers"));
-    const requestedChildren = Number(params.get("children"));
-    if (Number.isInteger(requestedAdults) && requestedAdults >= 1 && requestedAdults <= 100) {
-      setAdults(requestedAdults);
-      const requestedSeniors = Number(params.get("seniors"));
-      if (
-        Number.isInteger(requestedSeniors) &&
-        requestedSeniors >= 0 &&
-        requestedSeniors <= requestedAdults
-      )
-        setSeniors(requestedSeniors);
-      if (
-        Number.isInteger(requestedChildren) &&
-        requestedChildren >= 0 &&
-        requestedChildren <= 20 &&
-        requestedAdults + requestedChildren <= 100
-      )
-        setChildren(requestedChildren);
-    }
     if (query) setFilter((current) => ({ ...current, search: query.slice(0, 150) }));
   }, []);
   const packages = catalog.packages.filter((pkg) => pkg.category === category);

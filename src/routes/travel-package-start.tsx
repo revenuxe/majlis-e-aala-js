@@ -4,6 +4,7 @@ import { TravelSavedPackagesLink } from "@/components/TravelSavedPackages";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useTravelTravellers } from "@/hooks/use-travel-travellers";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { BrandLogo } from "@/components/Brand";
 import { Button, QuantitySelector } from "@/components/ui-kit";
@@ -12,29 +13,12 @@ import { TravelJourneyCards } from "@/components/TravelJourneyCards";
 
 export default function TravelPackageStart() {
   const router = useRouter();
-  const [adults, setAdults] = useState(2);
-  const [children, setChildren] = useState(0);
-  const [seniors, setSeniors] = useState(0);
+  const { adults, children, seniors, setAdults, setChildren, setSeniors } = useTravelTravellers();
   const seniorCount = Math.min(seniors, adults);
   const [choosingJourney, setChoosingJourney] = useState(false);
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const adultCount = Number(params.get("travellers"));
-    const childCount = Number(params.get("children"));
-    const seniorCount = Number(params.get("seniors"));
-    if (Number.isInteger(adultCount) && adultCount >= 1 && adultCount <= 100) {
-      setAdults(adultCount);
-      if (
-        Number.isInteger(childCount) &&
-        childCount >= 0 &&
-        childCount <= 20 &&
-        adultCount + childCount <= 100
-      )
-        setChildren(childCount);
-      if (Number.isInteger(seniorCount) && seniorCount >= 0 && seniorCount <= adultCount)
-        setSeniors(seniorCount);
-      if (params.get("step") === "journey") setChoosingJourney(true);
-    }
+    if (params.get("step") === "journey") setChoosingJourney(true);
   }, []);
   return (
     <div className="min-h-screen bg-background pb-32 lg:pb-12">
