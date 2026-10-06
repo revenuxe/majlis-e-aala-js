@@ -10,6 +10,7 @@ import { TravelCountBanner } from "@/components/TravelCountBanner";
 import { TravelPrice } from "@/components/TravelPrice";
 import { TravelCatalogueControls } from "@/components/TravelCatalogueControls";
 import { TravelPackageChoice } from "@/components/TravelPackageChoice";
+import { TravelPackageGroups } from "@/components/TravelPackageGroups";
 import { TravelJourneyCards } from "@/components/TravelJourneyCards";
 import { BookingAuth } from "@/components/BookingAuth";
 import { saveTravelProfile, travelProfileFromUser } from "@/lib/travel-profile";
@@ -553,7 +554,7 @@ export default function TravelPlan() {
           </span>
         </div>
       </header>
-      <main className="mx-auto max-w-[1000px] px-5 py-7 sm:py-10">
+      <main className="mx-auto max-w-[1000px] px-5 py-4 sm:py-6">
         <div className="flex items-center justify-between gap-3 text-[12px]">
           <p className="font-semibold">
             Step {step + 1} of {TOTAL_STEPS}{" "}
@@ -574,7 +575,7 @@ export default function TravelPlan() {
             style={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
           />
         </div>
-        <p className="eyebrow mt-7">{step === 1 ? "A journey that’s yours" : categoryName}</p>
+        <p className="eyebrow mt-5">{step === 1 ? "A journey that’s yours" : categoryName}</p>
         <h1 className="mt-2 font-display text-[36px] leading-tight sm:text-[44px]">
           {
             [
@@ -601,7 +602,7 @@ export default function TravelPlan() {
             ][step]
           }
         </p>
-        <div className="mt-7 space-y-5">
+        <div className="mt-4 space-y-4">
           {step === 1 && (
             <>
               <TravelJourneyCards
@@ -801,6 +802,15 @@ export default function TravelPlan() {
                   </Button>
                 </div>
               )}
+              <TravelPackageGroups
+                packages={matchingPackages}
+                value={packageFilter.group || "all"}
+                loading={catalog.loading}
+                onChange={(group) => {
+                  setPackageFilter({ ...packageFilter, group, collection: "all" });
+                  setPackageLimit(6);
+                }}
+              />
               <TravelCatalogueControls
                 category={draft.category}
                 value={packageFilter}

@@ -7,6 +7,9 @@ import { BrandLogo } from "@/components/Brand";
 import { TravelNavigation } from "@/components/TravelNavigation";
 import { TravelCountBanner } from "@/components/TravelCountBanner";
 import { TravelPackageChoice } from "@/components/TravelPackageChoice";
+import { TravelPackageGroups } from "@/components/TravelPackageGroups";
+import { TravelJourneyCards } from "@/components/TravelJourneyCards";
+import { packageGroupKeys } from "@/lib/travel-package-groups";
 import { useTravelCatalog } from "@/hooks/use-travel-catalog";
 import {
   filterTravelPackages,
@@ -100,15 +103,23 @@ export default function TravelPackages({
     if (query) setFilter((current) => ({ ...current, search: query.slice(0, 150) }));
   }, []);
   const packages = catalog.packages.filter((pkg) => pkg.category === category);
-  const destinations = [...new Set(packages.map((pkg) => pkg.places.split(" → ")[0]))].sort();
+  const destinations = [
+    ...new Set(
+      packages
+        .flatMap(packageGroupKeys)
+        .filter((key) => key.startsWith("destination:"))
+        .map((key) => key.slice(12)),
+    ),
+  ].sort();
   const durations = [...new Set(packages.map((pkg) => pkg.duration))];
   const visible = filterTravelPackages(packages, filter).filter(
     (pkg) =>
-      (!destination || pkg.places.split(" → ")[0] === destination) &&
+      (!destination || packageGroupKeys(pkg).includes(`destination:${destination}`)) &&
       (!duration || pkg.duration === duration),
   );
   const activeCount =
     Number(filter.collection !== "all") +
+    Number(Boolean(filter.group && filter.group !== "all")) +
     Number(Boolean(filter.budget)) +
     Number(Boolean(destination)) +
     Number(Boolean(duration));
@@ -130,8 +141,8 @@ export default function TravelPackages({
           </Link>
         </div>
       </header>
-      <main className="mx-auto max-w-[1200px] px-5 py-7 sm:px-8 sm:py-12">
-        <div className="mt-5">
+      <main className="mx-auto max-w-[1200px] px-5 py-4 sm:px-8 sm:py-6">
+        <div>
           <TravelCountBanner
             category={category}
             adults={adults}
@@ -149,13 +160,33 @@ export default function TravelPackages({
             onChildren={setChildren}
           />
         </div>
-        <h1 className="mt-9 font-display text-[32px] leading-tight sm:text-[38px]">
-          Choose a package
-        </h1>
-        <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
-          Select the package that suits your journey.
-        </p>
-        <div className="mt-7 flex flex-wrap items-center gap-3">
+        <section aria-label="Journey categories" className="mt-4 min-w-0">
+          <h2 className="text-base font-semibold">Choose your journey</h2>
+          <TravelJourneyCards
+            scrollable
+            selected={category}
+            onSelect={(nextCategory) => {
+              if (nextCategory !== category)
+                router.push(
+                  `/travel/packages/${nextCategory}?travellers=${adults}&children=${children}&seniors=${seniorCount}`,
+                );
+            }}
+          />
+        </section>
+        <h1 className="sr-only">Choose a package</h1>
+        <div className="mt-4">
+          <TravelPackageGroups
+            packages={packages}
+            value={filter.group || "all"}
+            loading={catalog.loading}
+            onChange={(group) => {
+              setFilter({ ...filter, group, collection: "all" });
+              setDestination("");
+              setLimit(6);
+            }}
+          />
+        </div>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
           <label className="flex h-12 min-w-0 flex-1 items-center gap-2 rounded-xl border border-border bg-card px-3">
             <Search size={17} className="shrink-0 text-muted-foreground" />
             <input
@@ -292,7 +323,7 @@ export default function TravelPackages({
             </div>
           </section>
         )}
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           <p aria-live="polite" className="text-sm text-muted-foreground">
             {catalog.loading ? "Loading packages…" : `${visible.length} packages`}
             {activeCount > 0 && (
@@ -337,7 +368,7 @@ export default function TravelPackages({
             </button>
           </div>
         )}
-        <div className="mt-5 grid items-start gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-4 grid items-start gap-4 md:grid-cols-2 lg:grid-cols-3">
           {visible.slice(0, limit).map((pkg) => (
             <TravelPackageChoice
               key={pkg.id}
@@ -361,7 +392,7 @@ export default function TravelPackages({
             Show more packages ({visible.length - limit} remaining)
           </button>
         )}
-        <div className="mt-10 rounded-2xl bg-surface p-6">
+        <div className="mt-6 rounded-2xl bg-surface p-6">
           <h2 className="font-display text-2xl">Prefer a journey made for you?</h2>
           <Link
             href={`/travel/plan?category=${category}&travellers=${adults}&children=${children}&seniors=${seniorCount}`}

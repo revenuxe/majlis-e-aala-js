@@ -1,4 +1,5 @@
 import type { Journey, TravelCategory } from "./travel";
+import { packageGroupKeys } from "./travel-package-groups";
 
 export type TravelPackage = {
   id: string;
@@ -166,6 +167,7 @@ export function packageJourney(pkg: TravelPackage): Journey {
 }
 
 export type TravelCatalogueFilter = {
+  group?: string;
   search: string;
   collection: string;
   budget: string;
@@ -176,14 +178,20 @@ export const initialCatalogueFilter: TravelCatalogueFilter = {
   collection: "all",
   budget: "",
   sort: "recommended",
+  group: "all",
 };
 export function filterTravelPackages(packages: TravelPackage[], filter: TravelCatalogueFilter) {
+  const group =
+    filter.group && packages.some((item) => packageGroupKeys(item).includes(filter.group!))
+      ? filter.group
+      : "all";
   const result = packages.filter(
     (pkg) =>
       `${pkg.name} ${pkg.places} ${pkg.description}`
         .toLowerCase()
         .includes(filter.search.trim().toLowerCase()) &&
       (filter.collection === "all" || pkg.collection === filter.collection) &&
+      (group === "all" || packageGroupKeys(pkg).includes(group)) &&
       (!filter.budget ||
         (pkg.price_per_adult != null && Number(pkg.price_per_adult) <= Number(filter.budget))),
   );

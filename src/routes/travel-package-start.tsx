@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { BrandLogo } from "@/components/Brand";
-import { Button, QuantitySelector, SectionHeader } from "@/components/ui-kit";
+import { Button, QuantitySelector } from "@/components/ui-kit";
 import { TravelSeniorCount } from "@/components/TravelSeniorCount";
 import { TravelJourneyCards } from "@/components/TravelJourneyCards";
 
@@ -48,7 +48,7 @@ export default function TravelPackageStart() {
           </Link>
         </div>
       </header>
-      <main className="mx-auto max-w-[1100px] px-5 py-8 sm:px-8 sm:py-12">
+      <main className="mx-auto max-w-[1100px] px-5 py-4 sm:px-8 sm:py-6">
         {!choosingJourney ? (
           <div className="mx-auto max-w-xl">
             <p className="eyebrow">Find your package · Step 1 of 2</p>
@@ -106,7 +106,8 @@ export default function TravelPackageStart() {
           </div>
         ) : (
           <>
-            <div className="mb-7 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gold/40 bg-card p-5">
+            <h1 className="sr-only">Choose your journey</h1>
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gold/40 bg-card p-5">
               <div>
                 <p className="eyebrow">Your traveller count</p>
                 <p className="mt-2 text-sm font-semibold">
@@ -122,11 +123,6 @@ export default function TravelPackageStart() {
                 Change
               </button>
             </div>
-            <SectionHeader
-              eyebrow="Find your kind of journey"
-              title="Sacred beginnings. Beautiful escapes."
-              subtitle="Choose your journey to see packages calculated for your group."
-            />
             <TravelJourneyCards
               onSelect={(category) =>
                 router.push(
