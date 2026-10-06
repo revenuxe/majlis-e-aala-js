@@ -4,6 +4,7 @@ import { Check, ChevronDown, Heart } from "lucide-react";
 import { cx } from "@/components/ui-kit";
 import { travelMoney, type TravelPackage } from "@/lib/travel-booking";
 import { useSavedTravelPackages } from "@/components/TravelSavedPackages";
+import { travelWhatsApp } from "@/lib/travel";
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <details className="group/section border-b border-border last:border-0">
@@ -56,48 +57,69 @@ export function TravelPackageChoice({
             Saved
           </span>
         )}
-        <button
-          type="button"
-          aria-expanded={expanded}
-          aria-controls={detailsId}
-          aria-label={`Details for ${pkg.name}`}
-          onClick={() => setExpanded(!expanded)}
-          className="mt-7 grid min-h-24 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[18px] bg-surface px-5 py-4 text-left"
-        >
-          <span>
-            <span className="block text-[25px] font-bold leading-tight">
-              {price == null ? "Price on request" : `From ${travelMoney(Number(price) * adults)}`}
-            </span>
-            {price != null && (
-              <span className="mt-1 block text-[13px] font-semibold">
-                Starting estimate for {adults} {adults === 1 ? "adult" : "adults"}
-              </span>
-            )}
-            {price != null && (
-              <span className="mt-3 inline-flex flex-wrap items-center gap-x-1 rounded-lg border border-gold/40 bg-champagne/50 px-2.5 py-1.5 text-[12px] font-semibold leading-relaxed text-foreground">
-                From {travelMoney(Number(price))} per adult
-              </span>
-            )}
-            <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
-              {pkg.price_basis}
-            </span>
-            {pkg.pricing_mode === "seasonal" && (
-              <span className="mt-1 block text-xs font-semibold text-gold">
-                Seasonal starting guide
-              </span>
-            )}
-          </span>
-          <span
-            className={cx(
-              "grid h-12 w-12 shrink-0 place-items-center rounded-full border border-border bg-card transition-transform",
-              expanded && "rotate-180 border-gold/50",
-            )}
+        <div className="relative mt-7">
+          <button
+            type="button"
+            aria-expanded={expanded}
+            aria-controls={detailsId}
+            aria-label={`Details for ${pkg.name}`}
+            onClick={() => setExpanded(!expanded)}
+            className="grid min-h-24 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[18px] bg-surface px-5 py-4 text-left"
           >
-            <ChevronDown size={22} />
-          </span>
-        </button>
-        <p className="mt-4 text-[11px] leading-[1.6] text-muted-foreground">
-          <strong className="mb-1 block text-[12px] font-medium text-foreground">
+            <span>
+              <span className="block text-[25px] font-bold leading-tight">
+                {price == null ? "Price on request" : `From ${travelMoney(Number(price) * adults)}`}
+              </span>
+              {price != null && (
+                <span className="mt-1 block text-[13px] font-semibold">
+                  Starting estimate for {adults} {adults === 1 ? "adult" : "adults"}
+                </span>
+              )}
+              {price != null && (
+                <span className="mt-3 inline-flex flex-wrap items-center gap-x-1 rounded-lg border border-gold/40 bg-champagne/50 px-2.5 py-1.5 text-[12px] font-semibold leading-relaxed text-foreground">
+                  From {travelMoney(Number(price))} per adult
+                </span>
+              )}
+              <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                {pkg.price_basis}
+              </span>
+              {pkg.pricing_mode === "seasonal" && (
+                <span className="mt-1 block text-xs font-semibold text-gold">
+                  Seasonal starting guide
+                </span>
+              )}
+            </span>
+            <span
+              className={cx(
+                "grid h-12 w-12 shrink-0 place-items-center rounded-full border border-border bg-card transition-transform",
+                expanded && "rotate-180 border-gold/50",
+              )}
+            >
+              <ChevronDown size={22} />
+            </span>
+          </button>
+          <a
+            href={travelWhatsApp(
+              `Hello, I'd like to enquire about the ${pkg.name} package (${pkg.duration}, ${pkg.places}) for ${adults} ${adults === 1 ? "adult" : "adults"}${children > 0 ? ` and ${children} ${children === 1 ? "child" : "children"}` : ""}${seniors > 0 ? `, including ${Math.min(seniors, adults)} senior ${Math.min(seniors, adults) === 1 ? "citizen" : "citizens"}` : ""}. Please share availability and a quotation.`,
+            )}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Enquire on WhatsApp about ${pkg.name} (opens in a new tab)`}
+            title="Enquire on WhatsApp"
+            className="absolute -bottom-3 -right-3 grid h-12 w-12 place-items-center rounded-full border border-gold bg-[#111111] text-gold shadow-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
+          >
+            <span
+              aria-hidden="true"
+              className="h-6 w-6 bg-current"
+              style={{
+                mask: "url(/whatsapp.svg) center / contain no-repeat",
+                WebkitMask: "url(/whatsapp.svg) center / contain no-repeat",
+              }}
+            />
+          </a>
+        </div>
+        <p className="mt-5 text-[11px] leading-[1.6] text-muted-foreground">
+          <strong className="mb-1 block pr-16 text-[12px] font-medium text-foreground">
             {adults} {adults === 1 ? "adult" : "adults"}
             {children > 0 ? ` and ${children} ${children === 1 ? "child" : "children"}` : ""}{" "}
             travelling
