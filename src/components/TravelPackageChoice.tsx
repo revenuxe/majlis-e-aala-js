@@ -58,28 +58,67 @@ export function TravelPackageChoice({
           </span>
         )}
         <div className="relative mt-7">
-          <button
-            type="button"
-            aria-expanded={expanded}
-            aria-controls={detailsId}
-            aria-label={`Details for ${pkg.name}`}
-            onClick={() => setExpanded(!expanded)}
-            className="grid min-h-24 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[18px] bg-surface px-5 py-4 text-left"
-          >
-            <span>
+          <div className="grid min-h-24 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[18px] bg-surface px-5 py-4 text-left">
+            <div>
               <span className="block text-[25px] font-bold leading-tight">
                 {price == null ? "Price on request" : `From ${travelMoney(Number(price) * adults)}`}
               </span>
-              {price != null && (
-                <span className="mt-1 block text-[13px] font-semibold">
-                  Starting estimate for {adults} {adults === 1 ? "adult" : "adults"}
+              <span className="mt-2 block text-[13px] font-semibold leading-relaxed">
+                {adults + children} {adults + children === 1 ? "traveller" : "travellers"} ·{" "}
+                {adults} {adults === 1 ? "adult" : "adults"}
+                {children > 0 ? ` + ${children} ${children === 1 ? "child" : "children"}` : ""}
+              </span>
+              {seniors > 0 && (
+                <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                  Includes {Math.min(seniors, adults)} senior{" "}
+                  {Math.min(seniors, adults) === 1 ? "citizen" : "citizens"} within the adult count
                 </span>
               )}
-              {price != null && (
-                <span className="mt-3 inline-flex flex-wrap items-center gap-x-1 rounded-lg border border-gold/40 bg-champagne/50 px-2.5 py-1.5 text-[12px] font-semibold leading-relaxed text-foreground">
-                  From {travelMoney(Number(price))} per adult
-                </span>
-              )}
+              <span className="mt-1 block text-[13px] font-semibold">
+                {price == null
+                  ? "Personalised quotation"
+                  : "Adult starting estimate · child fares extra"}
+              </span>
+              <details className="group/pricing mt-3">
+                <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-lg border border-gold/40 bg-champagne/50 px-2.5 py-2 text-[12px] font-semibold leading-relaxed text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold [&::-webkit-details-marker]:hidden">
+                  {price == null
+                    ? "View pricing breakdown"
+                    : `From ${travelMoney(Number(price))} per adult`}
+                  <ChevronDown
+                    size={16}
+                    className="shrink-0 transition-transform group-open/pricing:rotate-180"
+                  />
+                </summary>
+                <dl className="mt-3 space-y-3 rounded-xl border border-gold/25 bg-card p-3 text-[13px] leading-relaxed">
+                  <div>
+                    <dt className="font-semibold">Adults · {adults}</dt>
+                    <dd className="text-muted-foreground">
+                      {price == null
+                        ? "Price on request"
+                        : `From ${travelMoney(Number(price))} per person`}
+                    </dd>
+                    {price != null && (
+                      <dd className="mt-1 font-medium">
+                        {adults} × {travelMoney(Number(price))} ={" "}
+                        {travelMoney(Number(price) * adults)}
+                      </dd>
+                    )}
+                  </div>
+                  <div className="border-t border-border pt-3">
+                    <dt className="font-semibold">Children · {children}</dt>
+                    <dd className="text-muted-foreground">
+                      Per-child fare quoted separately based on age.
+                    </dd>
+                  </div>
+                  <div className="border-t border-border pt-3">
+                    <dt className="font-semibold">Senior citizens · {Math.min(seniors, adults)}</dt>
+                    <dd className="text-muted-foreground">
+                      Included in the adult count above, at the adult rate. No additional person
+                      charge.
+                    </dd>
+                  </div>
+                </dl>
+              </details>
               <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
                 {pkg.price_basis}
               </span>
@@ -88,16 +127,21 @@ export function TravelPackageChoice({
                   Seasonal starting guide
                 </span>
               )}
-            </span>
-            <span
+            </div>
+            <button
+              type="button"
+              aria-expanded={expanded}
+              aria-controls={detailsId}
+              aria-label={`Details for ${pkg.name}`}
+              onClick={() => setExpanded(!expanded)}
               className={cx(
-                "grid h-12 w-12 shrink-0 place-items-center rounded-full border border-border bg-card transition-transform",
+                "grid h-12 w-12 shrink-0 place-items-center self-start rounded-full border border-border bg-card transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold",
                 expanded && "rotate-180 border-gold/50",
               )}
             >
               <ChevronDown size={22} />
-            </span>
-          </button>
+            </button>
+          </div>
           <a
             href={travelWhatsApp(
               `Hello, I'd like to enquire about the ${pkg.name} package (${pkg.duration}, ${pkg.places}) for ${adults} ${adults === 1 ? "adult" : "adults"}${children > 0 ? ` and ${children} ${children === 1 ? "child" : "children"}` : ""}${seniors > 0 ? `, including ${Math.min(seniors, adults)} senior ${Math.min(seniors, adults) === 1 ? "citizen" : "citizens"}` : ""}. Please share availability and a quotation.`,
@@ -119,14 +163,6 @@ export function TravelPackageChoice({
           </a>
         </div>
         <p className="mt-5 text-[11px] leading-[1.6] text-muted-foreground">
-          <strong className="mb-1 block pr-16 text-[12px] font-medium text-foreground">
-            {adults} {adults === 1 ? "adult" : "adults"}
-            {children > 0 ? ` and ${children} ${children === 1 ? "child" : "children"}` : ""}{" "}
-            travelling
-            {seniors > 0
-              ? ` · ${Math.min(seniors, adults)} senior ${Math.min(seniors, adults) === 1 ? "citizen" : "citizens"} included`
-              : ""}
-          </strong>
           {price == null
             ? "Quote tailored to your group and room preferences."
             : "Estimate based on your selected room sharing."}{" "}

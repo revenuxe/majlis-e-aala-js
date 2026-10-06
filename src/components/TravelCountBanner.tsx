@@ -96,6 +96,13 @@ export function TravelCountBanner({
                   <TravelSeniorCount adults={adults} value={seniors} onChange={onSeniors} />
                 </div>
               )}
+              <button
+                type="button"
+                onClick={onChange}
+                className="press min-h-12 w-full rounded-[14px] bg-primary px-5 py-3 text-[15px] font-semibold text-primary-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 sm:col-span-2"
+              >
+                Done
+              </button>
             </div>
           )}
         </div>
