@@ -1,4 +1,5 @@
 "use client";
+import { ServiceOverview } from "@/components/admin/ServiceOverview";
 import { TravelListingsPanel } from "@/components/admin/TravelListings";
 import { AdminWorkspaceProvider, useAdminState } from "@/components/admin/AdminWorkspace";
 /* eslint-disable @typescript-eslint/no-explicit-any -- Supabase custom tables are migrated ahead of generated types. */
@@ -96,6 +97,10 @@ export default function AdminDashboard({ userId }: { userId: string }) {
 function AdminWorkspace() {
   const navigate = useRouter();
   const [ready, setReady] = useState(false);
+  const [overviewService, setOverviewService] = useAdminState<"catering" | "travel">(
+    "AdminWorkspace:overviewService",
+    "catering",
+  );
   const [tab, setTab] = useAdminState<MainTab>("AdminWorkspace:tab", "dashboard");
   const [listingService, setListingService] = useAdminState<ListingService>(
     "AdminWorkspace:listingService",
@@ -127,17 +132,7 @@ function AdminWorkspace() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      if (tab === "dashboard") {
-        const [p, m, o] = await Promise.all([
-          supabase.from("packages").select("id, name"),
-          supabase.from("menu_items").select("id"),
-          supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(50),
-        ]);
-        setPackages((p.data ?? []) as PackageRow[]);
-        setMenuItems((m.data ?? []) as MenuItemRow[]);
-        setOrders((o.data ?? []) as OrderRow[]);
-        return;
-      }
+      if (tab === "dashboard") return;
       if (tab === "orders") {
         if (orderService === "travel") return;
         const [p, o] = await Promise.all([
@@ -258,10 +253,6 @@ function AdminWorkspace() {
     );
   }
 
-  const newOrders = orders.filter((o) => o.status === "new").length;
-  const pipeline = orders.reduce((sum, o) => sum + Number(o.estimated_total || 0), 0);
-  const guests = orders.reduce((sum, o) => sum + (o.guests || 0), 0);
-
   return (
     <div className="min-h-screen bg-background pb-24 lg:pb-0">
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
@@ -320,67 +311,35 @@ function AdminWorkspace() {
           </div>
         ) : tab === "dashboard" ? (
           <section className="space-y-6">
-            <div>
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <h1 className="text-2xl font-semibold">Overview</h1>
-            </div>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-              <StatCard
-                label="New enquiries"
-                value={String(newOrders)}
-                sub={`${orders.length} total`}
-                icon={<ClipboardList className="h-4 w-4" />}
-              />
-              <StatCard
-                label="Pipeline"
-                value={inr(pipeline)}
-                sub="Estimated value"
-                icon={<Wallet className="h-4 w-4" />}
-              />
-              <StatCard
-                label="Guests"
-                value={String(guests)}
-                sub="Across all enquiries"
-                icon={<Users className="h-4 w-4" />}
-              />
-              <StatCard
-                label="Listings"
-                value={`${packages.length}/${menuItems.length}`}
-                sub="Packages / dishes"
-                icon={<PackageIcon className="h-4 w-4" />}
-              />
-            </div>
-
-            <div className="rounded-[20px] border border-border bg-card p-4 shadow-card sm:p-5">
-              <div className="flex items-center justify-between gap-3">
-                <h2 className="font-display text-[22px]">Latest enquiries</h2>
-                <button
-                  onClick={() => setTab("orders")}
-                  className="press text-[13px] font-semibold text-gold"
-                >
-                  View all
-                </button>
-              </div>
-              <div className="mt-4 space-y-2">
-                {orders.slice(0, 5).map((o) => (
-                  <div
-                    key={o.id}
-                    className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[14px] border border-border bg-surface/60 px-4 py-3"
+              <div role="group" aria-label="Overview service" className="flex gap-2">
+                {(["catering", "travel"] as const).map((service) => (
+                  <button
+                    type="button"
+                    key={service}
+                    aria-pressed={overviewService === service}
+                    onClick={() => setOverviewService(service)}
+                    className={cx(
+                      "min-h-11 rounded-xl border px-4 py-2 text-sm font-semibold",
+                      overviewService === service
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-border bg-card",
+                    )}
                   >
-                    <div className="min-w-0">
-                      <p className="truncate text-[15px] font-semibold">{o.customer_name}</p>
-                      <p className="truncate text-[12px] text-muted-foreground">
-                        {o.booking_reference ? `${o.booking_reference} · ` : ""}
-                        {o.occasion ?? "Event"} • {o.guests} guests
-                      </p>
-                    </div>
-                    <span className="shrink-0 rounded-full bg-champagne px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.1em]">
-                      {o.status}
-                    </span>
-                  </div>
+                    {service === "catering" ? "Catering" : "Travel"}
+                  </button>
                 ))}
-                {orders.length === 0 && <EmptyRow text="No enquiries yet." />}
               </div>
             </div>
+            <ServiceOverview
+              key={overviewService}
+              service={overviewService}
+              onViewAll={() => {
+                setOrderService(overviewService);
+                setTab("orders");
+              }}
+            />
           </section>
         ) : tab === "orders" ? (
           <section className="space-y-5">
