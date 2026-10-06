@@ -10,6 +10,8 @@ let id = 0;
 const pending = new Map();
 ws.onmessage = (e) => {
   const d = JSON.parse(e.data);
+  if (d.method === "Page.javascriptDialogOpening")
+    void call("Page.handleJavaScriptDialog", { accept: true });
   if (d.id) {
     const p = pending.get(d.id);
     pending.delete(d.id);
@@ -76,7 +78,9 @@ if(url.includes('/user'))return json(testUser);
 return json({});
 }
 if(url.includes('/rpc/submit_travel_booking')){window.__bookings.push(JSON.parse(init.body));return json([{booking_reference:'MAT-SIGNED-IN-TEST'}]);}
+if(url.includes('/rpc/cancel_customer_travel_booking')){const allowed=window.__trackingStatus==='new';if(allowed)window.__trackingStatus='cancelled';return json(allowed);}
 if(url.includes('/rpc/get_my_travel_booking'))return json([{booking_reference:'MAT-SIGNED-IN-TEST',category:'umrah',package_name:'Umrah Economy',departure_city:'Hyderabad',preferred_date:null,preferred_month:null,dates_flexible:true,adults:2,children:0,status:window.__trackingStatus,estimated_adult_total:null,quoted_total:12345,created_at:new Date().toISOString()}]);
+if(url.includes('/rpc/get_my_travel_bookings'))return json([{booking_reference:'MAT-SIGNED-IN-TEST',category:'umrah',package_name:'Umrah Economy',departure_city:'Hyderabad',preferred_date:null,preferred_month:null,dates_flexible:true,adults:2,children:0,status:window.__trackingStatus,estimated_adult_total:null,quoted_total:12345,created_at:new Date().toISOString()}]);
 if(url.includes('/rest/v1/orders'))return json([{id:'33333333-3333-4333-8333-333333333333',booking_reference:'CAT-TEST-ONLY',customer_name:'Catering Test Customer',phone:'910000000010',occasion:'Nikah',event_date:'2026-12-20',guests:100,estimated_total:45000,status:'confirmed',venue:{area:'Bengaluru'},created_at:new Date().toISOString()}]);
 if(url.includes('/rest/v1/travel_booking_requests'))return json([{id:'44444444-4444-4444-8444-444444444444',booking_reference:'MAT-SIGNED-IN-TEST',customer_name:'Travel Test Customer',phone:'910000000020',category:'umrah',departure_city:'Hyderabad',adults:2,children:0,child_ages:[],preferences:{room:'twin',stay:'comfort',assistance:[]},package_snapshot:{name:'Umrah Economy'},estimated_adult_total:null,quoted_total:12345,notes:'',admin_notes:'',status:'quoted',created_at:new Date().toISOString()}]);
 if(url.includes('/travel_packages')||url.includes('/travel_departures')||url.includes('/travel_hero_carousels')){const headers=new Headers(init?.headers);headers.delete('Authorization');return realFetch(input,{...init,headers});}
@@ -181,7 +185,7 @@ return realFetch(input,init);
   );
   await call("Page.navigate", { url: "http://localhost:3000/profile" });
   await until(
-    async () => (await body()).toLowerCase().includes("your travel requests"),
+    async () => (await body()).toLowerCase().includes("travel bookings"),
     "Account travel section missing",
   );
   await until(
@@ -203,6 +207,12 @@ return realFetch(input,init);
     "Travel tracking did not load",
   );
   assert((await body()).includes("Itinerary planning"));
+  assert(
+    !(await body()).includes("Cancel travel request"),
+    "Advanced requests must hide cancellation",
+  );
+  assert.equal(await evaluate("location.pathname"), "/travel/bookings/MAT-SIGNED-IN-TEST");
+  assert(!(await body()).includes("Your catering bookings"));
   assert.equal(
     await evaluate(
       "document.querySelector('[aria-current=step]').innerText.includes('Travel quotation shared')",
@@ -210,7 +220,7 @@ return realFetch(input,init);
     true,
   );
   assert((await body()).includes("12345") || (await body()).includes("12,345"));
-  await click("Catering Booking");
+  await call("Page.navigate", { url: "http://localhost:3000/orders" });
   await until(
     async () =>
       await evaluate("!!document.querySelector('ol[aria-label=\"Catering booking tracking\"]')"),
@@ -227,11 +237,16 @@ return realFetch(input,init);
     ),
     true,
   );
-  await click("Travel Booking");
+  await call("Page.navigate", { url: "http://localhost:3000/travel/bookings" });
+  await until(async () => (await body()).includes("MAT-SIGNED-IN-TEST"), "Travel list missing");
+  assert(!(await body()).includes("CAT-TEST-ONLY"));
+  await evaluate(
+    "document.querySelector('a[href=\"/travel/bookings/MAT-SIGNED-IN-TEST\"]').click()",
+  );
   await until(
     async () =>
       await evaluate("!!document.querySelector('ol[aria-label=\"Travel booking tracking\"]')"),
-    "Travel tab switch failed",
+    "Individual travel booking did not load",
   );
   for (const width of [320, 390, 1280]) {
     await call("Emulation.setDeviceMetricsOverride", {
@@ -242,11 +257,20 @@ return realFetch(input,init);
     });
     assert.equal(await evaluate("document.documentElement.scrollWidth>innerWidth"), false);
   }
-  await evaluate("window.__trackingStatus='cancelled'");
-  await click("Refresh travel status");
+  await evaluate("window.__trackingStatus='new'");
+  await click("Refresh status");
+  await until(
+    async () => (await body()).includes("Cancel travel request"),
+    "New request must allow cancellation",
+  );
+  await click("Cancel travel request");
   await until(
     async () => (await body()).includes("Travel booking cancelled"),
     "Cancelled travel state missing",
+  );
+  assert(
+    !(await body()).includes("Cancel travel request"),
+    "Cancelled requests must hide cancellation",
   );
   assert.equal(
     await evaluate("!!document.querySelector('ol[aria-label=\"Travel booking tracking\"]')"),
@@ -293,7 +317,7 @@ return realFetch(input,init);
   await call("Network.clearBrowserCookies");
   await call("Page.navigate", { url: "http://localhost:3000/orders?service=travel" });
   await until(
-    async () => (await body()).includes("Sign in to view your orders"),
+    async () => (await body()).includes("Sign in to securely view travel requests"),
     "Signed-out tracker must require authentication",
   );
   assert(
@@ -307,6 +331,13 @@ return realFetch(input,init);
   );
   assert.equal(new URL(invalid.headers.get("location")).pathname, "/profile");
   assert.equal(invalid.headers.get("cache-control"), "no-store");
+  for (const next of ["/travel/bookings", "/travel/bookings/MAT-SIGNED-IN-TEST"]) {
+    const result = await fetch(
+      `http://localhost:3000/auth/callback?next=${encodeURIComponent(next)}`,
+      { redirect: "manual" },
+    );
+    assert.equal(new URL(result.headers.get("location")).pathname, next);
+  }
   const failed = await fetch(
     "http://localhost:3000/auth/callback?next=%2Ftravel%2Fplan%3Fstep%3D6",
     { redirect: "manual" },

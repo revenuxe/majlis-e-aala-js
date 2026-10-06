@@ -5,7 +5,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button, EmptyState, SectionHeader, cx } from "@/components/ui-kit";
 
-import { TravelBookingHistory } from "@/components/TravelBookingHistory";
 import { BookingTracking } from "@/components/BookingTracking";
 
 type CustomerOrder = {
@@ -21,8 +20,6 @@ type CustomerOrder = {
 const statusLabel = (status: string) => (status === "new" ? "Pending" : status);
 
 export default function OrdersPage() {
-  const [service, setService] = useState<"catering" | "travel">("catering");
-  const [userId, setUserId] = useState<string | null>(null);
   const generation = useRef(0);
   const [orders, setOrders] = useState<CustomerOrder[]>([]);
   const [selectedReference, setSelectedReference] = useState<string | null>(null);
@@ -36,7 +33,7 @@ export default function OrdersPage() {
     setLoading(true);
     setError(null);
     setOrders([]);
-    setUserId(null);
+
     try {
       const { data: userData, error: authError } = await supabase.auth.getUser();
       if (request !== generation.current) return;
@@ -46,7 +43,7 @@ export default function OrdersPage() {
         return;
       }
       setAuthenticated(true);
-      setUserId(userData.user.id);
+
       const { data, error: failure } = await supabase
         .from("orders")
         .select("booking_reference, occasion, event_date, guests, estimated_total, status, venue")
@@ -76,8 +73,6 @@ export default function OrdersPage() {
   }, []);
   useEffect(() => {
     let active = true;
-    const params = new URLSearchParams(location.search);
-    if (params.get("service") === "travel") setService("travel");
     void load();
     const { data: listener } = supabase.auth.onAuthStateChange(() => {
       queueMicrotask(() => {
@@ -110,7 +105,6 @@ export default function OrdersPage() {
           "This catering booking could not be cancelled. Refresh its status or contact our team.",
         );
         return;
-        return;
       }
       await load();
     } catch {
@@ -124,32 +118,9 @@ export default function OrdersPage() {
     <main className="mx-auto max-w-[860px] px-5 py-8 pb-32 sm:px-8">
       <SectionHeader
         eyebrow="Your bookings"
-        title="Booking tracking"
+        title="Your catering bookings"
         subtitle="Select a booking to view its current status and details."
       />
-      <div role="group" aria-label="Booking service" className="mt-6 flex gap-2">
-        {(["catering", "travel"] as const).map((item) => (
-          <button
-            key={item}
-            aria-pressed={service === item}
-            onClick={() => {
-              setService(item);
-              const params = new URLSearchParams(location.search);
-              params.set("service", item);
-              params.delete("reference");
-              history.replaceState(null, "", `${location.pathname}?${params}`);
-            }}
-            className={cx(
-              "min-h-11 rounded-full border px-4 text-sm font-semibold",
-              service === item
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-border bg-card",
-            )}
-          >
-            {item === "travel" ? "Travel Booking" : "Catering Booking"}
-          </button>
-        ))}
-      </div>
       {authenticated === false ? (
         <div className="mt-6 rounded-[18px] border border-border bg-card p-6 text-center shadow-card">
           <h2 className="font-display text-[26px]">Sign in to view your orders</h2>
@@ -160,8 +131,6 @@ export default function OrdersPage() {
             <Button size="lg">Sign in or create account</Button>
           </Link>
         </div>
-      ) : service === "travel" && userId ? (
-        <TravelBookingHistory key={userId} userId={userId} tracking />
       ) : loading ? (
         <div className="grid place-items-center py-20">
           <Loader2 className="h-6 w-6 animate-spin text-gold" />

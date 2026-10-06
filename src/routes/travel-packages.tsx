@@ -113,7 +113,7 @@ export default function TravelPackages({ category }: { category: TravelCategory 
           <Link href="/travel">
             <BrandLogo className="h-8" />
           </Link>
-          <Link href="/orders?service=travel" className="text-sm font-semibold">
+          <Link href="/travel/bookings" className="text-sm font-semibold">
             My bookings
           </Link>
         </div>

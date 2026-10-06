@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServerClient } from "@/integrations/supabase/server";
 
-const allowedReturns = new Set(["/plan", "/travel/plan", "/profile"]);
+const allowedReturns = new Set(["/plan", "/travel/plan", "/profile", "/travel/bookings"]);
 export async function GET(request: NextRequest) {
   let desired = new URL("/profile", request.nextUrl.origin);
   try {
@@ -12,7 +12,9 @@ export async function GET(request: NextRequest) {
   } catch {
     /* Ignore malformed return destinations. */
   }
-  const safe = desired.origin === request.nextUrl.origin && allowedReturns.has(desired.pathname);
+  const safe =
+    desired.origin === request.nextUrl.origin &&
+    (allowedReturns.has(desired.pathname) || /^\/travel\/bookings\/[^/]+$/.test(desired.pathname));
   const destination = safe ? desired : new URL("/profile", request.nextUrl.origin);
   const code = request.nextUrl.searchParams.get("code");
   if (code) {

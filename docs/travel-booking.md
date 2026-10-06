@@ -114,6 +114,29 @@ confirmation notices, profile prefill, restored review, signed-in submission,
 profile-sync failure isolation, account history and safe callback redirects.
 It mocks auth/booking writes and does not complete a real Google account login.
 
+## Travel booking cancellation and deletion
+
+Migration `20261006060000_travel_booking_cancellation_and_deletion.sql` preserves
+existing bookings and adds two restricted RPCs. Signed-in customers can cancel
+their own requests only while the database status is `new` (Travel request
+received). The button is hidden for every later status. Requests still in that
+state refresh every 30 seconds while visible, as well as on focus and manual
+refresh. The server checks the current status atomically even if the page is stale.
+
+Admins can permanently delete a travel booking from its request editor after
+confirmation. Customer cancellation retains the booking history. Admin updates
+check the originally loaded status so they cannot overwrite a newer cancellation.
+Deletion does not remove the package, departure, or any other booking.
+
+Rollback-only permission and status checks:
+
+```
+npx supabase db query --linked --project-ref <project-ref> --file supabase/tests/travel_booking_actions.sql
+```
+
+The auth browser script also checks cancellation visibility and a mocked
+cancellation from the individual travel booking page.
+
 ## Research
 
 Reviewed 6 October 2026. Guest entry and fewer required fields follow

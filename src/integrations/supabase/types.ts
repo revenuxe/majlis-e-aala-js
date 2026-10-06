@@ -862,6 +862,14 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      cancel_customer_travel_booking: {
+        Args: { p_booking_reference: string };
+        Returns: boolean;
+      };
+      delete_admin_travel_booking: {
+        Args: { p_booking_id: string };
+        Returns: boolean;
+      };
       cancel_customer_booking: {
         Args: { p_booking_reference: string };
         Returns: boolean;

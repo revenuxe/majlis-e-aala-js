@@ -64,6 +64,7 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
   const [itinerary, setItinerary] = useState("");
   const [dep, setDep] = useState<TravelDeparture | Omit<TravelDeparture, "id"> | null>(null);
   const [request, setRequest] = useState<TravelRequest | null>(null);
+  const [originalRequest, setOriginalRequest] = useState<TravelRequest | null>(null);
   const loadVersion = useRef(0);
   const load = useCallback(async () => {
     const version = ++loadVersion.current;
@@ -106,6 +107,7 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
     };
   }, [load]);
   async function save(kind: "package" | "departure" | "request") {
+    if (busy) return;
     setBusy(true);
     try {
       let result;
@@ -185,7 +187,13 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
             quoted_total: request.quoted_total,
             admin_notes: request.admin_notes,
           })
-          .eq("id", request.id);
+          .eq("id", request.id)
+          .eq("status", originalRequest?.status || request.status)
+          .select("id");
+        if (!result.error && !result.data?.length)
+          throw new Error(
+            "This booking changed or was deleted. Close it and refresh before updating.",
+          );
       }
       if (result?.error)
         throw new Error(
@@ -200,6 +208,35 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
       await load();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not save changes.");
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function deleteRequest() {
+    if (
+      !request ||
+      busy ||
+      !window.confirm(
+        `Permanently delete travel booking ${request.booking_reference}? This cannot be undone.`,
+      )
+    )
+      return;
+    setBusy(true);
+    try {
+      const { data, error: failure } = await db.rpc("delete_admin_travel_booking", {
+        p_booking_id: request.id,
+      });
+      if (failure) throw failure;
+      if (!data) throw new Error("This travel booking was already deleted. Refresh the list.");
+      setRequest(null);
+      toast.success("Travel booking deleted");
+      await load();
+    } catch (err) {
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : "Could not delete this travel booking. Please try again.",
+      );
     } finally {
       setBusy(false);
     }
@@ -379,7 +416,10 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
             {requests.slice(0, limit).map((item) => (
               <button
                 key={item.id}
-                onClick={() => setRequest({ ...item })}
+                onClick={() => {
+                  setOriginalRequest(item);
+                  setRequest({ ...item });
+                }}
                 className="flex w-full flex-wrap justify-between gap-3 rounded-2xl border bg-card p-5 text-left"
               >
                 <div>
@@ -647,9 +687,19 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
         title={request?.booking_reference || "Travel request"}
         onClose={close}
         footer={
-          <Button full disabled={busy} onClick={() => void save("request")}>
-            {busy ? "Saving…" : "Update request"}
-          </Button>
+          <div className="space-y-3">
+            <Button full disabled={busy} onClick={() => void save("request")}>
+              {busy ? "Please wait…" : "Update request"}
+            </Button>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void deleteRequest()}
+              className="min-h-11 w-full rounded-xl border border-destructive px-4 text-sm font-semibold text-destructive disabled:opacity-50"
+            >
+              Delete travel booking
+            </button>
+          </div>
         }
       >
         {request && (

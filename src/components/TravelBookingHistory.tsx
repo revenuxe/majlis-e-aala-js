@@ -1,11 +1,12 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ArrowRight, CalendarDays, MapPin, RefreshCw, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui-kit";
 import { travelDate, travelMoney } from "@/lib/travel-booking";
 import { BookingTracking } from "@/components/BookingTracking";
-
+import { travelCategories } from "@/lib/travel";
 type TravelHistory = {
   booking_reference: string;
   category: string;
@@ -19,12 +20,31 @@ type TravelHistory = {
   quoted_total: number | null;
   created_at: string;
 };
+const statuses: Record<string, string> = {
+  new: "Request received",
+  contacted: "Planning your journey",
+  quoted: "Quote ready",
+  confirmed: "Confirmed",
+  completed: "Journey completed",
+  cancelled: "Cancelled",
+};
+function dateLabel(row: TravelHistory) {
+  return row.preferred_date
+    ? travelDate(row.preferred_date)
+    : row.preferred_month
+      ? new Intl.DateTimeFormat("en-IN", { month: "long", year: "numeric" }).format(
+          new Date(`${row.preferred_month}-01T00:00:00`),
+        )
+      : "Dates to be planned";
+}
 export function TravelBookingHistory({
   userId,
-  tracking = false,
+  reference,
+  standalone = false,
 }: {
   userId: string;
-  tracking?: boolean;
+  reference?: string;
+  standalone?: boolean;
 }) {
   const [rows, setRows] = useState<TravelHistory[]>([]);
   const [page, setPage] = useState(0);
@@ -32,49 +52,78 @@ export function TravelBookingHistory({
   const [error, setError] = useState(false);
   const [more, setMore] = useState(false);
   const [retry, setRetry] = useState(0);
-  const [selectedReference, setSelectedReference] = useState<string | null>(null);
-  const [direct, setDirect] = useState<TravelHistory | null>(null);
-  const [directError, setDirectError] = useState(false);
+  const [cancelling, setCancelling] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const hasNewRequests = rows.some((row) => row.status === "new");
   useEffect(() => {
-    if (!tracking) return;
-    const ref = new URLSearchParams(location.search).get("reference");
-    if (!ref) return;
-    let active = true;
-    setSelectedReference(ref);
-    void supabase
-      .rpc("get_my_travel_booking", { p_booking_reference: ref })
-      .then(({ data, error }) => {
-        if (!active) return;
-        setDirect(data?.[0] || null);
-        setDirectError(!!error || !data?.length);
+    if (!hasNewRequests) return;
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === "visible" && !cancelling) {
+        setPage(0);
+        setRetry((n) => n + 1);
+      }
+    }, 30000);
+    return () => window.clearInterval(timer);
+  }, [hasNewRequests, cancelling]);
+  async function cancelBooking(bookingReference: string) {
+    if (cancelling || !window.confirm("Cancel this travel request?")) return;
+    setCancelling(bookingReference);
+    setActionError(null);
+    try {
+      const { data, error: failure } = await supabase.rpc("cancel_customer_travel_booking", {
+        p_booking_reference: bookingReference,
       });
-    return () => {
-      active = false;
-    };
-  }, [userId, tracking, retry]);
-  const reload = useCallback(() => setRetry((n) => n + 1), []);
+      if (failure) throw failure;
+      if (data) {
+        setRows((previous) =>
+          previous.map((row) =>
+            row.booking_reference === bookingReference ? { ...row, status: "cancelled" } : row,
+          ),
+        );
+      } else {
+        setActionError(
+          "This request can no longer be cancelled. Its status may have changed. Contact travel support for help.",
+        );
+      }
+      setPage(0);
+      setRetry((n) => n + 1);
+    } catch {
+      setActionError("Could not cancel your travel request. Please try again.");
+    } finally {
+      setCancelling(null);
+    }
+  }
   useEffect(() => {
     const focus = () => {
       setPage(0);
-      reload();
+      setRetry((n) => n + 1);
     };
     window.addEventListener("focus", focus);
     return () => window.removeEventListener("focus", focus);
-  }, [reload]);
+  }, []);
   useEffect(() => {
     let active = true;
     setLoading(true);
     setError(false);
     void (async () => {
       try {
-        const { data, error: failure } = await supabase.rpc("get_my_travel_bookings", {
-          p_limit: 25,
-          p_offset: page * 25,
-        });
-        if (failure) throw failure;
+        const result = reference
+          ? await supabase.rpc("get_my_travel_booking", { p_booking_reference: reference })
+          : await supabase.rpc("get_my_travel_bookings", { p_limit: 25, p_offset: page * 25 });
+        if (result.error) throw result.error;
         if (!active) return;
-        setRows((previous) => (page === 0 ? data || [] : [...previous, ...(data || [])]));
-        setMore((data || []).length === 25);
+        const data = result.data || [];
+        setRows((previous) =>
+          reference || page === 0
+            ? data
+            : [
+                ...previous,
+                ...data.filter(
+                  (row) => !previous.some((old) => old.booking_reference === row.booking_reference),
+                ),
+              ],
+        );
+        setMore(!reference && data.length === 25);
       } catch {
         if (active) setError(true);
       } finally {
@@ -84,133 +133,171 @@ export function TravelBookingHistory({
     return () => {
       active = false;
     };
-  }, [userId, page, retry]);
-  const selected =
-    rows.find((row) => row.booking_reference === selectedReference) ||
-    (direct?.booking_reference === selectedReference ? direct : null) ||
-    (!selectedReference ? rows[0] : null);
+  }, [userId, reference, page, retry]);
+  const selected = reference ? rows.find((row) => row.booking_reference === reference) : null;
   return (
-    <section className="mt-8">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="eyebrow">Your travel requests</p>
-        <Link href="/travel/plan" className="text-sm font-semibold underline">
-          Plan another journey
-        </Link>
-      </div>
-      <h2 className="mt-2 font-display text-[28px]">Travel Booking</h2>
-      {tracking && (
+    <section className="mt-7">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        {!standalone ? (
+          <h2 className="font-display text-[28px]">Travel bookings</h2>
+        ) : (
+          <p className="eyebrow">{reference ? "Travel booking status" : "Your journeys"}</p>
+        )}
         <button
-          className="mt-2 text-sm underline"
           disabled={loading}
           onClick={() => {
             setPage(0);
-            reload();
+            setRetry((n) => n + 1);
           }}
+          className="flex min-h-11 items-center gap-2 rounded-full border border-border bg-card px-4 text-[12px] font-semibold disabled:opacity-50"
         >
-          Refresh travel status
+          <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+          Refresh status
         </button>
-      )}
-      <p className="mt-2 text-xs text-muted-foreground">
-        Requests made while signed in appear here. Our team confirms final availability and
-        arrangements.
-      </p>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        {rows.map((row) => (
-          <article
-            key={row.booking_reference}
-            className="rounded-2xl border border-border bg-card p-5"
-          >
-            <p className="mb-2 text-xs font-semibold text-gold">Travel Booking</p>
-            <p className="text-xs uppercase text-gold">{row.category}</p>
-            <h3 className="mt-2 font-semibold">{row.package_name}</h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {row.adults} adults{row.children ? ` · ${row.children} children` : ""} ·{" "}
-              {row.departure_city}
-            </p>
-            <p className="mt-2 text-sm">
-              {row.preferred_date
-                ? travelDate(row.preferred_date)
-                : row.preferred_month || "Flexible dates"}
-            </p>
-            <p className="mt-3 break-all font-mono text-xs">{row.booking_reference}</p>
-            <span className="mt-3 inline-block rounded-full bg-surface px-3 py-1 text-xs font-semibold capitalize">
-              {row.status}
-            </span>
-            {row.quoted_total !== null && (
-              <p className="mt-3 text-sm">Quotation: {travelMoney(Number(row.quoted_total))}</p>
-            )}
-            {tracking ? (
-              <button
-                aria-pressed={selected?.booking_reference === row.booking_reference}
-                className="mt-4 min-h-11 text-sm font-semibold underline"
-                onClick={() => {
-                  setSelectedReference(row.booking_reference);
-                  setDirectError(false);
-                  const params = new URLSearchParams(location.search);
-                  params.set("service", "travel");
-                  params.set("reference", row.booking_reference);
-                  history.replaceState(null, "", `${location.pathname}?${params}`);
-                }}
-              >
-                Track this travel booking
-              </button>
-            ) : (
-              <Link
-                href={`/orders?service=travel&reference=${encodeURIComponent(row.booking_reference)}`}
-                className="mt-4 inline-flex min-h-11 items-center text-sm font-semibold underline"
-              >
-                Track travel booking
-              </Link>
-            )}
-          </article>
-        ))}
       </div>
-      {directError && (
-        <p role="alert" className="mt-4 text-sm">
-          This travel booking could not be found in your account. Choose a booking below or refresh
-          to try again.
+      {actionError && (
+        <p role="alert" className="mb-4 rounded-xl border border-border p-4 text-sm">
+          {actionError}
         </p>
       )}
-      {tracking && selected && (
-        <section
-          className="mt-5 rounded-2xl border border-border bg-card p-5"
-          aria-label="Selected travel booking"
-        >
-          <p className="eyebrow">Travel Booking tracking</p>
-          <h3 className="mt-2 font-display text-2xl">{selected.package_name}</h3>
-          <p className="mt-2 break-all font-mono text-xs">{selected.booking_reference}</p>
-          <BookingTracking service="travel" status={selected.status} />
-          <p className="mt-5 text-xs leading-relaxed text-muted-foreground">
-            Dates and prices are confirmed by our travel team. For changes or cancellations, contact
-            the team with this reference.
-          </p>
-          <a className="mt-3 inline-block text-sm underline" href="tel:+919886285028">
-            Contact travel support
-          </a>
-        </section>
-      )}
-      {loading && (
-        <p role="status" className="mt-4 text-sm">
-          Loading your travel requests…
-        </p>
-      )}
-      {error && (
-        <div role="alert" className="mt-4 text-sm">
-          Could not load your travel requests.{" "}
-          <button onClick={reload} className="underline">
+      {error ? (
+        <div role="alert" className="rounded-2xl border border-border bg-card p-5 text-sm">
+          Could not load your travel bookings.{" "}
+          <button onClick={() => setRetry((n) => n + 1)} className="min-h-11 underline">
             Try again
           </button>
         </div>
-      )}
-      {!loading && !error && !rows.length && (
-        <p className="mt-4 text-sm text-muted-foreground">
-          Your next signed-in travel request will appear here.
+      ) : loading && !rows.length ? (
+        <p role="status" className="py-10 text-sm text-muted-foreground">
+          Loading your travel bookings…
         </p>
-      )}
-      {!loading && !error && more && (
-        <Button className="mt-4" onClick={() => setPage((n) => n + 1)}>
-          Load older requests
-        </Button>
+      ) : (
+        <>
+          {reference && !selected && !loading ? (
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <h2 className="font-display text-2xl">Booking unavailable</h2>
+              <p className="mt-3 text-sm text-muted-foreground">
+                This reference could not be found in your account. Check that you signed in with the
+                account used to book.
+              </p>
+              <Link
+                href="/travel/bookings"
+                className="mt-4 inline-flex min-h-11 items-center text-sm font-semibold underline"
+              >
+                View your travel bookings
+              </Link>
+            </div>
+          ) : null}
+          {!reference && !rows.length && !loading ? (
+            <div className="rounded-[24px] border border-border bg-card p-7 text-center">
+              <h2 className="font-display text-[28px]">Your next journey starts here</h2>
+              <p className="mt-3 text-[13px] text-muted-foreground">
+                Travel requests made while signed in will appear here.
+              </p>
+              <Link
+                href="/travel/packages"
+                className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-white"
+              >
+                Find your journey
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          ) : null}
+          <div className={reference ? "" : "grid items-start gap-4 sm:grid-cols-2"}>
+            {(reference ? (selected ? [selected] : []) : rows).map((row) => (
+              <article
+                key={row.booking_reference}
+                className="overflow-hidden rounded-[24px] border border-border bg-card"
+              >
+                <div className="border-b border-border bg-surface px-5 py-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="eyebrow">
+                      {travelCategories.find((category) => category.id === row.category)?.name ||
+                        row.category}
+                    </p>
+                    <span className="rounded-full border border-gold/25 bg-champagne/50 px-3 py-1.5 text-[11px] font-semibold">
+                      {statuses[row.status] || row.status}
+                    </span>
+                  </div>
+                  <h2 className="mt-3 font-display text-[26px] leading-tight">
+                    {row.package_name}
+                  </h2>
+                </div>
+                <div className="p-5">
+                  <div className="space-y-3 text-[13px]">
+                    <p className="flex items-center gap-2">
+                      <Users size={16} className="shrink-0 text-gold" />
+                      {row.adults} {row.adults === 1 ? "adult" : "adults"}
+                      {row.children
+                        ? ` · ${row.children} ${row.children === 1 ? "child" : "children"}`
+                        : ""}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <MapPin size={16} className="shrink-0 text-gold" />
+                      <span>From {row.departure_city}</span>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <CalendarDays size={16} className="shrink-0 text-gold" />
+                      {dateLabel(row)}
+                    </p>
+                  </div>
+                  <p className="mt-4 break-all text-[10px] text-muted-foreground">
+                    Reference: {row.booking_reference}
+                  </p>
+                  {row.quoted_total !== null && (
+                    <p className="mt-4 text-sm">
+                      Your quotation{" "}
+                      <span className="ml-2 font-semibold">
+                        {travelMoney(Number(row.quoted_total))}
+                      </span>
+                    </p>
+                  )}
+                  {!reference && (
+                    <Link
+                      href={`/travel/bookings/${encodeURIComponent(row.booking_reference)}`}
+                      className="mt-5 flex min-h-12 items-center justify-between rounded-xl bg-primary px-4 text-[13px] font-semibold text-white"
+                    >
+                      View booking & status
+                      <ArrowRight size={16} />
+                    </Link>
+                  )}
+                  {reference && (
+                    <>
+                      <BookingTracking service="travel" status={row.status} />
+                      <p className="mt-6 border-t border-border pt-4 text-[12px] leading-relaxed text-muted-foreground">
+                        Our travel team confirms dates, availability and final pricing. For changes
+                        or cancellations, contact us with your reference.
+                      </p>
+                      <a
+                        href="tel:+919886285028"
+                        className="mt-3 inline-flex min-h-11 items-center rounded-full border border-border px-4 text-[13px] font-semibold"
+                      >
+                        Contact travel support
+                      </a>
+                    </>
+                  )}
+                  {row.status === "new" && (
+                    <button
+                      type="button"
+                      disabled={loading || cancelling !== null}
+                      onClick={() => void cancelBooking(row.booking_reference)}
+                      className="mt-4 inline-flex min-h-11 items-center rounded-full border border-destructive px-4 text-[13px] font-semibold text-destructive disabled:opacity-50"
+                    >
+                      {cancelling === row.booking_reference
+                        ? "Cancelling…"
+                        : "Cancel travel request"}
+                    </button>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+          {!loading && more && (
+            <Button className="mt-5" onClick={() => setPage((n) => n + 1)}>
+              Load older bookings
+            </Button>
+          )}
+        </>
       )}
     </section>
   );

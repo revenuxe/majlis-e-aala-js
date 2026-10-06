@@ -503,7 +503,7 @@ export default function TravelPlan() {
         </div>
         {customer && (
           <Link
-            href={`/orders?service=travel&reference=${encodeURIComponent(reference)}`}
+            href={`/travel/bookings/${encodeURIComponent(reference)}`}
             className="mb-5 text-sm font-semibold underline"
           >
             View your travel requests in your account

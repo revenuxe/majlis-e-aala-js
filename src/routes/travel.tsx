@@ -836,7 +836,7 @@ export default function TravelHome() {
             Guide
           </a>
           <a
-            href="/orders?service=travel"
+            href="/travel/bookings"
             className="flex h-full flex-1 flex-col items-center justify-center gap-1 text-[11px]"
           >
             <ClipboardList size={21} strokeWidth={1.6} />
