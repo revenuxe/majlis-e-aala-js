@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, MapPin, RefreshCw, Users } from "lucide-react";
+import { ArrowRight, CalendarDays, Compass, MapPin, Plane, RefreshCw, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui-kit";
 import { travelDate, travelMoney } from "@/lib/travel-booking";
@@ -27,6 +27,14 @@ const statuses: Record<string, string> = {
   confirmed: "Confirmed",
   completed: "Journey completed",
   cancelled: "Cancelled",
+};
+const statusStyles: Record<string, string> = {
+  new: "border-amber-200 bg-amber-50 text-amber-800",
+  contacted: "border-blue-200 bg-blue-50 text-blue-800",
+  quoted: "border-violet-200 bg-violet-50 text-violet-800",
+  confirmed: "border-emerald-200 bg-emerald-50 text-emerald-800",
+  completed: "border-border bg-surface text-muted-foreground",
+  cancelled: "border-border bg-surface text-muted-foreground",
 };
 function dateLabel(row: TravelHistory) {
   return row.preferred_date
@@ -136,23 +144,32 @@ export function TravelBookingHistory({
   }, [userId, reference, page, retry]);
   const selected = reference ? rows.find((row) => row.booking_reference === reference) : null;
   return (
-    <section className="mt-7">
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        {!standalone ? (
-          <h2 className="font-display text-[28px]">Travel bookings</h2>
-        ) : (
-          <p className="eyebrow">{reference ? "Travel booking status" : "Your journeys"}</p>
-        )}
+    <section className="mt-6">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <h2 className="text-sm font-semibold">
+            {!standalone ? "Travel bookings" : reference ? "Booking status" : "All bookings"}
+          </h2>
+          {!reference && !loading && !error && (
+            <span className="rounded-full bg-surface px-2.5 py-1 text-[11px] font-medium text-muted-foreground">
+              {rows.length}
+              {more ? "+" : ""}
+            </span>
+          )}
+        </div>
         <button
+          type="button"
+          aria-label="Refresh status"
+          title="Refresh status"
           disabled={loading}
           onClick={() => {
             setPage(0);
             setRetry((n) => n + 1);
           }}
-          className="flex min-h-11 items-center gap-2 rounded-full border border-border bg-card px-4 text-[12px] font-semibold disabled:opacity-50"
+          className="grid size-11 shrink-0 place-items-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-gold hover:text-foreground disabled:opacity-50"
         >
-          <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
-          Refresh status
+          <RefreshCw size={17} className={loading ? "animate-spin" : ""} />
+          <span className="sr-only">Refresh status</span>
         </button>
       </div>
       {actionError && (
@@ -168,14 +185,26 @@ export function TravelBookingHistory({
           </button>
         </div>
       ) : loading && !rows.length ? (
-        <p role="status" className="py-10 text-sm text-muted-foreground">
-          Loading your travel bookings…
-        </p>
+        <div role="status" className="grid gap-4 sm:grid-cols-2">
+          <span className="sr-only">Loading your travel bookings…</span>
+          {[0, 1].map((item) => (
+            <div
+              key={item}
+              aria-hidden="true"
+              className="space-y-4 rounded-2xl border border-border bg-card p-5 motion-safe:animate-pulse"
+            >
+              <div className="h-3 w-20 rounded bg-surface" />
+              <div className="h-6 w-3/4 rounded bg-surface" />
+              <div className="h-20 rounded-xl bg-surface" />
+              <div className="h-11 rounded-xl bg-surface" />
+            </div>
+          ))}
+        </div>
       ) : (
         <>
           {reference && !selected && !loading ? (
             <div className="rounded-2xl border border-border bg-card p-6">
-              <h2 className="font-display text-2xl">Booking unavailable</h2>
+              <h2 className="text-xl font-semibold">Booking unavailable</h2>
               <p className="mt-3 text-sm text-muted-foreground">
                 This reference could not be found in your account. Check that you signed in with the
                 account used to book.
@@ -189,16 +218,19 @@ export function TravelBookingHistory({
             </div>
           ) : null}
           {!reference && !rows.length && !loading ? (
-            <div className="rounded-[24px] border border-border bg-card p-7 text-center">
-              <h2 className="font-display text-[28px]">Your next journey starts here</h2>
-              <p className="mt-3 text-[13px] text-muted-foreground">
-                Travel requests made while signed in will appear here.
+            <div className="rounded-2xl border border-border bg-card px-5 py-9 text-center shadow-card sm:py-12">
+              <div className="mx-auto grid size-16 place-items-center rounded-2xl border border-gold/20 bg-champagne/50 text-gold">
+                <Compass size={30} strokeWidth={1.5} />
+              </div>
+              <h2 className="mt-5 text-xl font-semibold tracking-tight">No trips booked yet</h2>
+              <p className="mx-auto mt-2 max-w-xs text-[13px] leading-relaxed text-muted-foreground">
+                Find a journey you love. Requests made while signed in will appear here.
               </p>
               <Link
                 href="/travel/packages"
-                className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-white"
+                className="mt-6 inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-primary px-5 text-[13px] font-semibold text-primary-foreground transition-colors hover:bg-soft-black"
               >
-                Find your journey
+                Explore journeys
                 <ArrowRight size={16} />
               </Link>
             </div>
@@ -207,19 +239,22 @@ export function TravelBookingHistory({
             {(reference ? (selected ? [selected] : []) : rows).map((row) => (
               <article
                 key={row.booking_reference}
-                className="overflow-hidden rounded-[24px] border border-border bg-card"
+                className="min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-card"
               >
-                <div className="border-b border-border bg-surface px-5 py-4">
+                <div className="border-b border-border px-5 py-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="eyebrow">
+                    <p className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
+                      <Plane size={14} className="text-gold" />
                       {travelCategories.find((category) => category.id === row.category)?.name ||
                         row.category}
                     </p>
-                    <span className="rounded-full border border-gold/25 bg-champagne/50 px-3 py-1.5 text-[11px] font-semibold">
+                    <span
+                      className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold ${statusStyles[row.status] || statusStyles["completed"]}`}
+                    >
                       {statuses[row.status] || row.status}
                     </span>
                   </div>
-                  <h2 className="mt-3 font-display text-[26px] leading-tight">
+                  <h2 className="mt-3 break-words text-xl font-semibold leading-snug tracking-tight">
                     {row.package_name}
                   </h2>
                 </div>
@@ -232,9 +267,9 @@ export function TravelBookingHistory({
                         ? ` · ${row.children} ${row.children === 1 ? "child" : "children"}`
                         : ""}
                     </p>
-                    <p className="flex items-center gap-2">
+                    <p className="flex items-start gap-2">
                       <MapPin size={16} className="shrink-0 text-gold" />
-                      <span>From {row.departure_city}</span>
+                      <span className="min-w-0 break-words">From {row.departure_city}</span>
                     </p>
                     <p className="flex items-center gap-2">
                       <CalendarDays size={16} className="shrink-0 text-gold" />
@@ -245,9 +280,9 @@ export function TravelBookingHistory({
                     Reference: {row.booking_reference}
                   </p>
                   {row.quoted_total !== null && (
-                    <p className="mt-4 text-sm">
-                      Your quotation{" "}
-                      <span className="ml-2 font-semibold">
+                    <p className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-xl bg-surface px-3.5 py-3 text-xs text-muted-foreground">
+                      Quotation{" "}
+                      <span className="text-base font-semibold text-foreground">
                         {travelMoney(Number(row.quoted_total))}
                       </span>
                     </p>

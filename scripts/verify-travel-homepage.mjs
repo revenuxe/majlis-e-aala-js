@@ -64,6 +64,15 @@ try {
     );
     assert.equal(await evaluate("document.querySelectorAll('h1').length"), 1);
     assert.equal(await evaluate("document.body.innerText.includes('Catering in')"), false);
+    assert.equal(await evaluate("document.querySelectorAll('[data-service=travel]').length"), 1);
+    assert.equal(await evaluate("document.querySelectorAll('header').length"), 1);
+    assert.equal(
+      await evaluate(
+        "document.querySelectorAll('nav[aria-label=\"Travel quick navigation\"]').length",
+      ),
+      1,
+    );
+    assert.equal(await evaluate("!!document.querySelector('[data-service=catering]')"), false);
     if (width === 390 && process.env.SEO_SCREENSHOT_PATH) {
       const screenshot = await call("Page.captureScreenshot", { format: "png" });
       await writeFile(process.env.SEO_SCREENSHOT_PATH, Buffer.from(screenshot.data, "base64"));
@@ -71,6 +80,43 @@ try {
   }
   await evaluate("document.querySelector('a[href=\"/travel/packages/umrah\"]').click()");
   await until(() => evaluate("location.pathname === '/travel/packages/umrah'"));
+  for (const route of [
+    "/travel/packages",
+    "/travel/bookings",
+    "/travel/bookings/MAT-TEST",
+    "/travel/plan",
+  ]) {
+    await call("Page.navigate", { url: base + route });
+    await until(() => evaluate("!!document.querySelector('[data-service=travel]')"));
+    assert.equal(
+      await evaluate("!!document.querySelector('[data-service=catering]')"),
+      false,
+      route,
+    );
+    assert.equal(await evaluate("document.querySelectorAll('header').length"), 1, route);
+    assert.equal(
+      await evaluate(
+        "document.querySelectorAll('nav[aria-label=\"Travel quick navigation\"]').length",
+      ),
+      route === "/travel/plan" ? 0 : 1,
+      route,
+    );
+  }
+  await call("Page.navigate", { url: base + "/catering" });
+  await until(() => evaluate("!!document.querySelector('[data-service=catering]')"));
+  assert.equal(await evaluate("document.querySelectorAll('header').length"), 1);
+  assert.equal(
+    await evaluate(
+      "document.querySelectorAll('nav[aria-label=\"Catering quick navigation\"]').length",
+    ),
+    1,
+  );
+  assert.equal(await evaluate("!!document.querySelector('[data-service=travel]')"), false);
+  await evaluate("document.querySelector('a[href=\"/\"]').click()");
+  await until(() =>
+    evaluate("location.pathname === '/' && !!document.querySelector('[data-service=travel]')"),
+  );
+  assert.equal(await evaluate("!!document.querySelector('[data-service=catering]')"), false);
   await call("Emulation.setScriptExecutionDisabled", { value: true });
   await call("Page.navigate", { url: base + "/" });
   await until(() =>

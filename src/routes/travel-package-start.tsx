@@ -1,4 +1,5 @@
 "use client";
+import { TravelNavigation } from "@/components/TravelNavigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -35,7 +36,7 @@ export default function TravelPackageStart() {
     }
   }, []);
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-32 lg:pb-12">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between px-5 py-5">
           <Link href="/">
@@ -136,6 +137,7 @@ export default function TravelPackageStart() {
           </>
         )}
       </main>
+      <TravelNavigation />
     </div>
   );
 }

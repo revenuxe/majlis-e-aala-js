@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowRight, Search, SlidersHorizontal, X } from "lucide-react";
 import { BrandLogo } from "@/components/Brand";
+import { TravelNavigation } from "@/components/TravelNavigation";
 import { TravelCountBanner } from "@/components/TravelCountBanner";
 import { TravelPackageChoice } from "@/components/TravelPackageChoice";
 import { useTravelCatalog } from "@/hooks/use-travel-catalog";
@@ -118,7 +119,7 @@ export default function TravelPackages({
     setLimit(6);
   }
   return (
-    <div className="min-h-screen bg-background pb-12">
+    <div className="min-h-screen bg-background pb-32 lg:pb-12">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-3 px-5 py-5">
           <Link href="/">
@@ -371,6 +372,7 @@ export default function TravelPackages({
           </Link>
         </div>
       </main>
+      <TravelNavigation />
     </div>
   );
 }

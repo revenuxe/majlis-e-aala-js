@@ -16,10 +16,8 @@ import {
   FileCheck2,
   Globe2,
   HeartHandshake,
-  Home,
   MapPin,
   Menu,
-  ClipboardList,
   Plane,
   Pause,
   Play,
@@ -30,6 +28,7 @@ import {
   X,
 } from "lucide-react";
 import { TravelJourneyCards } from "@/components/TravelJourneyCards";
+import { TravelNavigation } from "@/components/TravelNavigation";
 import { BrandLogo, BrandMark } from "@/components/Brand";
 import { Button, QuantitySelector, SectionHeader, cx } from "@/components/ui-kit";
 import { useTravelHero } from "@/hooks/use-travel-hero";
@@ -338,24 +337,6 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
               </div>
             </div>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-2 rounded-[22px] border border-gold/45 bg-card p-3 shadow-[0_14px_30px_rgba(55,42,25,0.10)] sm:grid-cols-4 sm:gap-3 sm:p-4">
-            {[
-              { label: "Umrah & Hajj", Icon: Compass },
-              { label: "Family Holidays", Icon: Users },
-              { label: "Custom Itineraries", Icon: SlidersHorizontal },
-              { label: "Personal Planning", Icon: HeartHandshake },
-            ].map(({ label, Icon }) => (
-              <div
-                key={label}
-                className="flex min-h-12 items-center gap-2.5 rounded-[14px] border border-border bg-surface px-3 text-[13px] font-semibold transition-colors hover:border-gold/60 hover:bg-champagne/35 sm:min-h-14"
-              >
-                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-gold/35 bg-card text-gold shadow-[0_2px_6px_rgba(55,42,25,0.08)]">
-                  <Icon className="h-3.5 w-3.5" strokeWidth={2.5} />
-                </span>
-                <span className="leading-tight">{label}</span>
-              </div>
-            ))}
-          </div>
         </section>
 
         <Section id="explore">
@@ -365,18 +346,20 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
             subtitle="Choose what brings you here. We’ll help you take the next step."
           />
           <TravelJourneyCards onSelect={selectCategory} />
-          <div className="mt-5 flex flex-wrap items-center gap-3 text-[13px]">
-            <span className="text-muted-foreground">Something more personal?</span>
-            {["Family holiday", "Custom journey"].map((item) => (
-              <button
-                key={item}
-                onClick={() => planJourney(item)}
-                className="press flex min-h-11 items-center gap-2 rounded-full border border-border bg-card px-4"
-              >
-                {item}
-                <ArrowUpRight size={14} />
-              </button>
-            ))}
+          <div className="mt-6 text-[13px]">
+            <p className="mb-3 text-muted-foreground">Something more personal?</p>
+            <div className="grid grid-cols-2 gap-3 sm:max-w-md">
+              {["Family holiday", "Custom journey"].map((item) => (
+                <button
+                  key={item}
+                  onClick={() => planJourney(item)}
+                  className="press flex min-h-12 items-center justify-between gap-2 rounded-xl border border-border bg-card px-3.5 text-left font-semibold transition-colors hover:border-gold hover:bg-champagne/30"
+                >
+                  <span>{item}</span>
+                  <ArrowUpRight size={15} className="shrink-0 text-gold" />
+                </button>
+              ))}
+            </div>
           </div>
         </Section>
 
@@ -456,6 +439,24 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
             <p className="mt-3 text-[12px] text-muted-foreground">
               Your group size carries through to your enquiry. No booking or payment required.
             </p>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-2 rounded-[22px] border border-gold/45 bg-card p-3 shadow-[0_14px_30px_rgba(55,42,25,0.10)] sm:grid-cols-4 sm:gap-3 sm:p-4">
+            {[
+              { label: "Umrah & Hajj", Icon: Compass },
+              { label: "Family Holidays", Icon: Users },
+              { label: "Custom Itineraries", Icon: SlidersHorizontal },
+              { label: "Personal Planning", Icon: HeartHandshake },
+            ].map(({ label, Icon }) => (
+              <div
+                key={label}
+                className="flex min-h-12 items-center gap-2.5 rounded-[14px] border border-border bg-surface px-3 text-[13px] font-semibold transition-colors hover:border-gold/60 hover:bg-champagne/35 sm:min-h-14"
+              >
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-gold/35 bg-card text-gold shadow-[0_2px_6px_rgba(55,42,25,0.08)]">
+                  <Icon className="h-3.5 w-3.5" strokeWidth={2.5} />
+                </span>
+                <span className="leading-tight">{label}</span>
+              </div>
+            ))}
           </div>
         </Section>
 
@@ -770,47 +771,7 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
         </div>
       </footer>
 
-      <nav
-        aria-label="Travel quick navigation"
-        className="fixed inset-x-0 bottom-0 z-40 px-3 pb-[calc(10px+env(safe-area-inset-bottom))] lg:hidden"
-      >
-        <div className="mx-auto flex h-[72px] max-w-md items-center rounded-[22px] border border-primary bg-primary text-white shadow-float">
-          {[
-            { href: "/", label: "Home", icon: Home },
-            { href: "/travel/packages", label: "Packages", icon: Globe2 },
-          ].map(({ href, label, icon: Icon }) => (
-            <a
-              key={label}
-              href={href}
-              className="flex h-full flex-1 flex-col items-center justify-center gap-1 text-[11px]"
-            >
-              <Icon size={21} strokeWidth={1.6} />
-              {label}
-            </a>
-          ))}
-          <a
-            href="/travel/plan"
-            className="relative -top-3 flex h-[60px] w-[66px] shrink-0 flex-col items-center justify-center gap-1 rounded-[20px] border border-gold/70 bg-primary text-[10px] font-semibold"
-          >
-            <Plane size={23} />
-            PLAN
-          </a>
-          <a
-            href="#pilgrim-guide"
-            className="flex h-full flex-1 flex-col items-center justify-center gap-1 text-[11px]"
-          >
-            <FileCheck2 size={21} strokeWidth={1.6} />
-            Guide
-          </a>
-          <a
-            href="/travel/bookings"
-            className="flex h-full flex-1 flex-col items-center justify-center gap-1 text-[11px]"
-          >
-            <ClipboardList size={21} strokeWidth={1.6} />
-            Bookings
-          </a>
-        </div>
-      </nav>
+      <TravelNavigation />
     </div>
   );
 }

@@ -14,7 +14,11 @@ export function TravelNavigation() {
           { href: "/", label: "Home", icon: Home },
           { href: "/travel/packages", label: "Packages", icon: Globe2 },
           { href: "/travel/plan", label: "Plan", icon: Plane },
-          { href: "/#pilgrim-guide", label: "Guide", icon: FileCheck2 },
+          {
+            href: pathname === "/" ? "#pilgrim-guide" : "/#pilgrim-guide",
+            label: "Guide",
+            icon: FileCheck2,
+          },
           { href: "/travel/bookings", label: "Bookings", icon: ClipboardList },
         ].map(({ href, label, icon: Icon }) => (
           <Link
@@ -25,10 +29,14 @@ export function TravelNavigation() {
                 ? "page"
                 : undefined
             }
-            className="flex h-full min-w-0 flex-1 flex-col items-center justify-center gap-1 text-[11px] aria-[current=page]:text-gold"
+            className={
+              label === "Plan"
+                ? "relative -top-3 flex h-[60px] w-[66px] shrink-0 flex-col items-center justify-center gap-1 rounded-[20px] border border-gold/70 bg-primary text-[10px] font-semibold aria-[current=page]:text-gold"
+                : "flex h-full min-w-0 flex-1 flex-col items-center justify-center gap-1 text-[11px] aria-[current=page]:text-gold"
+            }
           >
-            <Icon size={21} strokeWidth={1.6} />
-            {label}
+            <Icon size={label === "Plan" ? 23 : 21} strokeWidth={1.6} />
+            {label === "Plan" ? "PLAN" : label}
           </Link>
         ))}
       </div>

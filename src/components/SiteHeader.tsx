@@ -30,6 +30,7 @@ export function SiteHeader() {
   return (
     <>
       <header
+        aria-label="Catering header"
         className={cx(
           "sticky top-0 z-50 w-full transition-all duration-200",
           scrolled ? "border-b border-border bg-background/85 backdrop-blur-md" : "bg-background",

@@ -51,28 +51,28 @@ export default function TravelBookings({ reference }: { reference?: string }) {
           </Link>
           <Link
             href="/travel/plan"
-            className="flex min-h-11 items-center gap-2 text-[13px] font-semibold"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-border bg-surface px-3.5 text-xs font-semibold"
           >
             <Plane size={17} />
-            Plan a journey
+            New trip
           </Link>
         </div>
       </header>
-      <main className="mx-auto max-w-[1000px] px-5 py-7 pb-32 sm:px-8 sm:py-10 sm:pb-32">
+      <main className="mx-auto max-w-[1000px] px-5 py-5 pb-12 sm:px-8 sm:py-8">
         <Link
           href={reference ? "/travel/bookings" : "/"}
-          className="inline-flex min-h-11 items-center gap-2 text-[13px] text-muted-foreground"
+          className="inline-flex min-h-11 items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft size={16} />
           {reference ? "All travel bookings" : "Travel home"}
         </Link>
-        <h1 className="mt-4 font-display text-[34px] leading-tight sm:text-[44px]">
-          {reference ? "Your journey, at a glance" : "Your travel bookings"}
+        <h1 className="mt-3 text-[28px] font-semibold leading-tight tracking-tight sm:text-[34px]">
+          {reference ? "Booking details" : "Travel bookings"}
         </h1>
-        <p className="mt-3 text-[13px] leading-relaxed text-muted-foreground">
+        <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
           {reference
-            ? "Follow your request from planning to confirmation."
-            : "Your journeys, quotations and booking updates, together in one place."}
+            ? "Follow your journey from request to confirmation."
+            : "Your trips, quotations and latest updates."}
         </p>
         {!ready ? (
           <div role="status" className="flex items-center gap-2 py-12 text-sm">
@@ -107,9 +107,17 @@ export default function TravelBookings({ reference }: { reference?: string }) {
           </div>
         )}
       </main>
-      <footer className="mx-auto max-w-[1000px] border-t border-border px-5 pb-28 pt-5 text-[12px] text-muted-foreground lg:pb-8">
-        Looking for your event orders?{" "}
-        <Link href="/orders" className="font-semibold underline">
+      <footer className="mx-auto flex max-w-[1000px] flex-wrap items-center justify-between gap-3 border-t border-border px-5 pb-32 pt-5 text-[12px] text-muted-foreground sm:px-8 lg:pb-8">
+        <a
+          href="tel:+919886285028"
+          className="inline-flex min-h-11 items-center font-medium hover:text-foreground"
+        >
+          Travel support
+        </a>
+        <Link
+          href="/orders"
+          className="inline-flex min-h-11 items-center font-medium hover:text-foreground"
+        >
           Catering bookings
         </Link>
       </footer>

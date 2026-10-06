@@ -48,7 +48,10 @@ export function BottomNav() {
   };
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-[60] px-3 pb-[calc(10px+env(safe-area-inset-bottom))] lg:hidden">
+    <nav
+      aria-label="Catering quick navigation"
+      className="fixed inset-x-0 bottom-0 z-[60] px-3 pb-[calc(10px+env(safe-area-inset-bottom))] lg:hidden"
+    >
       <div className="mx-auto flex h-[72px] max-w-md items-center rounded-[22px] border border-primary bg-primary shadow-[var(--shadow-float)]">
         {link(items[0].to, items[0].label, items[0].icon)}
         {link(items[1].to, items[1].label, items[1].icon)}

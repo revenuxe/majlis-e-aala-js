@@ -9,11 +9,10 @@ import { SiteHeader } from "@/components/SiteHeader";
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const focused =
-    path === "/" ||
-    path.startsWith("/plan") ||
-    path.startsWith("/admin") ||
-    path === "/travel" ||
-    path.startsWith("/travel/");
+    path === "/plan" ||
+    path.startsWith("/plan/") ||
+    path === "/admin" ||
+    path.startsWith("/admin/");
 
   useEffect(() => {
     // Hash-only links are intentionally left untouched.
@@ -21,7 +20,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
   }, [path]);
 
   return (
-    <>
+    <div data-service="catering">
       {!focused && <SiteHeader />}
       {children}
       {!focused && (
@@ -31,6 +30,6 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
           <BottomNav />
         </>
       )}
-    </>
+    </div>
   );
 }
