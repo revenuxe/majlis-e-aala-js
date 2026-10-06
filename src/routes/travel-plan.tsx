@@ -161,6 +161,7 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
   const catalog = useTravelCatalog(initialPackages);
   const [packageFilter, setPackageFilter] = useState(initialCatalogueFilter);
   const [packageLimit, setPackageLimit] = useState(6);
+  const [changingPackage, setChangingPackage] = useState(false);
   const chosenPackage = catalog.packages.find((p) => p.id === draft.packageId);
   const chosenDeparture = catalog.departures.find((d) => d.id === draft.departureId);
   const matchingPackages = catalog.packages.filter((p) => p.category === draft.category);
@@ -601,7 +602,7 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
             [
               "Who is joining your journey?",
               "Where would you like to go?",
-              "Choose your package.",
+              chosenPackage && !changingPackage ? "Your selected package." : "Choose your package.",
               "When would you like to travel?",
               "Any special requests?",
               "Keep your journeys together.",
@@ -803,6 +804,7 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
           {step === 2 && (
             <>
               <TravelCountBanner
+                compact
                 seniors={draft.seniors}
                 category={draft.category}
                 adults={draft.adults}
@@ -831,64 +833,95 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
                   </Button>
                 </div>
               )}
-              <TravelPackageGroups
-                packages={matchingPackages}
-                value={packageFilter.group || "all"}
-                loading={catalog.loading}
-                onChange={(group) => {
-                  setPackageFilter({ ...packageFilter, group, collection: "all" });
-                  setPackageLimit(6);
-                }}
-              />
-              <TravelCatalogueControls
-                category={draft.category}
-                value={packageFilter}
-                count={filteredPackages.length}
-                onChange={(value) => {
-                  setPackageFilter(value);
-                  setPackageLimit(6);
-                }}
-              />
-              {chosenPackage && (
-                <div className="rounded-xl border border-gold/40 p-4">
-                  <p className="text-xs text-muted-foreground">Your selected journey</p>
-                  <p className="mt-1 font-semibold">{chosenPackage.name}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{chosenPackage.price_basis}</p>
-                </div>
-              )}
-              {!catalog.loading && !catalog.error && !filteredPackages.length && (
-                <p className="rounded-xl bg-surface p-4 text-sm">
-                  No matching packages. Adjust your filters or choose a custom journey below.
-                </p>
-              )}
-              <div className="grid items-start gap-5 sm:grid-cols-2">
-                {filteredPackages.slice(0, packageLimit).map((pkg) => (
+              {chosenPackage && !changingPackage ? (
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    Your package is selected. Continue to choose your travel dates.
+                  </p>
                   <TravelPackageChoice
-                    key={pkg.id}
-                    pkg={pkg}
-                    selected={draft.packageId === pkg.id}
+                    pkg={chosenPackage}
+                    selected
                     adults={draft.adults}
                     children={draft.children}
                     seniors={draft.seniors}
-                    onSelect={() => update({ packageId: pkg.id, departureId: null })}
+                    selectLabel="Change package"
+                    onSelect={() => {
+                      setPackageFilter(initialCatalogueFilter);
+                      setPackageLimit(6);
+                      setChangingPackage(true);
+                    }}
                   />
-                ))}
-              </div>
-              {filteredPackages.length > packageLimit && (
-                <Button
-                  variant="outline"
-                  full
-                  onClick={() => setPackageLimit((count) => count + 6)}
-                >
-                  SHOW MORE JOURNEYS ({filteredPackages.length - packageLimit} remaining)
-                </Button>
+                </div>
+              ) : (
+                <>
+                  {chosenPackage && (
+                    <button
+                      type="button"
+                      onClick={() => setChangingPackage(false)}
+                      className="min-h-11 rounded-xl border border-gold/40 bg-surface px-4 py-2 text-sm font-semibold"
+                    >
+                      Keep {chosenPackage.name}
+                    </button>
+                  )}
+                  <TravelPackageGroups
+                    packages={matchingPackages}
+                    value={packageFilter.group || "all"}
+                    loading={catalog.loading}
+                    onChange={(group) => {
+                      setPackageFilter({ ...packageFilter, group, collection: "all" });
+                      setPackageLimit(6);
+                    }}
+                  />
+                  <TravelCatalogueControls
+                    category={draft.category}
+                    value={packageFilter}
+                    count={filteredPackages.length}
+                    onChange={(value) => {
+                      setPackageFilter(value);
+                      setPackageLimit(6);
+                    }}
+                  />
+                  {!catalog.loading && !catalog.error && !filteredPackages.length && (
+                    <p className="rounded-xl bg-surface p-4 text-sm">
+                      No matching packages. Adjust your filters or choose a custom journey below.
+                    </p>
+                  )}
+                  <div className="grid items-start gap-5 sm:grid-cols-2">
+                    {filteredPackages.slice(0, packageLimit).map((pkg) => (
+                      <TravelPackageChoice
+                        key={pkg.id}
+                        pkg={pkg}
+                        selected={draft.packageId === pkg.id}
+                        adults={draft.adults}
+                        children={draft.children}
+                        seniors={draft.seniors}
+                        onSelect={() => {
+                          update({ packageId: pkg.id, departureId: null });
+                          setChangingPackage(false);
+                        }}
+                      />
+                    ))}
+                  </div>
+                  {filteredPackages.length > packageLimit && (
+                    <Button
+                      variant="outline"
+                      full
+                      onClick={() => setPackageLimit((count) => count + 6)}
+                    >
+                      SHOW MORE JOURNEYS ({filteredPackages.length - packageLimit} remaining)
+                    </Button>
+                  )}
+                  <Choice
+                    selected={draft.packageId === null}
+                    onClick={() => {
+                      update({ packageId: null, departureId: null });
+                      setChangingPackage(false);
+                    }}
+                    title="Create a custom journey"
+                    note="Tell us your preferences. We’ll prepare a personal itinerary."
+                  />
+                </>
               )}
-              <Choice
-                selected={draft.packageId === null}
-                onClick={() => update({ packageId: null, departureId: null })}
-                title="Create a custom journey"
-                note="Tell us your preferences. We’ll prepare a personal itinerary."
-              />
               {draft.packageId && matchingDepartures.length > 0 && (
                 <div className="space-y-3">
                   <h2 className="text-[15px] font-semibold">
@@ -1229,11 +1262,15 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
           <Button full size="lg" disabled={!ready || busy} onClick={() => void next()}>
             {busy
               ? "Sending your request…"
-              : step === REVIEW_STEP
-                ? "SEND TRAVEL REQUEST"
-                : step === AUTH_STEP
-                  ? "CONTINUE AS GUEST"
-                  : "CONTINUE"}
+              : [
+                  draft.category ? "Choose your package" : "Choose your journey",
+                  "Choose your package",
+                  "Choose travel dates",
+                  "Choose travel preferences",
+                  customer ? "Review your travel request" : "Sign in or review as guest",
+                  "Review as guest",
+                  "Send travel request",
+                ][step]}
             {!busy && <ArrowRight size={18} />}
           </Button>
           <p className="mt-2 text-center text-[11px] text-muted-foreground">

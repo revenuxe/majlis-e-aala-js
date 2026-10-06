@@ -368,6 +368,7 @@ export default function TravelPackages({
             <TravelPackageChoice
               key={pkg.id}
               pkg={pkg}
+              selectLabel="Plan with this package"
               adults={adults}
               children={children}
               seniors={seniorCount}

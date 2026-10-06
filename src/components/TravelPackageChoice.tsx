@@ -42,6 +42,9 @@ export function TravelPackageChoice({
   const isSaved = items.some((item) => item.packageId === pkg.id);
   const detailsId = useId();
   const price = pkg.pricing_mode === "on_request" ? null : pkg.price_per_adult;
+  const roomBasis = pkg.price_basis
+    .replace(/\b(\d+)\s*\/\s*(\d+)\s+sharing\b/gi, "$1 to $2 people sharing one room")
+    .replace(/\b(\d+)\s+sharing\b/gi, "$1 people sharing one room");
   return (
     <article
       className={cx(
@@ -49,38 +52,62 @@ export function TravelPackageChoice({
         selected ? "border-primary ring-1 ring-primary/20" : "border-border",
       )}
     >
-      <div className="p-5 sm:p-6">
-        <h3 className="font-display text-[32px] leading-tight">{pkg.name}</h3>
+      <div className="p-4 pb-3 sm:p-5 sm:pb-3">
+        <h3 className="font-display text-[28px] leading-tight">{pkg.name}</h3>
         {isSaved && (
           <span className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-gold">
             <Heart size={14} className="fill-gold/20" />
             Saved
           </span>
         )}
-        <div className="relative mt-7">
-          <div className="grid min-h-24 w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-[18px] bg-surface px-5 py-4 text-left">
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border pb-3 text-sm leading-snug text-muted-foreground">
+          <p className="rounded-md bg-surface px-2.5 py-1.5 font-semibold text-foreground">
+            {pkg.duration}
+          </p>
+          <p className="min-w-0">{pkg.places}</p>
+        </div>
+        {pkg.inclusions.length > 0 && (
+          <ul
+            aria-label="Key package inclusions"
+            className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface/40 text-sm leading-snug"
+          >
+            {pkg.inclusions.slice(0, 3).map((item, index) => (
+              <li key={index} className="flex min-h-11 items-start gap-2 px-3 py-2.5">
+                <Check size={16} className="mt-0.5 shrink-0 text-gold" aria-hidden="true" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="relative mt-4">
+          <div className="w-full rounded-[16px] bg-surface px-4 py-3 text-left">
             <div>
+              {price != null && (
+                <span className="mb-1 block text-sm font-semibold text-muted-foreground">
+                  Starting adult total
+                </span>
+              )}
               <span className="block text-[25px] font-bold leading-tight">
                 {price == null ? "Price on request" : `From ${travelMoney(Number(price) * adults)}`}
               </span>
-              <span className="mt-2 block text-[13px] font-semibold leading-relaxed">
+              <span className="mt-1 block text-sm font-medium leading-snug">
                 {adults + children} {adults + children === 1 ? "traveller" : "travellers"} ·{" "}
                 {adults} {adults === 1 ? "adult" : "adults"}
                 {children > 0 ? ` + ${children} ${children === 1 ? "child" : "children"}` : ""}
               </span>
               {seniors > 0 && (
-                <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
+                <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
                   Includes {Math.min(seniors, adults)} senior{" "}
-                  {Math.min(seniors, adults) === 1 ? "citizen" : "citizens"} within the adult count
+                  {Math.min(seniors, adults) === 1 ? "citizen" : "citizens"} in adults
                 </span>
               )}
-              <span className="mt-1 block text-[13px] font-semibold">
-                {price == null
-                  ? "Personalised quotation"
-                  : "Adult starting estimate · child fares extra"}
-              </span>
-              <details className="group/pricing mt-3">
-                <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-lg border border-gold/40 bg-champagne/50 px-2.5 py-2 text-[12px] font-semibold leading-relaxed text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold [&::-webkit-details-marker]:hidden">
+              {children > 0 && (
+                <span className="mt-1 block text-sm text-muted-foreground">
+                  Children quoted separately
+                </span>
+              )}
+              <details className="group/pricing mt-2">
+                <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-lg border border-gold/40 bg-champagne/50 px-2.5 py-2 text-sm font-semibold leading-relaxed text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold [&::-webkit-details-marker]:hidden">
                   {price == null
                     ? "View pricing breakdown"
                     : `From ${travelMoney(Number(price))} per adult`}
@@ -89,7 +116,7 @@ export function TravelPackageChoice({
                     className="shrink-0 transition-transform group-open/pricing:rotate-180"
                   />
                 </summary>
-                <dl className="mt-3 space-y-3 rounded-xl border border-gold/25 bg-card p-3 text-[13px] leading-relaxed">
+                <dl className="mt-3 space-y-3 rounded-xl border border-gold/25 bg-card p-3 text-sm leading-relaxed">
                   <div>
                     <dt className="font-semibold">Adults · {adults}</dt>
                     <dd className="text-muted-foreground">
@@ -113,14 +140,13 @@ export function TravelPackageChoice({
                   <div className="border-t border-border pt-3">
                     <dt className="font-semibold">Senior citizens · {Math.min(seniors, adults)}</dt>
                     <dd className="text-muted-foreground">
-                      Included in the adult count above, at the adult rate. No additional person
-                      charge.
+                      Already counted among your adults. Adult rate applies.
                     </dd>
                   </div>
                 </dl>
               </details>
-              <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
-                {pkg.price_basis}
+              <span className="mt-2 block pr-5 text-sm leading-snug text-muted-foreground">
+                {roomBasis}
               </span>
               {pkg.pricing_mode === "seasonal" && (
                 <span className="mt-1 block text-xs font-semibold text-gold">
@@ -128,19 +154,6 @@ export function TravelPackageChoice({
                 </span>
               )}
             </div>
-            <button
-              type="button"
-              aria-expanded={expanded}
-              aria-controls={detailsId}
-              aria-label={`Details for ${pkg.name}`}
-              onClick={() => setExpanded(!expanded)}
-              className={cx(
-                "grid h-12 w-12 shrink-0 place-items-center self-start rounded-full border border-border bg-card transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold",
-                expanded && "rotate-180 border-gold/50",
-              )}
-            >
-              <ChevronDown size={22} />
-            </button>
           </div>
           <a
             href={travelWhatsApp(
@@ -162,13 +175,22 @@ export function TravelPackageChoice({
             />
           </a>
         </div>
-        <p className="mt-5 text-[11px] leading-[1.6] text-muted-foreground">
-          {price == null
-            ? "Quote tailored to your group and room preferences."
-            : "Estimate based on your selected room sharing."}{" "}
-          Child fares and upgrades are quoted separately. Final pricing depends on travel dates and
-          availability.
+        <p className="mt-4 text-[13px] leading-snug text-muted-foreground">
+          Final price varies by date and room.
         </p>
+        <button
+          type="button"
+          aria-expanded={expanded}
+          aria-controls={detailsId}
+          onClick={() => setExpanded(!expanded)}
+          className="mt-3 flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border border-gold/25 bg-surface px-4 py-3 text-sm font-semibold transition-colors hover:border-gold/50 hover:bg-champagne/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+        >
+          {expanded ? "Hide package details" : "View package details"}
+          <ChevronDown
+            size={18}
+            className={cx("shrink-0 transition-transform", expanded && "rotate-180")}
+          />
+        </button>
       </div>
       <div id={detailsId} hidden={!expanded} className="border-y border-border">
         <Section title="Journey overview">
@@ -216,7 +238,7 @@ export function TravelPackageChoice({
           </ul>
         </Section>
         <Section title="Pricing & room sharing">
-          <p className="font-semibold text-foreground">{pkg.price_basis}</p>
+          <p className="font-semibold text-foreground">{roomBasis}</p>
           <p className="mt-3">{pkg.pricing_note}</p>
           <p className="mt-3">
             Children, room changes and extras are quoted separately. Final price is confirmed before
@@ -227,7 +249,7 @@ export function TravelPackageChoice({
           <p>{pkg.cancellation_terms}</p>
         </Section>
       </div>
-      <div className="px-5 pb-5 pt-2 sm:px-6 sm:pb-6">
+      <div className="px-4 pb-4 sm:px-5 sm:pb-5">
         <button
           type="button"
           aria-pressed={selected}
@@ -240,11 +262,12 @@ export function TravelPackageChoice({
             });
             onSelect();
           }}
-          className="flex min-h-14 w-full items-center justify-center gap-2 rounded-[16px] bg-primary px-4 text-[15px] font-semibold text-white"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[14px] bg-primary px-4 py-3 text-[15px] font-semibold text-white"
         >
           {selectLabel || (selected ? "Selected package" : "Select package")}
           {selected && <Check size={18} />}
         </button>
+        <p className="mt-2 text-center text-sm text-muted-foreground">No payment required</p>
       </div>
     </article>
   );

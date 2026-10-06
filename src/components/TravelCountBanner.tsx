@@ -15,6 +15,7 @@ export function TravelCountBanner({
   editing = false,
   onAdults,
   onChildren,
+  compact = false,
 }: {
   category: TravelCategory | "";
   adults: number;
@@ -26,8 +27,40 @@ export function TravelCountBanner({
   editing?: boolean;
   onAdults?: (value: number) => void;
   onChildren?: (value: number) => void;
+  compact?: boolean;
 }) {
   const journey = travelCategories.find((item) => item.id === category);
+  const seniorCount = Math.min(seniors, adults);
+  const seniorSummary =
+    seniorCount > 0
+      ? `Includes ${seniorCount} senior ${seniorCount === 1 ? "citizen" : "citizens"} in the adult count`
+      : null;
+  if (compact) {
+    return (
+      <section
+        aria-label="Your travellers"
+        className="rounded-2xl border border-gold/30 bg-surface p-4"
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold">
+              {adults + children} {adults + children === 1 ? "traveller" : "travellers"} · {adults}{" "}
+              {adults === 1 ? "adult" : "adults"}
+              {children > 0 ? ` + ${children} ${children === 1 ? "child" : "children"}` : ""}
+            </p>
+            {seniorSummary && <p className="mt-1 text-sm text-muted-foreground">{seniorSummary}</p>}
+          </div>
+          <button
+            type="button"
+            onClick={onChange}
+            className="min-h-11 rounded-xl border border-gold/40 bg-card px-3 py-2 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+          >
+            Edit travellers
+          </button>
+        </div>
+      </section>
+    );
+  }
   return (
     <section className="relative overflow-hidden rounded-[28px] bg-primary px-5 pb-8 pt-6 text-primary-foreground shadow-[0_18px_36px_rgba(41,32,20,0.18)] sm:px-7 sm:pt-8">
       {/* Decorative image mirrors the catering package banner. */}
@@ -56,9 +89,11 @@ export function TravelCountBanner({
             <div className="min-w-0 flex-1">
               <p className="eyebrow">Your traveller count</p>
               <p className="mt-1 text-[15px] font-semibold">
-                {adults + children} travellers
-                {seniors > 0 ? ` (${seniors} seniors included)` : ""}{" "}
+                {adults + children} {adults + children === 1 ? "traveller" : "travellers"}
               </p>
+              {seniorSummary && (
+                <p className="mt-1 text-sm text-muted-foreground">{seniorSummary}</p>
+              )}
               <p className="mt-0.5 text-[10px] text-muted-foreground sm:text-[11px]">
                 All adult package estimates update instantly.
               </p>
@@ -68,7 +103,7 @@ export function TravelCountBanner({
               aria-expanded={editing}
               className="press shrink-0 rounded-full border border-gold/60 bg-champagne/45 px-3 py-2 text-[13px] font-bold text-foreground hover:border-gold sm:px-4"
             >
-              {editing ? "Done" : "Change"}
+              {editing ? "Done" : "Edit travellers"}
             </button>
           </div>
           {editing && onAdults && onChildren && (
