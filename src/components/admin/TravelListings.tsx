@@ -1,10 +1,12 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { ArrowUpRight, CalendarDays, MapPin, Phone, RefreshCw, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button, cx } from "@/components/ui-kit";
 import { Field, ImageField, Select, Sheet, TextArea, TextInput, Toggle } from "./AdminUI";
 import { travelCategories } from "@/lib/travel";
+import { useAdminState } from "./AdminWorkspace";
 import {
   assistanceOptions,
   travelDate,
@@ -16,6 +18,22 @@ import {
 
 const db = supabase;
 const statuses = ["new", "contacted", "quoted", "confirmed", "completed", "cancelled"] as const;
+const statusLabels: Record<TravelRequest["status"], string> = {
+  new: "Received",
+  contacted: "Planning",
+  quoted: "Quoted",
+  confirmed: "Confirmed",
+  completed: "Completed",
+  cancelled: "Cancelled",
+};
+const statusColors: Record<TravelRequest["status"], string> = {
+  new: "bg-amber-50 text-amber-800 border-amber-200",
+  contacted: "bg-blue-50 text-blue-800 border-blue-200",
+  quoted: "bg-violet-50 text-violet-800 border-violet-200",
+  confirmed: "bg-emerald-50 text-emerald-800 border-emerald-200",
+  completed: "bg-surface text-muted-foreground border-border",
+  cancelled: "bg-red-50 text-red-800 border-red-200",
+};
 const blankPackage: Omit<TravelPackage, "id"> = {
   slug: "",
   category: "umrah",
@@ -47,24 +65,34 @@ const lines = (value: string) =>
 const inputDate = () => new Date().toISOString().slice(0, 10);
 
 export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" | "orders" }) {
-  const [tab, setTab] = useState<"packages" | "departures" | "requests">(
+  const [tab, setTab] = useAdminState<"packages" | "departures" | "requests">(
+    `travel:${mode}:tab`,
     mode === "orders" ? "requests" : "packages",
   );
   const [packages, setPackages] = useState<TravelPackage[]>([]);
-  const [packageSearch, setPackageSearch] = useState("");
-  const [packageCategory, setPackageCategory] = useState("");
+  const [packageSearch, setPackageSearch] = useAdminState(`travel:${mode}:packageSearch`, "");
+  const [packageCategory, setPackageCategory] = useAdminState(`travel:${mode}:packageCategory`, "");
   const [departures, setDepartures] = useState<TravelDeparture[]>([]);
   const [requests, setRequests] = useState<TravelRequest[]>([]);
-  const [limit, setLimit] = useState(50);
-  const [status, setStatus] = useState("");
+  const [limit, setLimit] = useAdminState(`travel:${mode}:limit`, 50);
+  const [status, setStatus] = useAdminState(`travel:${mode}:status`, "");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [pkg, setPkg] = useState<TravelPackage | Omit<TravelPackage, "id"> | null>(null);
-  const [itinerary, setItinerary] = useState("");
-  const [dep, setDep] = useState<TravelDeparture | Omit<TravelDeparture, "id"> | null>(null);
-  const [request, setRequest] = useState<TravelRequest | null>(null);
-  const [originalRequest, setOriginalRequest] = useState<TravelRequest | null>(null);
+  const [pkg, setPkg] = useAdminState<TravelPackage | Omit<TravelPackage, "id"> | null>(
+    `travel:${mode}:pkg`,
+    null,
+  );
+  const [itinerary, setItinerary] = useAdminState(`travel:${mode}:itinerary`, "");
+  const [dep, setDep] = useAdminState<TravelDeparture | Omit<TravelDeparture, "id"> | null>(
+    `travel:${mode}:dep`,
+    null,
+  );
+  const [request, setRequest] = useAdminState<TravelRequest | null>(`travel:${mode}:request`, null);
+  const [originalRequest, setOriginalRequest] = useAdminState<TravelRequest | null>(
+    `travel:${mode}:originalRequest`,
+    null,
+  );
   const loadVersion = useRef(0);
   const load = useCallback(async () => {
     const version = ++loadVersion.current;
@@ -266,11 +294,7 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
           ))}
         </div>
       )}
-      <p className="text-sm text-muted-foreground">
-        {mode === "orders"
-          ? "Manage travel requests, customer quotations and booking status. Changes appear in the customer's Travel Booking tracking."
-          : "Manage travel independently from catering. Packages without a price show quotation required. Departures are planning options; capacity does not reserve seats."}
-      </p>
+
       {error ? (
         <div role="alert" className="rounded-xl border p-4">
           Could not load travel {mode === "orders" ? "orders" : "listings"}.{" "}
@@ -345,7 +369,7 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
                 </button>
               ))}
           </div>
-          {!loading && !packages.length && <p>No travel packages yet. Add your first journey.</p>}
+          {!loading && !packages.length && <p>No travel packages.</p>}
         </>
       )}
       {tab === "departures" && (
@@ -387,65 +411,145 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
               </button>
             ))}
           </div>
-          {!loading && !departures.length && (
-            <p>
-              No scheduled departures yet. Customers can still request flexible or custom dates.
-            </p>
-          )}
+          {!loading && !departures.length && <p>No departures.</p>}
         </>
       )}
       {tab === "requests" && (
         <>
-          <Field label="Filter by status">
-            <Select
-              value={status}
-              onChange={(e) => {
-                setStatus(e.target.value);
-                setLimit(50);
-              }}
+          <div className="flex items-center justify-between gap-3">
+            <div
+              role="group"
+              aria-label="Travel booking status"
+              className="no-scrollbar flex min-w-0 flex-1 gap-2 overflow-x-auto"
             >
-              <option value="">All requests</option>
-              {statuses.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
+              {["", ...statuses].map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={status === value}
+                  onClick={() => {
+                    setStatus(value);
+                    setLimit(50);
+                  }}
+                  className={cx(
+                    "min-h-10 shrink-0 whitespace-nowrap rounded-full border px-3.5 text-xs font-semibold transition-colors",
+                    status === value
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-card text-muted-foreground hover:border-gold",
+                  )}
+                >
+                  {value ? statusLabels[value as TravelRequest["status"]] : "All"}
+                </button>
               ))}
-            </Select>
-          </Field>
-          <div className="space-y-3">
+            </div>
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => void load()}
+              aria-label="Refresh travel bookings"
+              className="grid size-10 shrink-0 place-items-center rounded-full border border-border bg-card disabled:opacity-50"
+            >
+              <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+            </button>
+          </div>
+          <div className="grid items-start gap-4 md:grid-cols-2">
             {requests.slice(0, limit).map((item) => (
-              <button
+              <article
                 key={item.id}
-                onClick={() => {
-                  setOriginalRequest(item);
-                  setRequest({ ...item });
-                }}
-                className="flex w-full flex-wrap justify-between gap-3 rounded-2xl border bg-card p-5 text-left"
+                className="min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-card"
               >
-                <div>
-                  <p className="text-xs font-semibold text-gold">{item.booking_reference}</p>
-                  <h3 className="mt-1 font-semibold">
-                    {item.customer_name} ·{" "}
-                    {item.package_snapshot.name || `Custom ${item.category} journey`}
+                <div className="p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="min-w-0 break-all font-mono text-[10px] leading-5 text-muted-foreground">
+                      {item.booking_reference}
+                    </p>
+                    <span
+                      className={cx(
+                        "shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-semibold",
+                        statusColors[item.status],
+                      )}
+                    >
+                      {statusLabels[item.status]}
+                    </span>
+                  </div>
+                  <h3 className="mt-3 break-words text-lg font-semibold leading-snug">
+                    {item.customer_name}
                   </h3>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {item.adults} adults{item.children ? `, ${item.children} children` : ""} ·{" "}
-                    {item.departure_city} ·{" "}
-                    {item.preferred_date
-                      ? travelDate(item.preferred_date)
-                      : item.preferred_month || "Flexible dates"}
+                  <p className="mt-1 break-words text-sm text-muted-foreground">
+                    {item.package_snapshot.name || `Custom ${item.category} journey`}
                   </p>
-                  <p className="mt-2 text-xs">
-                    {item.phone} · {new Date(item.created_at).toLocaleString("en-IN")}
-                  </p>
+                  <div className="mt-5 space-y-2.5 text-[13px]">
+                    <p className="flex items-start gap-2.5">
+                      <MapPin size={15} className="mt-0.5 shrink-0 text-gold" />
+                      <span className="min-w-0 break-words">{item.departure_city}</span>
+                    </p>
+                    <p className="flex items-start gap-2.5">
+                      <CalendarDays size={15} className="mt-0.5 shrink-0 text-gold" />
+                      <span>
+                        {item.preferred_date
+                          ? travelDate(item.preferred_date)
+                          : item.preferred_month
+                            ? new Intl.DateTimeFormat("en-IN", {
+                                month: "short",
+                                year: "numeric",
+                              }).format(new Date(`${item.preferred_month}-01T00:00:00`))
+                            : "Flexible dates"}
+                      </span>
+                    </p>
+                    <p className="flex items-start gap-2.5">
+                      <Users size={15} className="mt-0.5 shrink-0 text-gold" />
+                      <span>
+                        {item.adults} {item.adults === 1 ? "adult" : "adults"}
+                        {item.children
+                          ? ` · ${item.children} ${item.children === 1 ? "child" : "children"}`
+                          : ""}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
+                    <span className="text-[11px] text-muted-foreground">
+                      Received {travelDate(item.created_at.slice(0, 10))}
+                    </span>
+                    <span className="text-sm font-semibold">
+                      {item.quoted_total !== null
+                        ? travelMoney(Number(item.quoted_total))
+                        : "Not quoted"}
+                    </span>
+                  </div>
                 </div>
-                <span className="h-fit rounded-full bg-surface px-3 py-1 text-xs capitalize">
-                  {item.status}
-                </span>
-              </button>
+                <div className="flex items-center gap-3 border-t border-border bg-surface/50 px-5 py-3">
+                  <a
+                    href={`tel:+${item.phone}`}
+                    aria-label={`Call ${item.customer_name}`}
+                    className="inline-flex min-h-11 min-w-0 flex-1 items-center gap-2 text-[13px] font-medium hover:text-gold"
+                  >
+                    <Phone size={15} className="shrink-0" />
+                    <span className="truncate">{item.phone}</span>
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOriginalRequest(item);
+                      setRequest({ ...item });
+                    }}
+                    className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl bg-primary px-4 text-xs font-semibold text-primary-foreground"
+                  >
+                    Manage
+                    <ArrowUpRight size={15} />
+                  </button>
+                </div>
+              </article>
             ))}
           </div>
-          {!loading && !requests.length && <p>No requests match this filter.</p>}
+          {!loading && !error && !requests.length && (
+            <div className="rounded-2xl border border-dashed border-border bg-card px-5 py-12 text-center text-sm text-muted-foreground">
+              No travel bookings
+              {status
+                ? ` marked ${statusLabels[status as TravelRequest["status"]].toLowerCase()}`
+                : " yet"}
+              .
+            </div>
+          )}
           {requests.length > limit && (
             <Button onClick={() => setLimit((n) => n + 50)}>Load more requests</Button>
           )}
@@ -527,10 +631,7 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
             <Field label="Itinerary" hint="One stage per line: Title | description">
               <TextArea value={itinerary} onChange={(e) => setItinerary(e.target.value)} />
             </Field>
-            <Field
-              label="Indicative adult price (INR)"
-              hint="Leave blank for quotation required. Children and extras are quoted separately."
-            >
+            <Field label="Indicative adult price (INR)" hint="Blank = quotation required">
               <TextInput
                 type="number"
                 min="0"
@@ -566,10 +667,7 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
                 <option value="on_request">Price on request</option>
               </Select>
             </Field>
-            <Field
-              label="Price basis"
-              hint="Include the adult rate and sharing basis, e.g. Per adult - 4 sharing."
-            >
+            <Field label="Price basis" hint="e.g. Per adult, 4 sharing">
               <TextInput
                 maxLength={200}
                 value={pkg.price_basis}
@@ -651,10 +749,7 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
                 />
               </Field>
             ))}
-            <Field
-              label="Maximum group size"
-              hint="Optional. This is not a live inventory of remaining seats."
-            >
+            <Field label="Maximum group size" hint="Optional">
               <TextInput
                 type="number"
                 min="1"
@@ -783,10 +878,7 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
                 ))}
               </Select>
             </Field>
-            <Field
-              label="Final quotation total (INR)"
-              hint="Include all agreed travellers and extras. Share the written quotation with the customer separately."
-            >
+            <Field label="Final quotation total (INR)">
               <TextInput
                 type="number"
                 min="0"

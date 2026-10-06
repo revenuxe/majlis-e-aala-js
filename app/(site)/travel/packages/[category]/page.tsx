@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import TravelPackages from "@/routes/travel-packages";
 import { travelCategories } from "@/lib/travel";
+import { getTravelHomeContent } from "@/lib/travel-home-content";
 
 export function generateStaticParams() {
   return travelCategories.map(({ id }) => ({ category: id }));
@@ -15,7 +16,7 @@ export async function generateMetadata({
   const item = travelCategories.find((entry) => entry.id === category);
   if (!item) return {};
   return {
-    title: `${item.name} Packages | Majlise Aala`,
+    title: { absolute: `${item.name} Packages | Majlise Aala Tours & Travels` },
     description: `Compare ${item.name} journeys, starting prices and package inclusions. Plan your journey with Majlise Aala.`,
     alternates: { canonical: `/travel/packages/${category}` },
   };
@@ -24,5 +25,12 @@ export default async function Page({ params }: { params: Promise<{ category: str
   const { category } = await params;
   const item = travelCategories.find((entry) => entry.id === category);
   if (!item) notFound();
-  return <TravelPackages key={item.id} category={item.id} />;
+  const { packages } = await getTravelHomeContent();
+  return (
+    <TravelPackages
+      key={item.id}
+      category={item.id}
+      initialPackages={packages.filter((pkg) => pkg.category === item.id)}
+    />
+  );
 }

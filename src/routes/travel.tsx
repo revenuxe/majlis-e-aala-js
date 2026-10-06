@@ -33,6 +33,7 @@ import { TravelJourneyCards } from "@/components/TravelJourneyCards";
 import { BrandLogo, BrandMark } from "@/components/Brand";
 import { Button, QuantitySelector, SectionHeader, cx } from "@/components/ui-kit";
 import { useTravelHero } from "@/hooks/use-travel-hero";
+import type { TravelHomeContent } from "@/lib/travel-home-content";
 import {
   travelCategories,
   travelContact,
@@ -68,18 +69,17 @@ function Section({
   );
 }
 
-export default function TravelHome() {
+export default function TravelHome({ initialContent }: { initialContent?: TravelHomeContent }) {
   const router = useRouter();
-  const catalog = useTravelCatalog();
+  const catalog = useTravelCatalog(initialContent?.packages);
   const journeys = catalog.packages.map(packageJourney);
   const [enquiryJourney, setEnquiryJourney] = useState("Umrah");
   const [mobileMenu, setMobileMenu] = useState(false);
   const [travellers, setTravellers] = useState(2);
   const [heroIndex, setHeroIndex] = useState(0);
-  const { slides: travelHeroSlides, loading: heroLoading, failed: heroFailed } = useTravelHero();
+  const { slides: travelHeroSlides } = useTravelHero(initialContent?.slides);
   const [heroPaused, setHeroPaused] = useState(false);
   const [heroInteracting, setHeroInteracting] = useState(false);
-  const [loadedHeroImages, setLoadedHeroImages] = useState<Set<string>>(() => new Set());
   const activeHeroIndex = travelHeroSlides.length ? heroIndex % travelHeroSlides.length : 0;
   const currentHero = travelHeroSlides[activeHeroIndex];
   useEffect(() => {
@@ -134,7 +134,7 @@ export default function TravelHome() {
       <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-md">
         <div className="mx-auto flex h-[76px] max-w-[1280px] items-center justify-between gap-5 px-5 sm:px-8 lg:h-[88px]">
           <Link
-            href="/travel"
+            href="/"
             aria-label="Majlise Aala Tours and Travels home"
             className="flex items-center gap-3"
           >
@@ -194,7 +194,7 @@ export default function TravelHome() {
               ["FAQs", "#travel-faqs"],
             ].map(([label, href]) => (
               <a
-                key={href}
+                key={label}
                 href={href}
                 onClick={() => setMobileMenu(false)}
                 className="flex min-h-12 items-center justify-between text-[14px]"
@@ -231,14 +231,6 @@ export default function TravelHome() {
                     index === activeHeroIndex ? "opacity-100" : "pointer-events-none opacity-0",
                   )}
                 >
-                  {!loadedHeroImages.has(
-                    `${slide.desktop_image_url}|${slide.mobile_image_url ?? ""}`,
-                  ) && (
-                    <div
-                      aria-hidden="true"
-                      className="absolute inset-0 motion-safe:animate-pulse bg-[radial-gradient(circle_at_72%_28%,rgba(202,164,93,0.34),transparent_28%),linear-gradient(135deg,#211b14,#5b4931_48%,#17130f)]"
-                    />
-                  )}
                   <picture className="block h-full w-full">
                     {slide.mobile_image_url && (
                       <source media="(max-width: 639px)" srcSet={slide.mobile_image_url} />
@@ -250,26 +242,12 @@ export default function TravelHome() {
                       loading={index === 0 ? "eager" : "lazy"}
                       fetchPriority={index === 0 ? "high" : "low"}
                       decoding="async"
-                      onLoad={() =>
-                        setLoadedHeroImages((current) =>
-                          new Set(current).add(
-                            `${slide.desktop_image_url}|${slide.mobile_image_url ?? ""}`,
-                          ),
-                        )
-                      }
-                      className={cx(
-                        "h-full w-full object-cover transition-opacity duration-300 motion-reduce:transition-none",
-                        loadedHeroImages.has(
-                          `${slide.desktop_image_url}|${slide.mobile_image_url ?? ""}`,
-                        )
-                          ? "opacity-100"
-                          : "opacity-0",
-                      )}
+                      className="h-full w-full object-cover"
                     />
                   </picture>
                 </div>
               ))}
-              {heroFailed && !travelHeroSlides.length && (
+              {!travelHeroSlides.length && (
                 <Image
                   src="/travel/makkah-courtyard.jpg"
                   alt="The Kaaba in Makkah"
@@ -322,22 +300,11 @@ export default function TravelHome() {
                     {currentHero?.eyebrow || "Majlise Aala Tours & Travels"}
                   </span>
                   <h1 className="mt-3 max-w-[360px] text-balance font-display text-[32px] leading-[1.06] text-white sm:max-w-xl sm:text-[54px] lg:max-w-[840px] lg:text-[64px] lg:[text-wrap:wrap]">
-                    {heroLoading ? (
-                      <span role="status" className="block motion-safe:animate-pulse">
-                        <span className="sr-only">Loading featured journeys</span>
-                        <span
-                          aria-hidden="true"
-                          className="block h-[1em] w-4/5 rounded bg-white/10"
-                        />
-                        <span
-                          aria-hidden="true"
-                          className="mt-2 block h-[1em] w-3/5 rounded bg-white/10"
-                        />
-                      </span>
-                    ) : (
-                      currentHero?.title || "Your next journey begins here."
-                    )}
+                    {currentHero?.title || "Umrah, Hajj & holidays, planned around you."}
                   </h1>
+                  <p className="mt-4 text-sm leading-relaxed text-white/85">
+                    Umrah journeys, Hajj preparation, international trips and domestic holidays.
+                  </p>
                   <form
                     onSubmit={(event) => {
                       event.preventDefault();
@@ -757,7 +724,7 @@ export default function TravelHome() {
                 Thoughtful planning, with you at the heart.
               </p>
               <Link
-                href="/"
+                href="/catering"
                 className="mt-5 inline-flex min-h-11 items-center gap-2 text-[13px] text-champagne"
               >
                 Discover Majlise Aala Catering <ArrowUpRight size={15} />
@@ -767,13 +734,13 @@ export default function TravelHome() {
               <p className="text-[11px] uppercase tracking-[.18em] text-white/50">Explore</p>
               <div className="mt-4 grid gap-1">
                 {travelCategories.map((item) => (
-                  <button
+                  <Link
                     key={item.id}
-                    onClick={() => selectCategory(item.id)}
+                    href={`/travel/packages/${item.id}`}
                     className="min-h-11 text-left text-[14px] text-white/80"
                   >
                     {item.name}
-                  </button>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -809,7 +776,7 @@ export default function TravelHome() {
       >
         <div className="mx-auto flex h-[72px] max-w-md items-center rounded-[22px] border border-primary bg-primary text-white shadow-float">
           {[
-            { href: "/travel", label: "Home", icon: Home },
+            { href: "/", label: "Home", icon: Home },
             { href: "/travel/packages", label: "Packages", icon: Globe2 },
           ].map(({ href, label, icon: Icon }) => (
             <a

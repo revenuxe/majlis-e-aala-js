@@ -7,7 +7,12 @@ import { BrandLogo } from "@/components/Brand";
 import { TravelCountBanner } from "@/components/TravelCountBanner";
 import { TravelPackageChoice } from "@/components/TravelPackageChoice";
 import { useTravelCatalog } from "@/hooks/use-travel-catalog";
-import { filterTravelPackages, initialCatalogueFilter, travelMoney } from "@/lib/travel-booking";
+import {
+  filterTravelPackages,
+  initialCatalogueFilter,
+  travelMoney,
+  type TravelPackage,
+} from "@/lib/travel-booking";
 import { travelCategories, type TravelCategory } from "@/lib/travel";
 
 const settings = {
@@ -48,9 +53,15 @@ const settings = {
 } as const;
 const selectClass =
   "mt-2 h-12 w-full rounded-xl border border-border bg-card px-3 text-sm outline-none focus:border-gold";
-export default function TravelPackages({ category }: { category: TravelCategory }) {
+export default function TravelPackages({
+  category,
+  initialPackages,
+}: {
+  category: TravelCategory;
+  initialPackages?: TravelPackage[];
+}) {
   const router = useRouter();
-  const catalog = useTravelCatalog();
+  const catalog = useTravelCatalog(initialPackages);
   const config = settings[category];
   const name = travelCategories.find((item) => item.id === category)!.name;
   const [filter, setFilter] = useState(initialCatalogueFilter);
@@ -110,7 +121,7 @@ export default function TravelPackages({ category }: { category: TravelCategory 
     <div className="min-h-screen bg-background pb-12">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-3 px-5 py-5">
-          <Link href="/travel">
+          <Link href="/">
             <BrandLogo className="h-8" />
           </Link>
           <Link href="/travel/bookings" className="text-sm font-semibold">

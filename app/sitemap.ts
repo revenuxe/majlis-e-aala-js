@@ -3,7 +3,7 @@ import { siteUrl } from "@/lib/site-url";
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     "",
-    "/travel",
+    "/catering",
     "/travel/packages",
     "/travel/packages/umrah",
     "/travel/packages/hajj",
@@ -22,8 +22,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/terms",
   ].map((path) => ({
     url: `${siteUrl}${path}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: path ? 0.8 : 1,
   }));
 }

@@ -3,10 +3,10 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { TravelDeparture, TravelPackage } from "@/lib/travel-booking";
 
-export function useTravelCatalog() {
-  const [packages, setPackages] = useState<TravelPackage[]>([]);
+export function useTravelCatalog(initialPackages?: TravelPackage[]) {
+  const [packages, setPackages] = useState<TravelPackage[]>(initialPackages ?? []);
   const [departures, setDepartures] = useState<TravelDeparture[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(initialPackages === undefined);
   const [error, setError] = useState<string | null>(null);
   const load = useCallback(async () => {
     setLoading(true);

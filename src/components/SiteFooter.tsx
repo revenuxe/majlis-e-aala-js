@@ -41,6 +41,8 @@ export function SiteFooter() {
               Catering
             </p>
             <div className="mt-4 grid gap-2.5 text-[14px] opacity-85">
+              <Link href="/catering">Catering home</Link>
+              <Link href="/">Tours & Travels</Link>
               <Link href="/packages">Catering Packages</Link>
               <Link href="/plan">Plan Your Catering</Link>
               <Link href="/blog">Blog & Planning Guides</Link>

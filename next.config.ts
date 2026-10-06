@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
+  async redirects() {
+    return [{ source: "/travel", destination: "/", permanent: true }];
+  },
   images: { remotePatterns: [{ protocol: "https", hostname: "**" }] },
   env: {
     NEXT_PUBLIC_SUPABASE_URL:

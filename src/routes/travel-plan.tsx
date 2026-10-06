@@ -519,7 +519,7 @@ export default function TravelPlan() {
         >
           Discuss on WhatsApp
         </a>
-        <Link href="/travel" className="mt-4 min-h-11 py-3 text-[14px] underline">
+        <Link href="/" className="mt-4 min-h-11 py-3 text-[14px] underline">
           Back to travel homepage
         </Link>
       </main>
@@ -542,7 +542,7 @@ export default function TravelPlan() {
             <ArrowLeft size={18} />
             Back
           </button>
-          <Link href="/travel" aria-label="Travel homepage">
+          <Link href="/" aria-label="Travel homepage">
             <BrandMark size={42} />
           </Link>
           <span

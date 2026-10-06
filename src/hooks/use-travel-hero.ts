@@ -7,9 +7,9 @@ import type { Database } from "@/integrations/supabase/types";
 type TravelHero = Database["public"]["Tables"]["travel_hero_carousels"]["Row"];
 
 /** No persistent cache: admin edits are read on page load and when returning to this tab. */
-export function useTravelHero() {
-  const [slides, setSlides] = useState<TravelHero[]>([]);
-  const [loading, setLoading] = useState(true);
+export function useTravelHero(initialSlides?: TravelHero[]) {
+  const [slides, setSlides] = useState<TravelHero[]>(initialSlides ?? []);
+  const [loading, setLoading] = useState(initialSlides === undefined);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {

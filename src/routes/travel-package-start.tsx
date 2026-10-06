@@ -38,10 +38,10 @@ export default function TravelPackageStart() {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between px-5 py-5">
-          <Link href="/travel">
+          <Link href="/">
             <BrandLogo className="h-8" />
           </Link>
-          <Link href="/travel" className="flex min-h-11 items-center gap-2 text-sm">
+          <Link href="/" className="flex min-h-11 items-center gap-2 text-sm">
             <ArrowLeft size={16} />
             Travel home
           </Link>

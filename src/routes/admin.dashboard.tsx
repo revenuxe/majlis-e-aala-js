@@ -1,5 +1,6 @@
 "use client";
 import { TravelListingsPanel } from "@/components/admin/TravelListings";
+import { AdminWorkspaceProvider, useAdminState } from "@/components/admin/AdminWorkspace";
 /* eslint-disable @typescript-eslint/no-explicit-any -- Supabase custom tables are migrated ahead of generated types. */
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -84,14 +85,31 @@ type AddOnRow = {
   sort_order: number;
 };
 
-export default function AdminDashboard() {
+export default function AdminDashboard({ userId }: { userId: string }) {
+  return (
+    <AdminWorkspaceProvider key={userId} userId={userId}>
+      <AdminWorkspace />
+    </AdminWorkspaceProvider>
+  );
+}
+
+function AdminWorkspace() {
   const navigate = useRouter();
   const [ready, setReady] = useState(false);
-  const [tab, setTab] = useState<MainTab>("dashboard");
-  const [listingService, setListingService] = useState<ListingService>("catering");
-  const [orderService, setOrderService] = useState<"catering" | "travel">("catering");
-  const [listTab, setListTab] = useState<ListTab>("packages");
-  const [homepageTab, setHomepageTab] = useState<HomepageTab>("catering");
+  const [tab, setTab] = useAdminState<MainTab>("AdminWorkspace:tab", "dashboard");
+  const [listingService, setListingService] = useAdminState<ListingService>(
+    "AdminWorkspace:listingService",
+    "catering",
+  );
+  const [orderService, setOrderService] = useAdminState<"catering" | "travel">(
+    "AdminWorkspace:orderService",
+    "catering",
+  );
+  const [listTab, setListTab] = useAdminState<ListTab>("AdminWorkspace:listTab", "packages");
+  const [homepageTab, setHomepageTab] = useAdminState<HomepageTab>(
+    "AdminWorkspace:homepageTab",
+    "catering",
+  );
 
   const [packages, setPackages] = useState<PackageRow[]>([]);
   const [sections, setSections] = useState<SectionRow[]>([]);
@@ -303,10 +321,7 @@ export default function AdminDashboard() {
         ) : tab === "dashboard" ? (
           <section className="space-y-6">
             <div>
-              <p className="eyebrow">Overview</p>
-              <h1 className="mt-1 font-display text-[30px] leading-tight sm:text-[38px]">
-                Today at a glance
-              </h1>
+              <h1 className="text-2xl font-semibold">Overview</h1>
             </div>
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
               <StatCard
@@ -391,8 +406,7 @@ export default function AdminDashboard() {
             ) : (
               <>
                 <div>
-                  <p className="eyebrow">Travel bookings</p>
-                  <h1 className="mt-1 font-display text-[30px] sm:text-[38px]">Travel orders</h1>
+                  <h1 className="text-2xl font-semibold">Travel bookings</h1>
                 </div>
                 <TravelListingsPanel mode="orders" />
               </>
@@ -465,12 +479,7 @@ export default function AdminDashboard() {
           </section>
         ) : (
           <section className="space-y-5">
-            <div>
-              <p className="eyebrow">Listings</p>
-              <h1 className="mt-1 font-display text-[30px] leading-tight sm:text-[38px]">
-                Packages, menus &amp; travel
-              </h1>
-            </div>
+            <h1 className="sr-only">Listings</h1>
 
             {/* ── Service switcher: Catering / Travels ── */}
             <div className="flex gap-2">
@@ -599,13 +608,13 @@ function AddOnsPanel({
   packages: PackageRow[];
   onChanged: () => Promise<void>;
 }) {
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<AddOnRow | null>(null);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [eventIds, setEventIds] = useState<string[]>([]);
-  const [packageIds, setPackageIds] = useState<string[]>([]);
-  const [active, setActive] = useState(true);
+  const [open, setOpen] = useAdminState("AddOnsPanel:open", false);
+  const [editing, setEditing] = useAdminState<AddOnRow | null>("AddOnsPanel:editing", null);
+  const [name, setName] = useAdminState("AddOnsPanel:name", "");
+  const [description, setDescription] = useAdminState("AddOnsPanel:description", "");
+  const [eventIds, setEventIds] = useAdminState<string[]>("AddOnsPanel:eventIds", []);
+  const [packageIds, setPackageIds] = useAdminState<string[]>("AddOnsPanel:packageIds", []);
+  const [active, setActive] = useAdminState("AddOnsPanel:active", true);
   const toggle = (value: string, set: React.Dispatch<React.SetStateAction<string[]>>) =>
     set((current) =>
       current.includes(value) ? current.filter((id) => id !== value) : [...current, value],
@@ -647,12 +656,7 @@ function AddOnsPanel({
   return (
     <section className="space-y-4">
       <div className="flex items-end justify-between gap-3">
-        <div>
-          <p className="eyebrow">Optional services</p>
-          <p className="mt-1 text-[14px] text-muted-foreground">
-            Assign each add-on to any number of events and packages.
-          </p>
-        </div>
+        <h2 className="text-lg font-semibold">Add-ons</h2>
         <Button onClick={() => edit()}>
           <Plus className="h-4 w-4" /> Add add-on
         </Button>
@@ -789,15 +793,18 @@ function HomepagePanel({
 }) {
   const table = service === "travels" ? "travel_hero_carousels" : "hero_carousels";
   const serviceLabel = service === "travels" ? "Travels" : "Catering";
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<HeroCarouselRow | null>(null);
-  const [title, setTitle] = useState("");
-  const [eyebrow, setEyebrow] = useState("");
-  const [desktopImage, setDesktopImage] = useState("");
-  const [mobileImage, setMobileImage] = useState("");
-  const [active, setActive] = useState(true);
+  const [open, setOpen] = useAdminState(`hero:${service}:open`, false);
+  const [editing, setEditing] = useAdminState<HeroCarouselRow | null>(
+    `hero:${service}:editing`,
+    null,
+  );
+  const [title, setTitle] = useAdminState(`hero:${service}:title`, "");
+  const [eyebrow, setEyebrow] = useAdminState(`hero:${service}:eyebrow`, "");
+  const [desktopImage, setDesktopImage] = useAdminState(`hero:${service}:desktopImage`, "");
+  const [mobileImage, setMobileImage] = useAdminState(`hero:${service}:mobileImage`, "");
+  const [active, setActive] = useAdminState(`hero:${service}:active`, true);
   const [saving, setSaving] = useState(false);
-  const [sortOrder, setSortOrder] = useState(0);
+  const [sortOrder, setSortOrder] = useAdminState(`hero:${service}:sortOrder`, 0);
   const openNew = () => {
     setEditing(null);
     setTitle("");
@@ -879,20 +886,14 @@ function HomepagePanel({
     <section className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="eyebrow">Homepage / {serviceLabel}</p>
-          <h1 className="mt-1 font-display text-[30px] leading-tight sm:text-[38px]">
-            {serviceLabel} hero carousel
-          </h1>
-          <p className="mt-2 text-[14px] text-muted-foreground">
-            Optimized desktop and mobile artwork. Active slides are served in display order.
-          </p>
+          <h1 className="text-2xl font-semibold">Hero slides</h1>
         </div>
         <Button onClick={openNew}>
           <Plus className="h-4 w-4" /> Add slide
         </Button>
       </div>
       <a
-        href={service === "travels" ? "/travel" : "/"}
+        href={service === "travels" ? "/" : "/catering"}
         target="_blank"
         rel="noopener noreferrer"
         className="inline-flex min-h-11 items-center text-[13px] font-semibold underline"
@@ -956,6 +957,7 @@ function HomepagePanel({
       <Sheet
         open={open}
         title={editing ? "Edit hero slide" : "New hero slide"}
+        persistenceKey={`hero:${service}:${editing?.id || "new"}`}
         onClose={() => setOpen(false)}
         footer={
           <Button full size="lg" onClick={() => void save()} disabled={saving}>
@@ -1019,7 +1021,7 @@ function OrdersPanel({
   packages: PackageRow[];
   onChanged: () => Promise<void>;
 }) {
-  const [filter, setFilter] = useState<string>("all");
+  const [filter, setFilter] = useAdminState<string>("OrdersPanel:filter", "all");
   const shown = useMemo(
     () => (filter === "all" ? orders : orders.filter((o) => o.status === filter)),
     [orders, filter],
@@ -1048,10 +1050,7 @@ function OrdersPanel({
   return (
     <section className="space-y-5">
       <div>
-        <p className="eyebrow">Enquiries</p>
-        <h1 className="mt-1 font-display text-[30px] leading-tight sm:text-[38px]">
-          Catering orders
-        </h1>
+        <h1 className="text-2xl font-semibold">Catering orders</h1>
       </div>
       <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:px-0">
         {["all", ...ORDER_STATUSES].map((s) => (
@@ -1147,24 +1146,39 @@ function PackagesPanel({
   eventCategories: EventCategoryRow[];
   onChanged: () => Promise<void>;
 }) {
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<PackageRow | null>(null);
+  const [open, setOpen] = useAdminState("PackagesPanel:open", false);
+  const [editing, setEditing] = useAdminState<PackageRow | null>("PackagesPanel:editing", null);
   const [saving, setSaving] = useState(false);
 
-  const [name, setName] = useState("");
-  const [tagline, setTagline] = useState("");
-  const [price, setPrice] = useState("100000");
-  const [guestCountFrom, setGuestCountFrom] = useState("100");
-  const [guestCountTo, setGuestCountTo] = useState("100");
-  const [eventCategoryIds, setEventCategoryIds] = useState<string[]>([]);
-  const [foodPreference, setFoodPreference] = useState<"veg" | "nonveg" | "mixed">("mixed");
-  const [includedServices, setIncludedServices] = useState<string[]>([]);
-  const [excludedServices, setExcludedServices] = useState<string[]>([]);
-  const [serviceOptions, setServiceOptions] = useState<string[]>(PACKAGE_SERVICE_OPTIONS);
-  const [image, setImage] = useState("");
-  const [signature, setSignature] = useState(false);
-  const [active, setActive] = useState(true);
-  const [draft, setDraft] = useState<DraftSection[]>([]);
+  const [name, setName] = useAdminState("PackagesPanel:name", "");
+  const [tagline, setTagline] = useAdminState("PackagesPanel:tagline", "");
+  const [price, setPrice] = useAdminState("PackagesPanel:price", "100000");
+  const [guestCountFrom, setGuestCountFrom] = useAdminState("PackagesPanel:guestCountFrom", "100");
+  const [guestCountTo, setGuestCountTo] = useAdminState("PackagesPanel:guestCountTo", "100");
+  const [eventCategoryIds, setEventCategoryIds] = useAdminState<string[]>(
+    "PackagesPanel:eventCategoryIds",
+    [],
+  );
+  const [foodPreference, setFoodPreference] = useAdminState<"veg" | "nonveg" | "mixed">(
+    "PackagesPanel:foodPreference",
+    "mixed",
+  );
+  const [includedServices, setIncludedServices] = useAdminState<string[]>(
+    "PackagesPanel:includedServices",
+    [],
+  );
+  const [excludedServices, setExcludedServices] = useAdminState<string[]>(
+    "PackagesPanel:excludedServices",
+    [],
+  );
+  const [serviceOptions, setServiceOptions] = useAdminState<string[]>(
+    "PackagesPanel:serviceOptions",
+    PACKAGE_SERVICE_OPTIONS,
+  );
+  const [image, setImage] = useAdminState("PackagesPanel:image", "");
+  const [signature, setSignature] = useAdminState("PackagesPanel:signature", false);
+  const [active, setActive] = useAdminState("PackagesPanel:active", true);
+  const [draft, setDraft] = useAdminState<DraftSection[]>("PackagesPanel:draft", []);
 
   function openNew() {
     setEditing(null);
@@ -1613,7 +1627,7 @@ function PackageServicesEditor({
   onExcludedChange: (value: string[]) => void;
   onOptionsChange: (value: string[]) => void;
 }) {
-  const [newService, setNewService] = useState("");
+  const [newService, setNewService] = useAdminState("PackageServicesEditor:newService", "");
   const setStatus = (service: string, status: "included" | "excluded" | "none") => {
     onIncludedChange(
       status === "included"
@@ -1643,9 +1657,6 @@ function PackageServicesEditor({
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-[13px] font-semibold">Package services</p>
-          <p className="mt-1 text-[12px] text-muted-foreground">
-            Add, rename or remove services for this package.
-          </p>
         </div>
       </div>
       <div className="mt-3 flex gap-2">
@@ -1727,11 +1738,14 @@ function EventCategoriesPanel({
   categories: EventCategoryRow[];
   onChanged: () => Promise<void>;
 }) {
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<EventCategoryRow | null>(null);
-  const [name, setName] = useState("");
-  const [image, setImage] = useState("");
-  const [active, setActive] = useState(true);
+  const [open, setOpen] = useAdminState("EventCategoriesPanel:open", false);
+  const [editing, setEditing] = useAdminState<EventCategoryRow | null>(
+    "EventCategoriesPanel:editing",
+    null,
+  );
+  const [name, setName] = useAdminState("EventCategoriesPanel:name", "");
+  const [image, setImage] = useAdminState("EventCategoriesPanel:image", "");
+  const [active, setActive] = useAdminState("EventCategoriesPanel:active", true);
   const [saving, setSaving] = useState(false);
   const openNew = () => {
     setEditing(null);
@@ -1787,9 +1801,6 @@ function EventCategoriesPanel({
         <Button onClick={openNew} full className="sm:w-auto">
           <Plus className="h-4 w-4" /> New event category
         </Button>
-        <p className="mt-2 text-[13px] text-muted-foreground">
-          Create occasions such as Wedding, Nikah and Walima. Assign a package to one below.
-        </p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {categories.map((category) => (
@@ -1853,10 +1864,7 @@ function EventCategoriesPanel({
               placeholder="Wedding"
             />
           </Field>
-          <Field
-            label="Card image"
-            hint="Paste an image URL or use the upload button. This image appears on the homepage and plan-flow card."
-          >
+          <Field label="Card image">
             <ImageField value={image} onChange={setImage} />
           </Field>
           <Toggle
@@ -1877,11 +1885,11 @@ function CategoriesPanel({
   categories: CategoryRow[];
   onChanged: () => Promise<void>;
 }) {
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<CategoryRow | null>(null);
-  const [name, setName] = useState("");
-  const [image, setImage] = useState("");
-  const [active, setActive] = useState(true);
+  const [open, setOpen] = useAdminState("CategoriesPanel:open", false);
+  const [editing, setEditing] = useAdminState<CategoryRow | null>("CategoriesPanel:editing", null);
+  const [name, setName] = useAdminState("CategoriesPanel:name", "");
+  const [image, setImage] = useAdminState("CategoriesPanel:image", "");
+  const [active, setActive] = useAdminState("CategoriesPanel:active", true);
   const [saving, setSaving] = useState(false);
 
   function openNew() {
@@ -2024,10 +2032,10 @@ function MenuPanel({
   categories: CategoryRow[];
   onChanged: () => Promise<void>;
 }) {
-  const [open, setOpen] = useState(false);
-  const [editing, setEditing] = useState<MenuItemRow | null>(null);
+  const [open, setOpen] = useAdminState("MenuPanel:open", false);
+  const [editing, setEditing] = useAdminState<MenuItemRow | null>("MenuPanel:editing", null);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({
+  const [form, setForm] = useAdminState("MenuPanel:form", {
     name: "",
     categoryId: "",
     description: "",
@@ -2249,10 +2257,6 @@ function MenuPanel({
             onChange={(v) => setForm({ ...form, active: v })}
             label="Visible on website"
           />
-          <p className="flex items-center gap-2 text-[12px] text-muted-foreground">
-            <UtensilsCrossed className="h-3.5 w-3.5" /> Dishes appear on the public menu when
-            visible.
-          </p>
         </div>
       </Sheet>
     </div>

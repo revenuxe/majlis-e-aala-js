@@ -15,5 +15,5 @@ export default async function Page() {
   if (!user) redirect("/admin/login");
   const { data: isAdmin } = await supabase.rpc("has_role", { _user_id: user.id, _role: "admin" });
   if (!isAdmin) redirect("/admin/login");
-  return <AdminDashboard />;
+  return <AdminDashboard userId={user.id} />;
 }

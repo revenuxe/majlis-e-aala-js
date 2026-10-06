@@ -6,14 +6,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Best Muslim Food Caterers in Bangalore | Majlis E Aala",
+    default: "Tours & Travels | Majlise Aala",
     template: "%s | Majlis E Aala",
   },
-  description:
-    "Halal catering in Bangalore for weddings, Nikah, Walima and Aqiqah. Enjoy authentic flavours and custom menus with Majlis E Aala.",
+  description: "Explore journeys, holidays and catering services with Majlise Aala.",
   icons: { icon: "/favicon.ico", shortcut: "/favicon.ico" },
-  alternates: { canonical: "/" },
-  openGraph: { type: "website", siteName: "Majlis E Aala", locale: "en_IN", url: "/" },
+  openGraph: { type: "website", siteName: "Majlise Aala", locale: "en_IN" },
   twitter: { card: "summary_large_image" },
 };
 

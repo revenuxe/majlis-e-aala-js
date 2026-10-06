@@ -9,6 +9,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const focused =
+    path === "/" ||
     path.startsWith("/plan") ||
     path.startsWith("/admin") ||
     path === "/travel" ||

@@ -8,10 +8,10 @@ import { Button, cx } from "./ui-kit";
 import { SearchOverlay } from "./SearchOverlay";
 
 const navLinks = [
-  { label: "Home", to: "/" },
+  { label: "Home", to: "/catering" },
   { label: "Packages", to: "/packages" },
   { label: "Catering", to: "/plan" },
-  { label: "Tours & Travels", to: "/travel" },
+  { label: "Tours & Travels", to: "/" },
   { label: "About", to: "/about" },
 ] as const;
 
@@ -37,7 +37,7 @@ export function SiteHeader() {
       >
         {/* Mobile */}
         <div className="mx-auto grid h-16 max-w-[1280px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 lg:hidden">
-          <Link href="/" className="press">
+          <Link href="/catering" className="press">
             <BrandMark size={54} />
           </Link>
           <button className="press min-w-0 text-left">
@@ -69,7 +69,7 @@ export function SiteHeader() {
 
         {/* Desktop */}
         <div className="mx-auto hidden h-[84px] max-w-[1280px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-8 px-8 lg:grid">
-          <Link href="/" className="press">
+          <Link href="/catering" className="press">
             <BrandLogo className="h-12" />
           </Link>
           <nav className="flex min-w-0 items-center justify-center gap-8">

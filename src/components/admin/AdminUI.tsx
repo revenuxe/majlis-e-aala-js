@@ -4,6 +4,7 @@ import { ImagePlus, Loader2, X } from "lucide-react";
 import { cx } from "@/components/ui-kit";
 import { uploadImage } from "@/lib/admin";
 import { toast } from "sonner";
+import { useAdminStorageKey } from "./AdminWorkspace";
 
 export function Field({
   label,
@@ -146,13 +147,70 @@ export function Sheet({
   onClose,
   children,
   footer,
+  persistenceKey,
 }: {
   open: boolean;
   title: string;
   onClose: () => void;
   children: ReactNode;
   footer?: ReactNode;
+  persistenceKey?: string;
 }) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const storageKey = useAdminStorageKey(`sheet:${persistenceKey || title}`);
+  useEffect(() => {
+    const content = contentRef.current;
+    if (!open || !content || !storageKey) return;
+    const fields = () =>
+      Array.from(content.querySelectorAll<HTMLElement>("input,textarea,select,button"));
+    const remember = () => {
+      const focused = document.activeElement;
+      const index = fields().indexOf(focused as HTMLElement);
+      try {
+        const previous = JSON.parse(sessionStorage.getItem(storageKey) || "{}");
+        sessionStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            scroll: content.scrollTop,
+            index: index >= 0 ? index : previous.index,
+            caret:
+              focused instanceof HTMLInputElement || focused instanceof HTMLTextAreaElement
+                ? focused.selectionStart
+                : previous.caret,
+          }),
+        );
+      } catch {
+        /* Editing still works without storage. */
+      }
+    };
+    const frame = requestAnimationFrame(() => {
+      try {
+        const saved = JSON.parse(sessionStorage.getItem(storageKey) || "{}");
+        const field = fields()[saved.index];
+        field?.focus({ preventScroll: true });
+        if (
+          typeof saved.caret === "number" &&
+          (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement)
+        ) {
+          try {
+            field.setSelectionRange(saved.caret, saved.caret);
+          } catch {
+            /* Some input types have no text selection. */
+          }
+        }
+        content.scrollTop = saved.scroll || 0;
+      } catch {
+        /* Ignore damaged saved positions. */
+      }
+    });
+    for (const event of ["scroll", "focusin", "input", "keyup", "click"])
+      content.addEventListener(event, remember);
+    return () => {
+      cancelAnimationFrame(frame);
+      for (const event of ["scroll", "focusin", "input", "keyup", "click"])
+        content.removeEventListener(event, remember);
+    };
+  }, [open, storageKey]);
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -177,7 +235,9 @@ export function Sheet({
             <X className="h-5 w-5" />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">{children}</div>
+        <div ref={contentRef} className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
+          {children}
+        </div>
         {footer && <div className="border-t border-border bg-card px-5 py-4">{footer}</div>}
       </div>
     </div>

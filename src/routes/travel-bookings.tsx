@@ -42,7 +42,7 @@ export default function TravelBookings({ reference }: { reference?: string }) {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between gap-3 px-5 py-4 sm:px-8">
-          <Link href="/travel" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <BrandMark size={40} />
             <span>
               <span className="eyebrow block">Majlis E Aala</span>
@@ -60,7 +60,7 @@ export default function TravelBookings({ reference }: { reference?: string }) {
       </header>
       <main className="mx-auto max-w-[1000px] px-5 py-7 pb-32 sm:px-8 sm:py-10 sm:pb-32">
         <Link
-          href={reference ? "/travel/bookings" : "/travel"}
+          href={reference ? "/travel/bookings" : "/"}
           className="inline-flex min-h-11 items-center gap-2 text-[13px] text-muted-foreground"
         >
           <ArrowLeft size={16} />

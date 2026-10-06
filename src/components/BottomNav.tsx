@@ -6,7 +6,7 @@ import { usePlan } from "@/lib/plan-store";
 import { cx } from "./ui-kit";
 
 const items = [
-  { to: "/", label: "Home", icon: Home },
+  { to: "/catering", label: "Home", icon: Home },
   { to: "/packages", label: "Packages", icon: UtensilsCrossed },
   { to: "/orders", label: "Orders", icon: ClipboardList },
   { to: "/profile", label: "Profile", icon: User },
@@ -18,7 +18,7 @@ export function BottomNav() {
   const openBookingCount = bookings.filter((booking) => booking.status !== "cancelled").length;
 
   const link = (to: string, label: string, Icon: typeof Home) => {
-    const active = to === "/" ? path === "/" : path.startsWith(to);
+    const active = to === "/catering" ? path === "/catering" : path.startsWith(to);
     return (
       <Link
         key={to}
