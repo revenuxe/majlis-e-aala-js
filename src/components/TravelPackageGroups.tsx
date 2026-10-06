@@ -36,8 +36,6 @@ export function TravelPackageGroups({
   loading?: boolean;
 }) {
   const groups = travelPackageGroups(packages);
-  const destination =
-    packages[0]?.category === "domestic" || packages[0]?.category === "international";
   const active = groups.some((group) => group.id === value) ? value : "all";
   const items = [
     {
@@ -57,7 +55,7 @@ export function TravelPackageGroups({
     >
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-base font-semibold tracking-tight text-foreground">
-          {destination ? "Choose a destination" : "Package categories"}
+          Choose your journey
         </h2>
         <span className="rounded-full bg-surface px-2.5 py-1 text-xs tabular-nums text-muted-foreground">
           {loading ? "Loading…" : `${packages.length} packages`}
@@ -77,6 +75,7 @@ export function TravelPackageGroups({
               type="button"
               aria-pressed={isActive}
               onClick={() => onChange(group.id)}
+              style={{ width: 192, minWidth: 192, minHeight: 222, flex: "0 0 192px" }}
               className={cx(
                 "group relative min-h-[222px] w-48 min-w-48 flex-none snap-start overflow-hidden rounded-[22px] border-2 bg-primary text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-card motion-reduce:transition-none",
                 isActive ? "border-gold shadow-sm" : "border-gold/35 hover:border-gold",
