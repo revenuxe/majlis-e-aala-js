@@ -1,8 +1,9 @@
 ﻿"use client";
 import { useId, useState, type ReactNode } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown, Heart } from "lucide-react";
 import { cx } from "@/components/ui-kit";
 import { travelMoney, type TravelPackage } from "@/lib/travel-booking";
+import { useSavedTravelPackages } from "@/components/TravelSavedPackages";
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <details className="group/section border-b border-border last:border-0">
@@ -25,6 +26,7 @@ export function TravelPackageChoice({
   children = 0,
   seniors = 0,
   onSelect,
+  selectLabel,
 }: {
   pkg: TravelPackage;
   selected?: boolean;
@@ -32,8 +34,11 @@ export function TravelPackageChoice({
   children?: number;
   seniors?: number;
   onSelect: () => void;
+  selectLabel?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const { items, savePackage } = useSavedTravelPackages();
+  const isSaved = items.some((item) => item.packageId === pkg.id);
   const detailsId = useId();
   const price = pkg.pricing_mode === "on_request" ? null : pkg.price_per_adult;
   return (
@@ -45,6 +50,12 @@ export function TravelPackageChoice({
     >
       <div className="p-5 sm:p-6">
         <h3 className="font-display text-[32px] leading-tight">{pkg.name}</h3>
+        {isSaved && (
+          <span className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-gold">
+            <Heart size={14} className="fill-gold/20" />
+            Saved
+          </span>
+        )}
         <button
           type="button"
           aria-expanded={expanded}
@@ -162,10 +173,18 @@ export function TravelPackageChoice({
         <button
           type="button"
           aria-pressed={selected}
-          onClick={onSelect}
+          onClick={() => {
+            savePackage({
+              packageId: pkg.id,
+              adults,
+              children,
+              seniors: Math.min(seniors, adults),
+            });
+            onSelect();
+          }}
           className="flex min-h-14 w-full items-center justify-center gap-2 rounded-[16px] bg-primary px-4 text-[15px] font-semibold text-white"
         >
-          {selected ? "Selected package" : "Select package"}
+          {selectLabel || (selected ? "Selected package" : "Select package")}
           {selected && <Check size={18} />}
         </button>
       </div>

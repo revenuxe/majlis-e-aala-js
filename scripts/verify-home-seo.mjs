@@ -102,7 +102,7 @@ for (const path of sitemapPaths) {
 assert.equal((await fetch(base + "/travel/packages/not-a-category")).status, 404);
 assert(robots.includes("Sitemap:"));
 assert(robots.includes("Disallow: /admin/"));
-for (const path of ["/travel/bookings", "/travel/plan"]) {
+for (const path of ["/travel/bookings", "/travel/plan", "/travel/profile", "/travel/saved"]) {
   assert(
     metadata(await page(path)).tags.some(
       (a) => a.name === "robots" && a.content.includes("noindex"),

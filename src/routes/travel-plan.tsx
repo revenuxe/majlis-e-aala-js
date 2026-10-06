@@ -12,6 +12,7 @@ import { TravelCatalogueControls } from "@/components/TravelCatalogueControls";
 import { TravelPackageChoice } from "@/components/TravelPackageChoice";
 import { TravelPackageGroups } from "@/components/TravelPackageGroups";
 import { TravelJourneyCards } from "@/components/TravelJourneyCards";
+import { TravelSavedPackagesLink } from "@/components/TravelSavedPackages";
 import { BookingAuth } from "@/components/BookingAuth";
 import { saveTravelProfile, travelProfileFromUser } from "@/lib/travel-profile";
 import { Button, QuantitySelector, cx } from "@/components/ui-kit";
@@ -562,12 +563,15 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
           <Link href="/" aria-label="Travel homepage">
             <BrandMark size={42} />
           </Link>
-          <span
-            className="max-w-[45%] truncate text-[12px] text-muted-foreground"
-            title={customer?.email}
-          >
-            {customer ? customer.email : "Sign-in optional"}
-          </span>
+          <div className="flex min-w-0 max-w-[45%] items-center gap-2">
+            <span
+              className="hidden truncate text-[12px] text-muted-foreground sm:block"
+              title={customer?.email}
+            >
+              {customer ? customer.email : "Sign-in optional"}
+            </span>
+            <TravelSavedPackagesLink />
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-[1000px] px-5 py-4 sm:py-6">

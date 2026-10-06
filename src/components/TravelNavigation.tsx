@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ClipboardList, FileCheck2, Globe2, Home, Plane } from "lucide-react";
+import { ClipboardList, UserRound, Globe2, Home, Plane } from "lucide-react";
 export function TravelNavigation() {
   const pathname = usePathname();
   return (
@@ -14,12 +14,8 @@ export function TravelNavigation() {
           { href: "/", label: "Home", icon: Home },
           { href: "/travel/packages", label: "Packages", icon: Globe2 },
           { href: "/travel/plan", label: "Plan", icon: Plane },
-          {
-            href: pathname === "/" ? "#pilgrim-guide" : "/#pilgrim-guide",
-            label: "Guide",
-            icon: FileCheck2,
-          },
           { href: "/travel/bookings", label: "Bookings", icon: ClipboardList },
+          { href: "/travel/profile", label: "Profile", icon: UserRound },
         ].map(({ href, label, icon: Icon }) => (
           <Link
             key={label}

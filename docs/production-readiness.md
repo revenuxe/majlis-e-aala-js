@@ -23,6 +23,14 @@ Metadata follows the [Next.js metadata API](https://nextjs.org/docs/app/api-refe
 - Tested OAuth resume, saved profile prefill, profile-sync failure isolation, account history, tracking, cancellation rules and safe callback destinations with mocked responses.
 - Added route loading placeholders and a recoverable application error boundary.
 
+## Travel profile and saved packages
+
+- Travel navigation now links to Home, Packages, Plan, Bookings and Profile. The travel profile uses the travel layout and only shows travel account details and booking history.
+- Selecting a package automatically saves its ID and traveller counts on this device. The header heart links to saved packages; selections survive client navigation and page reloads, and can be resumed or removed.
+- Saved entries are validated, deduplicated and limited to 50. Package prices and availability come from the current catalogue, rather than stored price snapshots. Contact details are not stored in the shortlist.
+- Verified auto-save, count retention, child-age restoration on resume, duplicate selections, durable removal, malformed storage recovery, guest sign-in, mocked contact-profile saves, sign-out, private-page metadata and 320px/390px/1280px layouts with `scripts/verify-travel-saved.mjs`.
+- Saved packages are device-local; this change does not add cross-device account synchronisation.
+
 ## Limits of verification
 
 Live booking writes, live OAuth provider configuration, deployed Core Web Vitals and search-engine indexing were not verified. Booking/authentication mutations were mocked; catalogue reads used the public API. Search ranking and production uptime cannot be established by local tests.

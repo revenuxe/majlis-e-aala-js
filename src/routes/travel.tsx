@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { TravelJourneyCards } from "@/components/TravelJourneyCards";
 import { TravelNavigation } from "@/components/TravelNavigation";
+import { TravelSavedPackagesLink } from "@/components/TravelSavedPackages";
 import { BrandLogo, BrandMark } from "@/components/Brand";
 import { Button, QuantitySelector, SectionHeader, cx } from "@/components/ui-kit";
 import { useTravelHero } from "@/hooks/use-travel-hero";
@@ -135,19 +136,19 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
           <Link
             href="/"
             aria-label="Majlise Aala Tours and Travels home"
-            className="flex items-center gap-3"
+            className="flex min-w-0 items-center gap-3"
           >
             <span className="lg:hidden">
               <BrandMark size={46} />
             </span>
-            <span>
+            <span className="min-w-0">
               <span className="hidden lg:block">
                 <BrandLogo className="h-9" />
               </span>
               <span className="block text-[11px] font-semibold uppercase tracking-[.16em] lg:mt-1.5 lg:text-[9px]">
                 Tours & Travels
               </span>
-              <span className="text-[12px] text-muted-foreground lg:hidden">
+              <span className="block truncate text-[12px] text-muted-foreground lg:hidden">
                 Journeys with meaning
               </span>
             </span>
@@ -160,8 +161,11 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
             <a href="#explore">Journeys</a>
             <a href="#pilgrim-guide">Pilgrim guide</a>
             <a href="#travel-faqs">FAQs</a>
+            <Link href="/travel/bookings">Bookings</Link>
+            <Link href="/travel/profile">Profile</Link>
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
+            <TravelSavedPackagesLink />
             <div className="hidden sm:block">
               <a href="/travel/plan" className={anchorClass}>
                 PLAN YOUR TRIP <ArrowUpRight className="h-4 w-4" />
@@ -190,6 +194,8 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
               ["Browse packages", "#explore"],
               ["Pilgrim guide", "#pilgrim-guide"],
               ["Plan your trip", "/travel/plan"],
+              ["Bookings", "/travel/bookings"],
+              ["Profile", "/travel/profile"],
               ["FAQs", "#travel-faqs"],
             ].map(([label, href]) => (
               <a

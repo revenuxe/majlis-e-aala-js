@@ -57,7 +57,9 @@ try {
   await call("Runtime.enable");
   await call("Network.enable");
   await call("Network.clearBrowserCookies");
-  await evaluate("localStorage.removeItem('ma-travel-draft-v1');sessionStorage.clear()");
+  await evaluate(
+    `localStorage.removeItem('ma-travel-draft-v1');localStorage.removeItem('majlise-aala-travel-profile:${userId}');sessionStorage.clear()`,
+  );
   hook = await call("Page.addScriptToEvaluateOnNewDocument", {
     source: `
 window.__authTestBoot=crypto.randomUUID();window.__authPosts=[];window.__bookings=[];window.__trackingStatus='quoted';

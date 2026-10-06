@@ -7,6 +7,7 @@ import { BrandMark } from "@/components/Brand";
 import { BookingAuth } from "@/components/BookingAuth";
 import { TravelBookingHistory } from "@/components/TravelBookingHistory";
 import { TravelNavigation } from "@/components/TravelNavigation";
+import { TravelSavedPackagesLink } from "@/components/TravelSavedPackages";
 import { supabase } from "@/integrations/supabase/client";
 export default function TravelBookings({ reference }: { reference?: string }) {
   const [user, setUser] = useState<User | null>(null);
@@ -42,20 +43,24 @@ export default function TravelBookings({ reference }: { reference?: string }) {
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between gap-3 px-5 py-4 sm:px-8">
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex min-w-0 items-center gap-3">
             <BrandMark size={40} />
-            <span>
+            <span className="min-w-0">
               <span className="eyebrow block">Majlis E Aala</span>
               <span className="block text-sm font-semibold">Tours & Travels</span>
             </span>
           </Link>
-          <Link
-            href="/travel/plan"
-            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-border bg-surface px-3.5 text-xs font-semibold"
-          >
-            <Plane size={17} />
-            New trip
-          </Link>
+          <div className="flex shrink-0 items-center gap-2">
+            <TravelSavedPackagesLink />
+            <Link
+              href="/travel/plan"
+              aria-label="Plan a new trip"
+              className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-border bg-surface px-3.5 text-xs font-semibold"
+            >
+              <Plane size={17} />
+              <span className="hidden sm:inline">New trip</span>
+            </Link>
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-[1000px] px-5 py-5 pb-12 sm:px-8 sm:py-8">

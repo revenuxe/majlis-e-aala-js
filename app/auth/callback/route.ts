@@ -1,7 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServerClient } from "@/integrations/supabase/server";
 
-const allowedReturns = new Set(["/plan", "/travel/plan", "/profile", "/travel/bookings"]);
+const allowedReturns = new Set([
+  "/plan",
+  "/travel/plan",
+  "/profile",
+  "/travel/bookings",
+  "/travel/profile",
+]);
 export async function GET(request: NextRequest) {
   let desired = new URL("/profile", request.nextUrl.origin);
   try {

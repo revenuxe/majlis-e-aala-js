@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight, Search, SlidersHorizontal, X } from "lucide-react";
 import { BrandLogo } from "@/components/Brand";
 import { TravelNavigation } from "@/components/TravelNavigation";
+import { TravelSavedPackagesLink } from "@/components/TravelSavedPackages";
 import { TravelCountBanner } from "@/components/TravelCountBanner";
 import { TravelPackageChoice } from "@/components/TravelPackageChoice";
 import { TravelPackageGroups } from "@/components/TravelPackageGroups";
@@ -132,12 +133,15 @@ export default function TravelPackages({
     <div className="min-h-screen bg-background pb-32 lg:pb-12">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-[1200px] items-center justify-between gap-3 px-5 py-5">
-          <Link href="/">
-            <BrandLogo className="h-8" />
+          <Link href="/" className="min-w-0">
+            <BrandLogo className="h-8 max-w-full" />
           </Link>
-          <Link href="/travel/bookings" className="text-sm font-semibold">
-            My bookings
-          </Link>
+          <div className="flex shrink-0 items-center gap-3">
+            <TravelSavedPackagesLink />
+            <Link href="/travel/bookings" className="hidden text-sm font-semibold sm:block">
+              My bookings
+            </Link>
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-[1200px] px-5 py-4 sm:px-8 sm:py-6">

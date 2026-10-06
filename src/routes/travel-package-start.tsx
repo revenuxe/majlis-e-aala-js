@@ -1,5 +1,6 @@
 "use client";
 import { TravelNavigation } from "@/components/TravelNavigation";
+import { TravelSavedPackagesLink } from "@/components/TravelSavedPackages";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -39,13 +40,20 @@ export default function TravelPackageStart() {
     <div className="min-h-screen bg-background pb-32 lg:pb-12">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between px-5 py-5">
-          <Link href="/">
-            <BrandLogo className="h-8" />
+          <Link href="/" className="min-w-0">
+            <BrandLogo className="h-8 max-w-full" />
           </Link>
-          <Link href="/" className="flex min-h-11 items-center gap-2 text-sm">
-            <ArrowLeft size={16} />
-            Travel home
-          </Link>
+          <div className="flex shrink-0 items-center gap-2">
+            <TravelSavedPackagesLink />
+            <Link
+              href="/"
+              aria-label="Travel home"
+              className="hidden min-h-11 items-center gap-2 text-sm sm:flex"
+            >
+              <ArrowLeft size={16} />
+              Travel home
+            </Link>
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-[1100px] px-5 py-4 sm:px-8 sm:py-6">
