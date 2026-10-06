@@ -69,12 +69,12 @@ export function TravelPackageChoice({
         {pkg.inclusions.length > 0 && (
           <ul
             aria-label="Key package inclusions"
-            className="mt-3 divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface/40 text-[12px] leading-relaxed"
+            className="mt-3 divide-y divide-border/60 rounded-xl border border-border bg-surface/30 px-3 text-[11px] leading-snug"
           >
-            {pkg.inclusions.slice(0, 3).map((item, index) => (
-              <li key={index} className="flex min-h-10 items-start gap-2 px-3 py-2">
-                <Check size={14} className="mt-0.5 shrink-0 text-gold" aria-hidden="true" />
-                <span>{item}</span>
+            {pkg.inclusions.slice(0, 4).map((item, index) => (
+              <li key={index} className="flex min-w-0 items-start gap-2 py-2">
+                <Check size={12} className="mt-0.5 shrink-0 text-gold" aria-hidden="true" />
+                <span className="min-w-0 break-words">{item}</span>
               </li>
             ))}
           </ul>
