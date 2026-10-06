@@ -107,17 +107,17 @@ try {
   assert((await body()).includes("tell us each child’s age"), "Child ages required");
   await call("Page.reload");
   await until(async () => (await body()).includes("Step 1 of 7"), "Incomplete draft must restore");
-  await until(async () => await evaluate("Boolean(document.querySelector('main select'))"), "Child age control restored");
+  await until(
+    async () => await evaluate("Boolean(document.querySelector('main select'))"),
+    "Child age control restored",
+  );
   await setInput("main select", "7", "HTMLSelectElement");
   await evaluate("document.querySelector('input[type=checkbox]').click()");
   await pause();
   await click("CONTINUE");
   await click("Umrah");
   await click("CONTINUE");
-  await until(
-    async () => (await body()).includes("Umrah Economy"),
-    "Live packages must load",
-  );
+  await until(async () => (await body()).includes("Umrah Economy"), "Live packages must load");
   await click("Select package");
   await click("CONTINUE");
   await setInput("input[autocomplete='address-level2']", "Hyderabad");
@@ -125,12 +125,19 @@ try {
   assert((await body()).includes("Step 5 of 7"));
   assert((await body()).includes("Any special requests?"));
   assert.equal(await evaluate("document.querySelector('details:has(select)').open"), false);
-  assert.equal(await evaluate("JSON.parse(localStorage.getItem('ma-travel-draft-v1')).draft.room"), "package");
-  await evaluate("[...document.querySelectorAll('label')].find(l=>l.innerText.includes('Extra breaks or slower walking')).querySelector('input').click()");
+  assert.equal(
+    await evaluate("JSON.parse(localStorage.getItem('ma-travel-draft-v1')).draft.room"),
+    "package",
+  );
+  await evaluate(
+    "[...document.querySelectorAll('label')].find(l=>l.innerText.includes('Extra breaks or slower walking')).querySelector('input').click()",
+  );
   await pause();
   await evaluate("document.querySelector('details:has(select) summary').click()");
   await setInput("details select", "twin", "HTMLSelectElement");
-  await evaluate("[...document.querySelectorAll('label')].find(l=>l.innerText.includes('Mobility assistance')).querySelector('input').click()");
+  await evaluate(
+    "[...document.querySelectorAll('label')].find(l=>l.innerText.includes('Mobility assistance')).querySelector('input').click()",
+  );
   await pause();
   await click("CONTINUE");
   assert((await body()).includes("Step 6 of 7"));
@@ -166,7 +173,9 @@ try {
       `Review must fit ${width}px`,
     );
   }
-  await click("SEND TRAVEL REQUEST");
+  await evaluate(
+    "(()=>{const button=Array.from(document.querySelectorAll('button')).find(b=>b.innerText.includes('SEND TRAVEL REQUEST'));button.click();button.click()})()",
+  );
   await until(
     async () => (await body()).includes("save your request just now"),
     "Failed submission must show an error",
@@ -175,6 +184,11 @@ try {
     await evaluate("document.querySelector('input[autocomplete=name]').value"),
     "Browser Test Traveller",
     "Failure must preserve contact fields",
+  );
+  assert.equal(
+    await evaluate("window.__travelPosts.length"),
+    1,
+    "Double click must send one request",
   );
   await click("SEND TRAVEL REQUEST");
   await until(

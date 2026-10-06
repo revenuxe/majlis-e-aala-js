@@ -17,7 +17,7 @@ export default async function BookingConfirmedPage({
         <CheckCircle2 className="mx-auto h-12 w-12 text-gold" strokeWidth={1.5} />
         <p className="eyebrow mt-6">Booking request received</p>
         <h1 className="mt-3 font-display text-[36px] leading-tight sm:text-[46px]">
-          Thank you for choosing Majlise Aala.
+          Thank you for choosing Majlis E Aala.
         </h1>
         <p className="mx-auto mt-4 max-w-lg text-[15px] leading-relaxed text-muted-foreground">
           Our catering team will review your request and contact you shortly to confirm the details.

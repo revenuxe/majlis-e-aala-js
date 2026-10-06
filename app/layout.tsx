@@ -6,12 +6,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Tours & Travels | Majlise Aala",
+    default: "Tours & Travels | Majlis E Aala",
     template: "%s | Majlis E Aala",
   },
-  description: "Explore journeys, holidays and catering services with Majlise Aala.",
+  description: "Explore journeys, holidays and catering services with Majlis E Aala.",
   icons: { icon: "/favicon.ico", shortcut: "/favicon.ico" },
-  openGraph: { type: "website", siteName: "Majlise Aala", locale: "en_IN" },
+  openGraph: { type: "website", siteName: "Majlis E Aala", locale: "en_IN" },
   twitter: { card: "summary_large_image" },
 };
 

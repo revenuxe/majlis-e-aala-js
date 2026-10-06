@@ -47,7 +47,7 @@ export function SiteFooter() {
               <Link href="/plan">Plan Your Catering</Link>
               <Link href="/blog">Blog & Planning Guides</Link>
               <Link href="/my-menu">Your Catering Plan</Link>
-              <Link href="/travel">Tours & Travels</Link>
+              <Link href="/">Tours & Travels</Link>
             </div>
           </div>
           <div>

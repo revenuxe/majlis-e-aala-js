@@ -368,7 +368,7 @@ export default function TravelPackages({
               children={children}
               seniors={seniorCount}
               onSelect={() =>
-                window.location.assign(
+                router.push(
                   `/travel/plan?category=${category}&package=${pkg.id}&travellers=${adults}&children=${children}&seniors=${seniorCount}`,
                 )
               }

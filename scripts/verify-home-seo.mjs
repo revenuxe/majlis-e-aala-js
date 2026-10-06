@@ -35,7 +35,7 @@ const [home, catering, sitemap, robots] = await Promise.all([
   page("/robots.txt"),
 ]);
 const root = metadata(home);
-assert.equal(root.title, "Umrah, Hajj & Holiday Travel | Majlise Aala");
+assert.equal(root.title, "Umrah, Hajj & Holiday Travel | Majlis E Aala");
 assert.equal(root.canonical.length, 1);
 const canonical = new URL(root.canonical[0].href);
 assert.equal(canonical.pathname, "/");
@@ -54,8 +54,17 @@ for (const category of ["umrah", "hajj", "international", "domestic"]) {
   const path = `/travel/packages/${category}`;
   assert(home.includes(`href="${path}"`), "Crawlable category link " + category);
   const html = await page(path);
-  assert.equal(new URL(metadata(html).canonical[0].href).pathname, path);
+  const categoryMeta = metadata(html);
+  assert.equal(new URL(categoryMeta.canonical[0].href).pathname, path);
+  assert(categoryMeta.tags.some((tag) => tag.property === "og:image"));
+  assert(categoryMeta.tags.some((tag) => tag.name === "twitter:image"));
+  assert(
+    categoryMeta.schemas.some((schema) =>
+      schema["@graph"]?.some((node) => node["@type"] === "BreadcrumbList"),
+    ),
+  );
   assert(html.includes("<h1"));
+  assert(html.includes("<article"), `${path}: package cards must be server-rendered`);
 }
 const cateringMeta = metadata(catering);
 assert.equal(new URL(cateringMeta.canonical[0].href).pathname, "/catering");
@@ -75,6 +84,22 @@ assert(sitemapPaths.includes("/catering"));
 assert(!sitemapPaths.includes("/travel"));
 assert(!sitemap.includes("<lastmod>"));
 assert(!sitemapPaths.some((p) => p.includes("bookings") || p.startsWith("/admin")));
+for (const path of sitemapPaths) {
+  const html = await page(path);
+  const meta = metadata(html);
+  assert.equal((meta.title.match(/Majlis E Aala/g) || []).length, 1, `${path}: brand appears once`);
+  assert.equal(meta.canonical.length, 1, `${path}: one canonical`);
+  assert.equal(new URL(meta.canonical[0].href).pathname, path, `${path}: canonical path`);
+  assert(
+    meta.tags.some((tag) => tag.name === "description" && tag.content?.length > 20),
+    `${path}: description`,
+  );
+  assert(
+    !meta.tags.some((tag) => tag.name === "robots" && tag.content?.includes("noindex")),
+    `${path}: indexable`,
+  );
+}
+assert.equal((await fetch(base + "/travel/packages/not-a-category")).status, 404);
 assert(robots.includes("Sitemap:"));
 assert(robots.includes("Disallow: /admin/"));
 for (const path of ["/travel/bookings", "/travel/plan"]) {
@@ -86,5 +111,5 @@ for (const path of ["/travel/bookings", "/travel/plan"]) {
   );
 }
 console.log(
-  "PASS: travel homepage HTML, metadata, canonical and social URLs, structured data, category links, catering preservation, permanent redirect, sitemap and private-page indexing rules.",
+  "PASS: all sitemap pages return 200 with one branded title, description and canonical; travel social previews, structured data, category links, invalid-category 404, legacy redirect and private-page noindex.",
 );

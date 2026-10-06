@@ -96,8 +96,9 @@ try {
   assert(!(await body()).includes("Travel home"), "Duplicate back link removed");
   await click("Edit journey or travellers");
   await until(
-    async () => (await body()).includes("4 travellers") &&
-      await evaluate("document.querySelectorAll('main button img').length===4"),
+    async () =>
+      (await body()).includes("4 travellers") &&
+      (await evaluate("document.querySelectorAll('main button img').length===4")),
     "Card back returns to journey selection with counts preserved",
   );
   await click("Umrah");

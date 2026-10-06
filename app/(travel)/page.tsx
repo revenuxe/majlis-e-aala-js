@@ -3,9 +3,9 @@ import TravelHome from "@/routes/travel";
 import { siteUrl } from "@/lib/site-url";
 import { getTravelHomeContent } from "@/lib/travel-home-content";
 
-const title = "Umrah, Hajj & Holiday Travel | Majlise Aala";
+const title = "Umrah, Hajj & Holiday Travel | Majlis E Aala";
 const description =
-  "Plan Umrah journeys, Hajj preparation, international trips and domestic holidays with Majlise Aala Tours & Travels. Request a personalised travel quotation.";
+  "Plan Umrah journeys, Hajj preparation, international trips and domestic holidays with Majlis E Aala Tours & Travels. Request a personalised travel quotation.";
 export const metadata: Metadata = {
   title: { absolute: title },
   description,
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
-    siteName: "Majlise Aala Tours & Travels",
+    siteName: "Majlis E Aala Tours & Travels",
     title,
     description,
     url: "/",
@@ -29,7 +29,7 @@ export default async function Page() {
       {
         "@type": "TravelAgency",
         "@id": `${siteUrl}/#travel-agency`,
-        name: "Majlise Aala Tours & Travels",
+        name: "Majlis E Aala Tours & Travels",
         url: siteUrl,
         logo: `${siteUrl}/brand-logo.webp`,
         image: `${siteUrl}/travel/makkah.jpg`,
@@ -40,8 +40,8 @@ export default async function Page() {
         "@type": "WebSite",
         "@id": `${siteUrl}/#website`,
         url: siteUrl,
-        name: "Majlise Aala",
-        alternateName: "Majlis E Aala",
+        name: "Majlis E Aala",
+        alternateName: "Majlise Aala",
         publisher: { "@id": `${siteUrl}/#travel-agency` },
         inLanguage: "en-IN",
       },

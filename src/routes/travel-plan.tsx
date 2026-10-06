@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, MapPin, Plane, Users } from "lucide-react";
 import { z } from "zod";
 import type { User } from "@supabase/supabase-js";
@@ -23,6 +23,7 @@ import {
   initialCatalogueFilter,
   assistanceOptions,
   initialTravelDraft,
+  type TravelPackage,
   travelDate,
   travelMoney,
   type TravelDraft,
@@ -131,13 +132,14 @@ function Choice({
   );
 }
 
-export default function TravelPlan() {
+export default function TravelPlan({ initialPackages }: { initialPackages?: TravelPackage[] }) {
   const router = useRouter();
   const [draft, setDraft] = useState<TravelDraft>(initialTravelDraft);
   const [step, setStep] = useState(0);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const submitting = useRef(false);
   const [reference, setReference] = useState<string | null>(null);
   const [requestToken, setRequestToken] = useState("");
   const [customer, setCustomer] = useState<User | null>(null);
@@ -155,7 +157,7 @@ export default function TravelPlan() {
       setDraft((d) => ({ ...d, email: d.email || user.email || "" }));
     }
   };
-  const catalog = useTravelCatalog();
+  const catalog = useTravelCatalog(initialPackages);
   const [packageFilter, setPackageFilter] = useState(initialCatalogueFilter);
   const [packageLimit, setPackageLimit] = useState(6);
   const chosenPackage = catalog.packages.find((p) => p.id === draft.packageId);
@@ -197,7 +199,10 @@ export default function TravelPlan() {
       const parsed = savedDraftSchema.safeParse(saved?.draft);
       if (parsed.success) {
         restored = { ...restored, ...parsed.data };
-        const oldStep = Math.max(0, Math.min(REVIEW_STEP, Number(saved.step) || 0));
+        const storedStep = Number(saved.step);
+        const oldStep = Number.isInteger(storedStep)
+          ? Math.max(0, Math.min(REVIEW_STEP, storedStep))
+          : 0;
         setStep(saved.flowVersion === 2 ? oldStep : [1, 3, 0, 2, 4, 5, 6][oldStep]!);
       }
     } catch {
@@ -237,7 +242,6 @@ export default function TravelPlan() {
     ) {
       restored.adults = requestedTravellers;
       restored.children = 0;
-      restored.childAges = [];
     }
     const requestedChildren = Number(params.get("children"));
     if (
@@ -253,6 +257,7 @@ export default function TravelPlan() {
         (_, index) => restored.childAges[index] ?? -1,
       );
     }
+    if (restored.children === 0) restored.childAges = [];
     const requestedSeniors = Number(params.get("seniors"));
     if (
       params.has("seniors") &&
@@ -374,6 +379,10 @@ export default function TravelPlan() {
       return "Check your group size and tell us each child’s age.";
     if (index === 2) {
       if (catalog.loading) return "We’re loading the latest packages. Please wait a moment.";
+      if (draft.packageId && catalog.error)
+        return "Please refresh the packages before continuing with your selection.";
+      if (draft.departureId && catalog.departuresError)
+        return "Please refresh departure dates before continuing with your selection.";
       if (draft.packageId && (!chosenPackage || chosenPackage.category !== draft.category))
         return "This package is no longer available. Choose another or a custom journey.";
       if (
@@ -405,7 +414,7 @@ export default function TravelPlan() {
   function back() {
     if (busy) return;
     if (step === 0) {
-      router.push("/travel");
+      router.push("/");
       return;
     }
     setStep(step === REVIEW_STEP && customer ? AUTH_STEP - 1 : step - 1);
@@ -413,7 +422,7 @@ export default function TravelPlan() {
     window.scrollTo(0, 0);
   }
   async function next() {
-    if (busy) return;
+    if (busy || submitting.current) return;
     const problem = stepError(step);
     if (problem) {
       showError(problem);
@@ -443,6 +452,7 @@ export default function TravelPlan() {
         return;
       }
     }
+    submitting.current = true;
     setBusy(true);
     setError(null);
     try {
@@ -495,6 +505,7 @@ export default function TravelPlan() {
         "We couldn’t save your request just now. Your choices are still here. Please try again or call our team.",
       );
     } finally {
+      submitting.current = false;
       setBusy(false);
     }
   }
@@ -805,6 +816,14 @@ export default function TravelPlan() {
                   <p className="text-[14px]">{catalog.error}</p>
                   <Button className="mt-3" variant="outline" onClick={() => void catalog.reload()}>
                     Retry
+                  </Button>
+                </div>
+              )}
+              {catalog.departuresError && (
+                <div role="status" className="rounded-xl border border-border bg-card p-4 text-sm">
+                  <p>{catalog.departuresError}</p>
+                  <Button className="mt-3" variant="outline" onClick={() => void catalog.reload()}>
+                    Retry departure dates
                   </Button>
                 </div>
               )}
