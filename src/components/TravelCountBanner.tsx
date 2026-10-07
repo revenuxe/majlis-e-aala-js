@@ -1,5 +1,6 @@
 "use client";
 import { TravelSeniorCount } from "@/components/TravelSeniorCount";
+import { TravelChildAges } from "@/components/TravelChildAges";
 import { QuantitySelector } from "@/components/ui-kit";
 import type { TravelCategory } from "@/lib/travel";
 import { travelCategories } from "@/lib/travel";
@@ -16,6 +17,8 @@ export function TravelCountBanner({
   onAdults,
   onChildren,
   compact = false,
+  childAges,
+  onChildAge,
 }: {
   category: TravelCategory | "";
   adults: number;
@@ -28,6 +31,8 @@ export function TravelCountBanner({
   onAdults?: (value: number) => void;
   onChildren?: (value: number) => void;
   compact?: boolean;
+  childAges?: number[];
+  onChildAge?: (index: number, age: number) => void;
 }) {
   const journey = travelCategories.find((item) => item.id === category);
   const seniorCount = Math.min(seniors, adults);
@@ -124,6 +129,9 @@ export function TravelCountBanner({
                   suffix="Children"
                   onChange={(value) => onChildren(Math.max(0, Math.min(20, 100 - adults, value)))}
                 />
+                {childAges && onChildAge && (
+                  <TravelChildAges ages={childAges} onChange={onChildAge} />
+                )}
               </div>
               {onSeniors && (
                 <div className="sm:col-span-2">

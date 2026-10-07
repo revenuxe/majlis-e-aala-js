@@ -36,6 +36,7 @@ export function useTravelTravellers() {
   }
 
   return {
+    ready,
     ...counts,
     childAges: counts.childAges || [],
     setChildAge: (index: number, age: number) =>

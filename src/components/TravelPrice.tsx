@@ -7,10 +7,12 @@ type PricePackage = Pick<
 export function TravelPrice({
   pkg,
   adults,
+  childAges = [],
   compact = false,
 }: {
   pkg: PricePackage;
   adults?: number | undefined;
+  childAges?: number[];
   compact?: boolean;
 }) {
   const price = pkg.pricing_mode === "on_request" ? null : pkg.price_per_adult;
@@ -38,6 +40,25 @@ export function TravelPrice({
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
             Starting estimate at the displayed sharing basis. Children, room changes and extras are
             quoted separately.
+          </p>
+        </div>
+      )}
+      {childAges.length > 0 && (
+        <div className="mt-3 border-t border-border pt-3">
+          <p className="text-sm font-semibold">
+            {childAges.length} {childAges.length === 1 ? "child" : "children"} · quoted separately
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+            Ages at travel:{" "}
+            {childAges
+              .map((age) =>
+                age < 0
+                  ? "Not provided"
+                  : age === 0
+                    ? "Under 1 year"
+                    : `${age} ${age === 1 ? "year" : "years"}`,
+              )
+              .join(", ")}
           </p>
         </div>
       )}

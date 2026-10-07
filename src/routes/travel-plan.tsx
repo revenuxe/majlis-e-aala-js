@@ -318,9 +318,11 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
       restored.departureId = null;
       setStep(0);
     }
+    const applyTravellerSelection =
+      !hasSavedDraft || newSelection || params.get("datesSelected") === "1";
     const requestedTravellers = Number(params.get("travellers"));
     if (
-      (!hasSavedDraft || newSelection) &&
+      applyTravellerSelection &&
       requestedTravellers >= 1 &&
       requestedTravellers <= 100 &&
       Number.isInteger(requestedTravellers)
@@ -330,7 +332,7 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
     }
     const requestedChildren = Number(params.get("children"));
     if (
-      (!hasSavedDraft || newSelection) &&
+      applyTravellerSelection &&
       params.has("children") &&
       Number.isInteger(requestedChildren) &&
       requestedChildren >= 0 &&
@@ -349,7 +351,7 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
     );
     const requestedSeniors = Number(params.get("seniors"));
     if (
-      (!hasSavedDraft || newSelection) &&
+      applyTravellerSelection &&
       params.has("seniors") &&
       Number.isInteger(requestedSeniors) &&
       requestedSeniors >= 0 &&
@@ -366,7 +368,7 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
       requestedStep <= REVIEW_STEP
     )
       setStep(savedFlowVersion === 3 ? [0, 3, 1, 2, 4, 5, 6][requestedStep]! : requestedStep);
-    if (params.has("childAges") && (!hasSavedDraft || newSelection)) {
+    if (params.has("childAges") && applyTravellerSelection) {
       const ages = (params.get("childAges") || "").split(",").map(Number);
       restored.childAges = Array.from({ length: restored.children }, (_, i) =>
         Number.isInteger(ages[i]) && ages[i]! >= 0 && ages[i]! <= 17 ? ages[i]! : -1,
@@ -1376,6 +1378,7 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
                     <TravelPrice
                       pkg={{ ...chosenPackage, price_per_adult: adultPrice }}
                       adults={draft.adults}
+                      childAges={draft.childAges}
                     />
                   </div>
                 )}

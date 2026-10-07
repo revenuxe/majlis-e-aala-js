@@ -4,6 +4,7 @@ import { TravelBatchSummary } from "@/components/TravelBatchSummary";
 import { TravelChildAges } from "@/components/TravelChildAges";
 import { TravelFlowProgress } from "@/components/TravelFlowProgress";
 import Link from "next/link";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BrandLogo } from "@/components/Brand";
@@ -17,7 +18,21 @@ const selectClass =
 export default function TravelDates() {
   const router = useRouter();
   const catalog = useTravelCatalog();
-  const { adults, children, seniors, childAges, setChildAge } = useTravelTravellers();
+  const {
+    adults,
+    children,
+    seniors,
+    childAges,
+    setChildAge,
+    ready: travellersReady,
+  } = useTravelTravellers();
+  const [showChildAges, setShowChildAges] = useState(false);
+  useEffect(() => {
+    if (!showChildAges) return;
+    const field = document.querySelector<HTMLSelectElement>("#missing-child-ages select");
+    field?.focus({ preventScroll: true });
+    field?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [showChildAges]);
   const [category, setCategory] = useState<TravelCategory | "">("");
   const [packageId, setPackageId] = useState("");
   const [flightId, setFlightId] = useState("");
@@ -63,16 +78,29 @@ export default function TravelDates() {
     .sort((a, b) => a.start_date.localeCompare(b.start_date) || a.id.localeCompare(b.id));
   const nextBatch = batches[0];
   const selectedBatch = batches.find((batch) => batch.id === batchId);
+  const resolvingDates =
+    !ready ||
+    !travellersReady ||
+    catalog.loading ||
+    (!datesEdited && !catalog.departuresError && !!nextBatch && batchId !== nextBatch.id);
   useEffect(() => {
-    if (!ready || datesEdited || catalog.loading || catalog.departuresError || !nextBatch) return;
+    if (
+      !ready ||
+      !travellersReady ||
+      datesEdited ||
+      catalog.loading ||
+      catalog.departuresError ||
+      !nextBatch
+    )
+      return;
     setBatchId(nextBatch.id);
     setTravelDateValue(nextBatch.start_date);
     setDepartureCity(nextBatch.departure_city);
     setFlexibleDates(false);
-  }, [ready, datesEdited, catalog.loading, catalog.departuresError, nextBatch]);
+  }, [ready, travellersReady, datesEdited, catalog.loading, catalog.departuresError, nextBatch]);
 
   useEffect(() => {
-    if (!ready || !packageId || catalog.loading) return;
+    if (resolvingDates || catalog.departuresError || !packageId) return;
     const choice = {
       departure: selectedBatch?.id || "",
       city: departureCity,
@@ -87,6 +115,8 @@ export default function TravelDates() {
     window.history.replaceState(window.history.state, "", url);
   }, [
     ready,
+    resolvingDates,
+    catalog.departuresError,
     packageId,
     catalog.loading,
     selectedBatch,
@@ -98,7 +128,11 @@ export default function TravelDates() {
 
   function continueToPackages() {
     if (childAges.some((age) => age < 0)) {
-      setError("Choose each child’s age at travel.");
+      setShowChildAges(true);
+      setError("");
+      document
+        .getElementById("missing-child-ages")
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
     if (batchId && (!selectedBatch || catalog.departuresError)) {
@@ -149,9 +183,13 @@ export default function TravelDates() {
       <main className="mx-auto max-w-xl px-5 py-5">
         <Link
           href={category ? "/travel/packages/" + category : "/travel/packages"}
-          className="inline-flex min-h-11 items-center text-sm underline"
+          className="mb-5 flex min-h-16 w-full items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm font-semibold shadow-sm transition-colors hover:border-gold/50 hover:bg-champagne/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
         >
-          Back to packages
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-champagne/60 text-gold">
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+          </span>
+          <span className="flex-1">Back to packages</span>
+          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
         </Link>
         <TravelFlowProgress step={3} />
         <p className="mt-3 text-sm font-semibold">
@@ -164,122 +202,147 @@ export default function TravelDates() {
           <h2 id="catalogue-travel-dates" className="font-display text-[25px]">
             Choose your travel dates
           </h2>
-          <label className="block text-sm font-semibold">
-            Select next batch
-            <select
-              className={selectClass}
-              value={selectedBatch?.id || ""}
-              disabled={catalog.loading || !!catalog.departuresError}
-              onChange={(e) => {
-                setDatesEdited(true);
-                const batch = batches.find((item) => item.id === e.target.value);
-                setBatchId(batch?.id || "");
-                if (batch) {
-                  setTravelDateValue(batch.start_date);
-                  setDepartureCity(batch.departure_city);
-                  setFlexibleDates(false);
-                }
-              }}
-            >
-              <option value="">Keep my preferred dates</option>
-              {batches.map((batch) => (
-                <option key={batch.id} value={batch.id}>
-                  {travelDate(batch.start_date)} · {batch.departure_city} ·{" "}
-                  {catalog.packages.find((pkg) => pkg.id === batch.package_id)?.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          {!catalog.loading && !catalog.departuresError && batches.length === 0 && (
-            <p className="text-xs text-muted-foreground">
-              No upcoming batches for this package and group size. Share your preferred dates below.
-            </p>
-          )}
-          {catalog.departuresError && (
-            <p role="alert" className="text-xs">
-              Could not load batches.{" "}
-              <button
-                type="button"
-                className="min-h-11 underline"
-                onClick={() => void catalog.reload()}
-              >
-                Retry
-              </button>
-            </p>
-          )}
-          {selectedBatch ? (
-            <div className="space-y-3">
-              <TravelBatchSummary batch={selectedBatch} />
-              <button
-                type="button"
-                className="min-h-11 w-full rounded-xl border border-gold/40 bg-card px-4 py-2 text-sm font-semibold"
-                onClick={() => {
-                  setBatchId("");
-                  setDatesEdited(true);
-                  setError("");
-                }}
-              >
-                Choose preferred dates
-              </button>
+          {resolvingDates ? (
+            <div role="status" aria-live="polite" className="min-h-[230px] space-y-4 py-2">
+              <p className="text-sm text-muted-foreground">Loading your travel dates…</p>
+              <div aria-hidden="true" className="h-12 rounded-xl bg-border/50" />
+              <div aria-hidden="true" className="h-28 rounded-xl bg-border/30" />
             </div>
           ) : (
-            <div id="preferred-date-fields" className="space-y-3">
-              <p className="text-sm font-semibold">Confirm your preferred dates</p>
-              {selectedBatch && (
+            <>
+              <label className="block text-sm font-semibold">
+                Select next batch
+                <select
+                  className={selectClass}
+                  value={selectedBatch?.id || ""}
+                  disabled={catalog.loading || !!catalog.departuresError}
+                  onChange={(e) => {
+                    setDatesEdited(true);
+                    const batch = batches.find((item) => item.id === e.target.value);
+                    setBatchId(batch?.id || "");
+                    if (batch) {
+                      setTravelDateValue(batch.start_date);
+                      setDepartureCity(batch.departure_city);
+                      setFlexibleDates(false);
+                    }
+                  }}
+                >
+                  <option value="">Keep my preferred dates</option>
+                  {batches.map((batch) => (
+                    <option key={batch.id} value={batch.id}>
+                      {travelDate(batch.start_date)} · {batch.departure_city} ·{" "}
+                      {catalog.packages.find((pkg) => pkg.id === batch.package_id)?.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {!catalog.loading && !catalog.departuresError && batches.length === 0 && (
                 <p className="text-xs text-muted-foreground">
-                  Your batch date and city are filled in. Editing them requests a different
-                  arrangement.
+                  No upcoming batches for this package and group size. Share your preferred dates
+                  below.
                 </p>
               )}
-              <label className="block text-sm font-semibold">
-                Departure city
-                <input
-                  className={selectClass}
-                  maxLength={80}
-                  value={departureCity}
-                  onChange={(e) => {
-                    setDepartureCity(e.target.value);
-                    setBatchId("");
-                    setDatesEdited(true);
-                  }}
-                />
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {[true, false].map((flexible) => (
+              {catalog.departuresError && (
+                <p role="alert" className="text-xs">
+                  Could not load batches.{" "}
                   <button
-                    key={String(flexible)}
                     type="button"
-                    aria-pressed={flexibleDates === flexible}
-                    className={`min-h-12 rounded-xl border px-3 py-2 text-sm font-semibold ${flexibleDates === flexible ? "border-primary bg-champagne/50" : "border-border bg-card"}`}
+                    className="min-h-11 underline"
+                    onClick={() => void catalog.reload()}
+                  >
+                    Retry
+                  </button>
+                </p>
+              )}
+              {selectedBatch ? (
+                <div className="space-y-3">
+                  <TravelBatchSummary batch={selectedBatch} />
+                  <button
+                    type="button"
+                    className="min-h-11 w-full rounded-xl border border-gold/40 bg-card px-4 py-2 text-sm font-semibold"
                     onClick={() => {
-                      setFlexibleDates(flexible);
                       setBatchId("");
                       setDatesEdited(true);
+                      setError("");
                     }}
                   >
-                    {flexible ? "My dates are flexible" : "I have a date in mind"}
+                    Choose preferred dates
                   </button>
-                ))}
-              </div>
-              <label className="block text-sm font-semibold">
-                {flexibleDates ? "Preferred month (optional)" : "Travel date"}
-                <input
-                  className={selectClass}
-                  type={flexibleDates ? "month" : "date"}
-                  min={flexibleDates ? minimumTravelDate.slice(0, 7) : minimumTravelDate}
-                  value={flexibleDates ? travelMonth : travelDateValue}
-                  onChange={(e) => {
-                    if (flexibleDates) setTravelMonth(e.target.value);
-                    else setTravelDateValue(e.target.value);
-                    setBatchId("");
-                    setDatesEdited(true);
-                  }}
-                />
-              </label>
-            </div>
+                </div>
+              ) : (
+                <div id="preferred-date-fields" className="space-y-3">
+                  <p className="text-sm font-semibold">Confirm your preferred dates</p>
+                  {selectedBatch && (
+                    <p className="text-xs text-muted-foreground">
+                      Your batch date and city are filled in. Editing them requests a different
+                      arrangement.
+                    </p>
+                  )}
+                  <label className="block text-sm font-semibold">
+                    Departure city
+                    <input
+                      className={selectClass}
+                      maxLength={80}
+                      value={departureCity}
+                      onChange={(e) => {
+                        setDepartureCity(e.target.value);
+                        setBatchId("");
+                        setDatesEdited(true);
+                      }}
+                    />
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[true, false].map((flexible) => (
+                      <button
+                        key={String(flexible)}
+                        type="button"
+                        aria-pressed={flexibleDates === flexible}
+                        className={`min-h-12 rounded-xl border px-3 py-2 text-sm font-semibold ${flexibleDates === flexible ? "border-primary bg-champagne/50" : "border-border bg-card"}`}
+                        onClick={() => {
+                          setFlexibleDates(flexible);
+                          setBatchId("");
+                          setDatesEdited(true);
+                        }}
+                      >
+                        {flexible ? "My dates are flexible" : "I have a date in mind"}
+                      </button>
+                    ))}
+                  </div>
+                  <label className="block text-sm font-semibold">
+                    {flexibleDates ? "Preferred month (optional)" : "Travel date"}
+                    <input
+                      className={selectClass}
+                      type={flexibleDates ? "month" : "date"}
+                      min={flexibleDates ? minimumTravelDate.slice(0, 7) : minimumTravelDate}
+                      value={flexibleDates ? travelMonth : travelDateValue}
+                      onChange={(e) => {
+                        if (flexibleDates) setTravelMonth(e.target.value);
+                        else setTravelDateValue(e.target.value);
+                        setBatchId("");
+                        setDatesEdited(true);
+                      }}
+                    />
+                  </label>
+                </div>
+              )}
+            </>
           )}
         </section>
-        {children > 0 && <TravelChildAges ages={childAges} onChange={setChildAge} />}
+        {showChildAges && children > 0 && (
+          <section
+            id="missing-child-ages"
+            aria-labelledby="child-ages-title"
+            className="mt-4 rounded-xl border border-border bg-card p-4"
+          >
+            <h2 id="child-ages-title" className="text-base font-semibold">
+              Children’s ages
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Add their ages at travel to help us quote the right fares.
+            </p>
+            <TravelChildAges ages={childAges} onChange={setChildAge} />
+          </section>
+        )}
         {error && (
           <p role="alert" className="mt-3 text-sm text-destructive">
             {error}
@@ -289,11 +352,15 @@ export default function TravelDates() {
       <TravelStepFooter travellers={adults + children}>
         <button
           type="button"
-          disabled={!ready || catalog.loading}
+          disabled={resolvingDates}
           onClick={continueToPackages}
           className="min-h-14 w-full rounded-xl bg-primary px-4 py-3 font-semibold text-primary-foreground"
         >
-          {selectedBatch ? "Continue to preferences" : "Confirm travel dates"}
+          {resolvingDates
+            ? "Loading travel dates…"
+            : selectedBatch
+              ? "Continue to preferences"
+              : "Confirm travel dates"}
         </button>
       </TravelStepFooter>
     </div>

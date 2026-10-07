@@ -7,7 +7,6 @@ import { useTravelTravellers } from "@/hooks/use-travel-travellers";
 import { ArrowRight, Search, SlidersHorizontal, X } from "lucide-react";
 import { BrandLogo } from "@/components/Brand";
 import { TravelSavedPackagesLink } from "@/components/TravelSavedPackages";
-import { TravelChildAges } from "@/components/TravelChildAges";
 import { TravelCountBanner } from "@/components/TravelCountBanner";
 import { TravelPackageChoice } from "@/components/TravelPackageChoice";
 import { TravelPackageGroups } from "@/components/TravelPackageGroups";
@@ -154,10 +153,11 @@ export default function TravelPackages({
             onChange={() => setEditingCount(!editingCount)}
             onAdults={setAdults}
             onChildren={setChildren}
+            childAges={childAges}
+            onChildAge={setChildAge}
           />
         </div>
 
-        {editingCount && <TravelChildAges ages={childAges} onChange={setChildAge} />}
         <h1 className="mt-6 font-display text-[28px] leading-tight sm:mt-8 sm:text-[36px]">
           Choose a package
         </h1>
