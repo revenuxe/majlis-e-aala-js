@@ -25,6 +25,7 @@ import {
   Search,
   SlidersHorizontal,
   ShieldCheck,
+  Star,
   Users,
   X,
 } from "lucide-react";
@@ -699,6 +700,81 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
             </div>
           </Section>
         </div>
+
+        <Section id="testimonials">
+          <SectionHeader
+            eyebrow="Traveller stories"
+            title="Umrah & Hajj stories from Bengaluru"
+            subtitle="Sample testimonials — replace with approved customer reviews before publishing."
+          />
+          <div
+            role="region"
+            aria-label="Umrah and Hajj sample reviews"
+            tabIndex={0}
+            className="mt-7 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-4 focus-visible:outline-gold"
+          >
+            {[
+              {
+                title: "A peaceful family journey",
+                quote:
+                  "Having our flights, stays and travel dates explained together made planning our family Umrah feel much easier.",
+                traveller: "Khadeer Ahmed",
+                journey: "Umrah",
+              },
+              {
+                title: "Clear from the first conversation",
+                quote:
+                  "We appreciated being able to compare the airline options and understand our Umrah package before choosing our dates.",
+                traveller: "Aliya Afreen",
+                journey: "Umrah",
+              },
+              {
+                title: "Thoughtful planning for our parents",
+                quote:
+                  "Sharing our parents’ needs early helped us discuss a comfortable pace and the support they would need during Hajj.",
+                traveller: "Muskan Sheikh",
+                journey: "Hajj",
+              },
+              {
+                title: "Prepared for a meaningful Hajj",
+                quote:
+                  "Discussing the Hajj itinerary, documents and arrangements in advance helped us understand what to prepare for our pilgrimage.",
+                traveller: "Sufiyan",
+                journey: "Hajj",
+              },
+            ].map((review) => (
+              <figure
+                key={review.title}
+                className="flex w-[86%] max-w-sm shrink-0 snap-start flex-col rounded-xl border border-gold/25 bg-card p-5 sm:w-[340px] sm:p-6"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span
+                    className="flex gap-1 text-gold"
+                    role="img"
+                    aria-label="Sample rating: 5 out of 5 stars"
+                  >
+                    {Array.from({ length: 5 }, (_, index) => (
+                      <Star key={index} size={16} fill="currentColor" aria-hidden="true" />
+                    ))}
+                  </span>
+                </div>
+                <h3 className="mt-4 text-base font-semibold">{review.title}</h3>
+                <blockquote className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+                  “{review.quote}”
+                </blockquote>
+                <figcaption className="mt-5 border-t border-border pt-4">
+                  <p className="text-sm font-semibold">{review.traveller}</p>
+                  <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <MapPin size={13} aria-hidden="true" />
+                    <span>Bengaluru</span>
+                    <span aria-hidden="true">&middot;</span>
+                    <span>{review.journey}</span>
+                  </p>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </Section>
 
         <Section id="travel-planner">
           <div className="grid gap-8 lg:grid-cols-[.85fr_1.15fr]">
