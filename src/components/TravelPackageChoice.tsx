@@ -204,16 +204,16 @@ export function TravelPackageChoice({
                         ? "View pricing breakdown"
                         : `${travelMoney(Number(price))} per adult. View pricing breakdown`
                     }
-                    className="flex min-h-12 w-full cursor-pointer list-none items-center justify-between gap-1 rounded-xl border border-gold/40 bg-champagne/50 px-2 py-1.5 text-xs font-semibold leading-snug text-foreground sm:px-2.5 sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold [&::-webkit-details-marker]:hidden"
+                    className="grid min-h-12 w-full cursor-pointer list-none grid-cols-[minmax(0,1fr)_16px] items-center gap-2 rounded-xl border border-gold/40 bg-champagne/50 px-2 py-1.5 text-xs font-semibold leading-snug text-foreground sm:px-2.5 sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold [&::-webkit-details-marker]:hidden"
                   >
                     {price == null ? (
                       "View pricing breakdown"
                     ) : (
-                      <span className="inline-flex items-baseline gap-1 whitespace-nowrap">
-                        <span className="text-[15px] font-bold leading-tight tracking-tight text-foreground sm:text-[17px]">
+                      <span className="flex min-w-0 items-baseline gap-1 whitespace-nowrap">
+                        <span className="text-[12px] font-bold leading-tight tracking-tight text-foreground sm:text-[14px]">
                           {travelMoney(Number(price))}
                         </span>
-                        <span className="text-[10px] font-normal leading-tight text-muted-foreground sm:text-[11px]">
+                        <span className="text-[9px] font-normal leading-tight text-muted-foreground sm:text-[10px]">
                           per adult
                         </span>
                       </span>
