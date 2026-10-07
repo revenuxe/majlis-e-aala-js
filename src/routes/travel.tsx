@@ -907,6 +907,9 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
               <a href="#pilgrim-guide" className="block py-3 text-[14px]">
                 Pilgrim preparation guide
               </a>
+              <Link href="/travel/contact" className="flex min-h-11 items-center gap-2 text-[14px]">
+                Contact us <ArrowUpRight size={15} aria-hidden="true" />
+              </Link>
               <p className="mt-4 max-w-xs text-[12px] leading-relaxed text-white/55">
                 All journeys are enquiry-based. Final availability, inclusions and terms are
                 confirmed in your quotation.

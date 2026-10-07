@@ -2,19 +2,31 @@
 export const travelContact = { phone: "919886285028", displayPhone: "+91 98862 85028" };
 
 export const travelCategories = [
-  { id: "umrah", name: "Umrah", note: "A journey of devotion", image: "/travel/makkah.jpg" },
-  { id: "hajj", name: "Hajj", note: "Prepare for your pilgrimage", image: "/travel/madinah.jpg" },
+  {
+    id: "umrah",
+    name: "Umrah",
+    note: "A journey of devotion",
+    image: "https://res.cloudinary.com/dcrauhr1x/image/upload/v1791377604/umrah_image_h7tmay.webp",
+  },
+  {
+    id: "hajj",
+    name: "Hajj",
+    note: "Prepare for your pilgrimage",
+    image: "https://res.cloudinary.com/dcrauhr1x/image/upload/v1791378417/hajj_sjywcb.webp",
+  },
   {
     id: "international",
     name: "International",
     note: "Discover a little further",
-    image: "/travel/dubai.jpg",
+    image:
+      "https://res.cloudinary.com/dcrauhr1x/image/upload/v1791377991/international_image_q0jwxt.webp",
   },
   {
     id: "domestic",
     name: "Domestic",
     note: "Find wonder closer to home",
-    image: "/travel/kerala.jpg",
+    image:
+      "https://res.cloudinary.com/dcrauhr1x/image/upload/v1791378126/domestic_image_fxo7ol.webp",
   },
 ] as const;
 

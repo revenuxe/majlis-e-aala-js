@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { cx } from "@/components/ui-kit";
 import { travelCategories, type TravelCategory } from "@/lib/travel";
@@ -10,6 +11,13 @@ export function TravelJourneyCards({
   onSelect: (category: TravelCategory) => void;
   selected?: TravelCategory;
 }) {
+  const [failedImages, setFailedImages] = useState<Partial<Record<TravelCategory, boolean>>>({});
+  const fallbackImages: Record<TravelCategory, string> = {
+    umrah: "/travel/makkah.jpg",
+    hajj: "/travel/madinah.jpg",
+    international: "/travel/dubai.jpg",
+    domestic: "/travel/kerala.jpg",
+  };
   return (
     <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
       {travelCategories.map((item) => (
@@ -25,7 +33,11 @@ export function TravelJourneyCards({
           )}
         >
           <Image
-            src={item.image}
+            src={failedImages[item.id] ? fallbackImages[item.id] : item.image}
+            onError={() => {
+              if (!failedImages[item.id])
+                setFailedImages((current) => ({ ...current, [item.id]: true }));
+            }}
             alt=""
             fill
             sizes="(max-width: 1024px) 50vw, 25vw"

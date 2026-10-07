@@ -5,6 +5,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/catering",
     "/travel/packages",
+    "/travel/contact",
     "/travel/packages/umrah",
     "/travel/packages/hajj",
     "/travel/packages/international",
