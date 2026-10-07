@@ -12,7 +12,7 @@ export const travelCategories = [
     id: "hajj",
     name: "Hajj",
     note: "Prepare for your pilgrimage",
-    image: "https://res.cloudinary.com/dcrauhr1x/image/upload/v1791378417/hajj_sjywcb.webp",
+    image: "/travel/makkah.jpg",
   },
   {
     id: "international",

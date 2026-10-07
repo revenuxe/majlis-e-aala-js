@@ -14,7 +14,7 @@ export function TravelJourneyCards({
   const [failedImages, setFailedImages] = useState<Partial<Record<TravelCategory, boolean>>>({});
   const fallbackImages: Record<TravelCategory, string> = {
     umrah: "/travel/makkah.jpg",
-    hajj: "/travel/madinah.jpg",
+    hajj: "/travel/makkah.jpg",
     international: "/travel/dubai.jpg",
     domestic: "/travel/kerala.jpg",
   };
