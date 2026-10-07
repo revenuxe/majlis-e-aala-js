@@ -88,17 +88,33 @@ export function TravelPackageChoice({
           <p className="min-w-0">{pkg.places}</p>
         </div>
         {pkg.inclusions.length > 0 && (
-          <ul
-            aria-label="Key package inclusions"
-            className="mt-3 divide-y divide-border/60 rounded-xl border border-border bg-surface/30 px-3 text-[11px] leading-snug"
-          >
-            {pkg.inclusions.slice(0, 4).map((item, index) => (
-              <li key={index} className="flex min-w-0 items-start gap-2 py-1.5 sm:py-2">
-                <Check size={12} className="mt-0.5 shrink-0 text-gold" aria-hidden="true" />
-                <span className="min-w-0 break-words">{item}</span>
-              </li>
-            ))}
-          </ul>
+          <details className="group/inclusions mt-3 overflow-hidden rounded-xl border border-border bg-surface/30">
+            <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-3 py-3 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold [&::-webkit-details-marker]:hidden">
+              <span className="flex items-center gap-2">
+                <Check size={16} className="shrink-0 text-gold" aria-hidden="true" />
+                What’s included
+                <span className="text-xs font-normal text-muted-foreground">
+                  ({pkg.inclusions.length})
+                </span>
+              </span>
+              <ChevronDown
+                size={16}
+                className="shrink-0 transition-transform group-open/inclusions:rotate-180"
+                aria-hidden="true"
+              />
+            </summary>
+            <ul
+              aria-label="Package inclusions"
+              className="divide-y divide-border/60 border-t border-border px-3 text-xs leading-relaxed"
+            >
+              {pkg.inclusions.map((item, index) => (
+                <li key={index} className="flex min-w-0 items-start gap-2 py-2">
+                  <Check size={12} className="mt-1 shrink-0 text-gold" aria-hidden="true" />
+                  <span className="min-w-0 break-words">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </details>
         )}
         <div className="relative mt-3">
           <div className="w-full rounded-[16px] border border-gold/25 bg-surface px-3 py-3 text-left sm:px-4">
