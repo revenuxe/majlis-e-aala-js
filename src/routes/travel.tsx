@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTravelCatalog } from "@/hooks/use-travel-catalog";
-import { packageJourney } from "@/lib/travel-booking";
+import { packageJourney, travelDate } from "@/lib/travel-booking";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTravelTravellers } from "@/hooks/use-travel-travellers";
 import {
@@ -76,7 +76,43 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
   const journeys = catalog.packages.map(packageJourney);
   const [enquiryJourney, setEnquiryJourney] = useState("Umrah");
   const [mobileMenu, setMobileMenu] = useState(false);
-  const { adults: travellers, children, seniors, setAdults: setTravellers } = useTravelTravellers();
+  const {
+    adults: travellers,
+    children,
+    seniors,
+    childAges,
+    ready: travellersReady,
+    setAdults: setTravellers,
+  } = useTravelTravellers();
+  const today = new Date();
+  const todayDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const nextBatch = catalog.departures
+    .filter(
+      (batch) =>
+        batch.is_active &&
+        batch.start_date >= todayDate &&
+        (!batch.capacity || batch.capacity >= travellers + children) &&
+        catalog.packages.some((pkg) => pkg.id === batch.package_id && pkg.is_active),
+    )
+    .sort((a, b) => a.start_date.localeCompare(b.start_date) || a.id.localeCompare(b.id))[0];
+  const nextBatchPackage = catalog.packages.find((pkg) => pkg.id === nextBatch?.package_id);
+  const nextBatchHref =
+    nextBatch && nextBatchPackage
+      ? `/travel/dates?${new URLSearchParams({
+          category: nextBatchPackage.category,
+          package: nextBatchPackage.id,
+          travellers: String(travellers),
+          children: String(children),
+          seniors: String(seniors),
+          childAges: childAges.join(","),
+          departure: nextBatch.id,
+          date: nextBatch.start_date,
+          city: nextBatch.departure_city,
+          month: "",
+          flexible: "false",
+          datesSelected: "1",
+        })}`
+      : "";
   const [heroIndex, setHeroIndex] = useState(0);
   const { slides: travelHeroSlides } = useTravelHero(initialContent?.slides);
   const [heroPaused, setHeroPaused] = useState(false);
@@ -375,6 +411,36 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
         </Section>
 
         <Section className="!py-6 sm:!py-8">
+          {travellersReady && nextBatch && nextBatchPackage && !catalog.departuresError && (
+            <section
+              aria-labelledby="next-batch-heading"
+              className="mb-4 rounded-xl border border-gold/40 bg-champagne/30 p-5 sm:p-6"
+            >
+              <div className="flex items-center gap-2 text-gold">
+                <CalendarDays size={18} aria-hidden="true" />
+                <h3 id="next-batch-heading" className="text-sm font-semibold">
+                  Next batch
+                </h3>
+              </div>
+              <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="font-display text-[26px] leading-tight">{nextBatchPackage.name}</p>
+                  <p className="mt-2 text-base font-semibold">{travelDate(nextBatch.start_date)}</p>
+                  <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                    <MapPin size={15} aria-hidden="true" />
+                    From {nextBatch.departure_city}
+                  </p>
+                </div>
+                <Link href={nextBatchHref} className={cx(anchorClass, "w-full shrink-0 sm:w-auto")}>
+                  Choose this batch <ArrowRight size={17} aria-hidden="true" />
+                </Link>
+              </div>
+              <p className="mt-3 text-xs text-muted-foreground">
+                Your traveller count and this batch are preselected. Availability is confirmed by
+                our team.
+              </p>
+            </section>
+          )}
           <div className="relative overflow-hidden rounded-[24px] border border-gold/45 bg-card p-5 shadow-[0_16px_34px_rgba(55,42,25,0.12)] before:pointer-events-none before:absolute before:inset-x-7 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent sm:p-8">
             <div className="flex items-center gap-3">
               <span className="gold-rule" />
@@ -451,6 +517,7 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
               Your group size carries through to your enquiry. No booking or payment required.
             </p>
           </div>
+
           <div className="mt-4 grid grid-cols-2 gap-2 rounded-[22px] border border-gold/45 bg-card p-3 shadow-[0_14px_30px_rgba(55,42,25,0.10)] sm:grid-cols-4 sm:gap-3 sm:p-4">
             {[
               { label: "Umrah & Hajj", Icon: Compass },
