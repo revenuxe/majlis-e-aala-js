@@ -915,7 +915,20 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
           </div>
           <div className="mt-9 flex flex-wrap justify-between gap-4 border-t border-white/15 pt-6 text-[11px] text-white/55">
             <p>© {new Date().getFullYear()} Majlise Aala. All rights reserved.</p>
-            <p>Destination photography: Unsplash</p>
+            <nav aria-label="Legal" className="flex flex-wrap gap-x-6 gap-y-2">
+              <Link
+                href="/terms"
+                className="inline-flex min-h-11 items-center text-white/80 hover:text-white"
+              >
+                Terms &amp; Conditions
+              </Link>
+              <Link
+                href="/privacy"
+                className="inline-flex min-h-11 items-center text-white/80 hover:text-white"
+              >
+                Privacy Policy
+              </Link>
+            </nav>
           </div>
         </div>
       </footer>
