@@ -265,7 +265,7 @@ export function TravelPackageChoice({
                   {chosenFlight.notes}
                 </p>
               )}
-              <span className="mt-2 block pr-5 text-sm leading-snug text-muted-foreground">
+              <span className="mt-2 block pr-10 text-xs leading-relaxed text-muted-foreground">
                 {roomBasis}
               </span>
               {pkg.pricing_mode === "seasonal" && (
