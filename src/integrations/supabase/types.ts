@@ -680,7 +680,7 @@ export type Database = {
           capacity: number | null;
           created_at: string;
           departure_city: string;
-          end_date: string;
+          end_date: string | null;
           id: string;
           is_active: boolean;
           notes: string;
@@ -692,7 +692,7 @@ export type Database = {
           capacity?: number | null;
           created_at?: string;
           departure_city: string;
-          end_date: string;
+          end_date?: string | null;
           id?: string;
           is_active?: boolean;
           notes?: string;
@@ -704,7 +704,7 @@ export type Database = {
           capacity?: number | null;
           created_at?: string;
           departure_city?: string;
-          end_date?: string;
+          end_date?: string | null;
           id?: string;
           is_active?: boolean;
           notes?: string;

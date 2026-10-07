@@ -36,7 +36,7 @@ export type TravelDeparture = {
   package_id: string;
   departure_city: string;
   start_date: string;
-  end_date: string;
+  end_date: string | null;
   capacity: number | null;
   is_active: boolean;
   notes: string;
@@ -83,6 +83,7 @@ export type TravelRequest = {
   created_at: string;
 };
 export type TravelDraft = {
+  batchSelectionMade: boolean;
   category: TravelCategory | "";
   departureCity: string;
   datesFlexible: boolean;
@@ -106,6 +107,7 @@ export type TravelDraft = {
   consent: boolean;
 };
 export const initialTravelDraft: TravelDraft = {
+  batchSelectionMade: false,
   category: "",
   departureCity: "Bengaluru",
   datesFlexible: true,
@@ -168,9 +170,9 @@ export function packageAdultPrice(
   return prices.length ? Math.min(...prices) : null;
 }
 export const travelDate = (value: string) =>
-  new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(
-    new Date(`${value}T12:00:00`),
-  );
+  new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+    .format(new Date(`${value}T12:00:00`))
+    .replace(/\s+/g, "-");
 export function packageJourney(pkg: TravelPackage): Journey {
   return {
     id: pkg.id,

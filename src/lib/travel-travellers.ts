@@ -1,4 +1,9 @@
-export type TravelTravellers = { adults: number; children: number; seniors: number };
+export type TravelTravellers = {
+  adults: number;
+  children: number;
+  seniors: number;
+  childAges?: number[];
+};
 
 export const defaultTravelTravellers: TravelTravellers = { adults: 2, children: 0, seniors: 0 };
 export const travelTravellersKey = "ma-travel-travellers-v1";
@@ -10,9 +15,13 @@ function integer(value: unknown, fallback: number, min: number, max: number): nu
 
 export function normalizeTravellers(value: Partial<TravelTravellers>): TravelTravellers {
   const adults = integer(value.adults, 2, 1, 100);
+  const children = Math.min(integer(value.children, 0, 0, 20), 100 - adults);
   return {
     adults,
-    children: Math.min(integer(value.children, 0, 0, 20), 100 - adults),
+    children,
+    childAges: Array.from({ length: children }, (_, index) =>
+      integer(value.childAges?.[index], -1, 0, 17),
+    ),
     seniors: Math.min(integer(value.seniors, 0, 0, 100), adults),
   };
 }
@@ -29,6 +38,11 @@ export function restoreTravellers(params: URLSearchParams, saved: unknown): Trav
     adults,
     children: Number(params.get("children")),
     seniors: Number(params.get("seniors")),
+    childAges: params.has("childAges")
+      ? (params.get("childAges") || "").split(",").map(Number)
+      : fallback.children === Number(params.get("children"))
+        ? fallback.childAges || []
+        : [],
   });
 }
 
@@ -56,5 +70,6 @@ export function syncTravellerUrl(value: TravelTravellers): void {
   url.searchParams.set("travellers", String(value.adults));
   url.searchParams.set("children", String(value.children));
   url.searchParams.set("seniors", String(value.seniors));
+  if (value.childAges) url.searchParams.set("childAges", value.childAges.join(","));
   if (url.href !== window.location.href) window.history.replaceState(window.history.state, "", url);
 }

@@ -1,12 +1,13 @@
 "use client";
+import { TravelFlowProgress } from "@/components/TravelFlowProgress";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTravelTravellers } from "@/hooks/use-travel-travellers";
 import { ArrowRight, Search, SlidersHorizontal, X } from "lucide-react";
 import { BrandLogo } from "@/components/Brand";
-import { TravelNavigation } from "@/components/TravelNavigation";
 import { TravelSavedPackagesLink } from "@/components/TravelSavedPackages";
+import { TravelChildAges } from "@/components/TravelChildAges";
 import { TravelCountBanner } from "@/components/TravelCountBanner";
 import { TravelPackageChoice } from "@/components/TravelPackageChoice";
 import { TravelPackageGroups } from "@/components/TravelPackageGroups";
@@ -74,11 +75,22 @@ export default function TravelPackages({
   const [destination, setDestination] = useState("");
   const [duration, setDuration] = useState("");
   const [limit, setLimit] = useState(6);
-  const { adults, children, seniors, setAdults, setChildren, setSeniors } = useTravelTravellers();
+  const { adults, children, seniors, childAges, setChildAge, setAdults, setChildren, setSeniors } =
+    useTravelTravellers();
   const seniorCount = Math.min(seniors, adults);
   const [editingCount, setEditingCount] = useState(false);
+  const [dateParams, setDateParams] = useState<Record<string, string>>({});
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    if (params.get("datesSelected") === "1")
+      setDateParams(
+        Object.fromEntries(
+          ["departure", "city", "date", "month", "flexible", "datesSelected"].map((key) => [
+            key,
+            params.get(key) || "",
+          ]),
+        ),
+      );
     const query = params.get("q");
     if (query) setFilter((current) => ({ ...current, search: query.slice(0, 150) }));
   }, []);
@@ -125,6 +137,7 @@ export default function TravelPackages({
         </div>
       </header>
       <main className="mx-auto max-w-[1200px] px-5 py-4 sm:px-8 sm:py-6">
+        <TravelFlowProgress step={2} />
         <div>
           <TravelCountBanner
             category={category}
@@ -143,10 +156,12 @@ export default function TravelPackages({
             onChildren={setChildren}
           />
         </div>
-        <h1 className="mt-5 font-display text-[32px] leading-tight sm:text-[38px]">
+
+        {editingCount && <TravelChildAges ages={childAges} onChange={setChildAge} />}
+        <h1 className="mt-6 font-display text-[28px] leading-tight sm:mt-8 sm:text-[36px]">
           Choose a package
         </h1>
-        <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
+        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
           Select the package that suits your journey.
         </p>
         <div className="mt-4">
@@ -354,7 +369,7 @@ export default function TravelPackages({
               seniors={seniorCount}
               onSelect={(flightId) =>
                 router.push(
-                  `/travel/plan?category=${category}&package=${pkg.id}&flight=${encodeURIComponent(flightId || "")}&travellers=${adults}&children=${children}&seniors=${seniorCount}`,
+                  `/travel/dates?${new URLSearchParams({ category, package: pkg.id, flight: flightId || "", travellers: String(adults), children: String(children), seniors: String(seniorCount), childAges: childAges.join(","), ...dateParams, departure: catalog.departures.find((batch) => batch.id === dateParams["departure"])?.package_id === pkg.id ? dateParams["departure"] || "" : "" })}`,
                 )
               }
             />
@@ -379,7 +394,6 @@ export default function TravelPackages({
           </Link>
         </div>
       </main>
-      <TravelNavigation />
     </div>
   );
 }

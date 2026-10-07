@@ -75,6 +75,7 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
   const [packages, setPackages] = useState<TravelPackage[]>([]);
   const [packageSearch, setPackageSearch] = useAdminState(`travel:${mode}:packageSearch`, "");
   const [packageCategory, setPackageCategory] = useAdminState(`travel:${mode}:packageCategory`, "");
+  const [batchCategory, setBatchCategory] = useAdminState("travel:batchCategory", "");
   const [departures, setDepartures] = useState<TravelDeparture[]>([]);
   const [requests, setRequests] = useState<TravelRequest[]>([]);
   const [limit, setLimit] = useAdminState(`travel:${mode}:limit`, 50);
@@ -214,10 +215,13 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
           !dep.package_id ||
           dep.departure_city.trim().length < 2 ||
           !dep.start_date ||
-          !dep.end_date ||
-          dep.end_date < dep.start_date
+          (dep.end_date != null && dep.end_date < dep.start_date)
         )
-          throw new Error("Choose a package, departure city and a valid date range.");
+          throw new Error("Choose a package, departure city and a valid batch date range.");
+        if (!packages.some((item) => item.id === dep.package_id))
+          throw new Error("Choose an available package for this batch.");
+        if (!("id" in dep) && dep.start_date < inputDate())
+          throw new Error("Choose today or a future travel date for a new batch.");
         if (
           dep.capacity !== null &&
           (!Number.isInteger(dep.capacity) || dep.capacity < 1 || dep.capacity > 10000)
@@ -225,8 +229,12 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
           throw new Error("Group capacity must be a whole number between 1 and 10,000.");
         const { id, ...data } = dep as TravelDeparture;
         result = id
-          ? await db.from("travel_departures").update(data).eq("id", id)
-          : await db.from("travel_departures").insert(data);
+          ? await db.from("travel_departures").update(data).eq("id", id).select("id")
+          : await db.from("travel_departures").insert(data).select("id");
+        if (!result.error && !result.data?.length)
+          throw new Error(
+            "This batch was deleted or your account cannot update it. Refresh and try again.",
+          );
       } else if (kind === "request" && request) {
         if (
           request.quoted_total !== null &&
@@ -313,7 +321,7 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
                 tab === key ? "bg-primary text-primary-foreground" : "bg-card",
               )}
             >
-              {key}
+              {key === "departures" ? "Batches" : key}
             </button>
           ))}
         </div>
@@ -410,40 +418,64 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
             disabled={!packages.length}
             onClick={() =>
               setDep({
-                package_id: packages[0]?.id || "",
+                package_id:
+                  packages.find((p) => !batchCategory || p.category === batchCategory)?.id || "",
                 departure_city: "Bengaluru",
                 start_date: inputDate(),
-                end_date: inputDate(),
+                end_date: null,
                 capacity: null,
                 is_active: true,
                 notes: "",
               })
             }
           >
-            Add departure
+            Add batch
           </Button>
+          <Field label="Filter batches by category">
+            <Select value={batchCategory} onChange={(e) => setBatchCategory(e.target.value)}>
+              <option value="">All categories</option>
+              {travelCategories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </Select>
+          </Field>
           <div className="grid gap-3 sm:grid-cols-2">
-            {departures.map((item) => (
-              <button
-                key={item.id}
-                className="rounded-2xl border bg-card p-5 text-left"
-                onClick={() => setDep({ ...item })}
-              >
-                <h3 className="font-semibold">
-                  {packages.find((p) => p.id === item.package_id)?.name || "Travel package"}
-                </h3>
-                <p className="mt-2 text-sm">
-                  {item.departure_city} · {travelDate(item.start_date)} –{" "}
-                  {travelDate(item.end_date)}
-                </p>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  {item.is_active ? "Active" : "Hidden"} ·{" "}
-                  {item.capacity ? `Maximum group size: ${item.capacity}` : "Group size on request"}
-                </p>
-              </button>
-            ))}
+            {departures
+              .filter(
+                (item) =>
+                  !batchCategory ||
+                  packages.find((p) => p.id === item.package_id)?.category === batchCategory,
+              )
+              .map((item) => (
+                <button
+                  key={item.id}
+                  className="rounded-2xl border bg-card p-5 text-left"
+                  onClick={() => setDep({ ...item })}
+                >
+                  <h3 className="font-semibold">
+                    {packages.find((p) => p.id === item.package_id)?.name || "Travel package"}
+                  </h3>
+                  <p className="mt-2 text-sm">
+                    {item.departure_city} · {travelDate(item.start_date)}
+                    {item.end_date ? ` – ${travelDate(item.end_date)}` : ""}
+                  </p>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {item.is_active ? "Active" : "Hidden"} ·{" "}
+                    {item.capacity
+                      ? `Maximum group size: ${item.capacity}`
+                      : "Group size on request"}
+                  </p>
+                </button>
+              ))}
           </div>
-          {!loading && !departures.length && <p>No departures.</p>}
+          {!loading &&
+            !departures.some(
+              (item) =>
+                !batchCategory ||
+                packages.find((p) => p.id === item.package_id)?.category === batchCategory,
+            ) && <p>No batches in this category yet.</p>}
         </>
       )}
       {tab === "requests" && (
@@ -851,26 +883,58 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
       </Sheet>
       <Sheet
         open={!!dep}
-        title={dep && "id" in dep ? "Edit departure" : "New departure"}
+        title={dep && "id" in dep ? "Edit batch" : "New batch"}
         onClose={close}
         footer={
           <Button full disabled={busy} onClick={() => void save("departure")}>
-            {busy ? "Saving…" : "Save departure"}
+            {busy ? "Saving…" : "Save batch"}
           </Button>
         }
       >
         {dep && (
           <div className="space-y-4">
-            <Field label="Package">
+            <Field label="Journey category">
+              <Select
+                value={packages.find((p) => p.id === dep.package_id)?.category || ""}
+                onChange={(e) =>
+                  setDep({
+                    ...dep,
+                    package_id: packages.find((p) => p.category === e.target.value)?.id || "",
+                  })
+                }
+              >
+                <option value="" disabled>
+                  Choose category
+                </option>
+                {travelCategories.map((category) => (
+                  <option
+                    key={category.id}
+                    value={category.id}
+                    disabled={!packages.some((p) => p.category === category.id)}
+                  >
+                    {category.name}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <Field
+              label="Package"
+              hint="This batch is offered for this package; its category is inherited from the package."
+            >
               <Select
                 value={dep.package_id}
                 onChange={(e) => setDep({ ...dep, package_id: e.target.value })}
               >
-                {packages.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
+                {packages
+                  .filter(
+                    (p) =>
+                      p.category === packages.find((item) => item.id === dep.package_id)?.category,
+                  )
+                  .map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
               </Select>
             </Field>
             <Field label="Departure city">
@@ -880,11 +944,19 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
               />
             </Field>
             {(["start_date", "end_date"] as const).map((key) => (
-              <Field key={key} label={key.replaceAll("_", " ")}>
+              <Field
+                key={key}
+                label={key === "start_date" ? "Travel date" : "Return date (optional)"}
+              >
                 <TextInput
                   type="date"
-                  value={dep[key]}
-                  onChange={(e) => setDep({ ...dep, [key]: e.target.value })}
+                  value={dep[key] ?? ""}
+                  onChange={(e) =>
+                    setDep({
+                      ...dep,
+                      [key]: key === "end_date" ? e.target.value || null : e.target.value,
+                    })
+                  }
                 />
               </Field>
             ))}
@@ -909,7 +981,7 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
               />
             </Field>
             <Toggle
-              label="Offer this departure"
+              label="Offer this batch"
               checked={dep.is_active}
               onChange={(v) => setDep({ ...dep, is_active: v })}
             />

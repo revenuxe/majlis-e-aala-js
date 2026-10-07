@@ -65,7 +65,7 @@ export function TravelPackageChoice({
   return (
     <article
       className={cx(
-        "package-card self-start overflow-hidden rounded-[28px] border bg-card",
+        "package-card self-start overflow-hidden rounded-[12px] border bg-card",
         selected ? "package-card-featured border-gold ring-2 ring-gold/30" : "border-border",
       )}
     >
@@ -117,7 +117,7 @@ export function TravelPackageChoice({
           </details>
         )}
         <div className="relative mt-3">
-          <div className="w-full rounded-[16px] border border-gold/25 bg-surface px-3 py-3 text-left sm:px-4">
+          <div className="w-full rounded-[12px] border border-gold/25 bg-surface px-3 py-3 text-left sm:px-4">
             <div>
               <div className="space-y-3">
                 <div className="min-w-0" aria-live="polite" aria-atomic="true">
@@ -383,7 +383,7 @@ export function TravelPackageChoice({
             });
             onSelect(chosenFlight?.id ?? null);
           }}
-          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[14px] bg-primary px-4 py-3 text-[15px] font-semibold text-white"
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[12px] bg-primary px-4 py-3 text-[15px] font-semibold text-white"
         >
           {selectLabel || (selected ? "Selected package" : "Select package")}
           {selected && <Check size={18} />}

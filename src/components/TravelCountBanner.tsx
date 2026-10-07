@@ -62,7 +62,7 @@ export function TravelCountBanner({
     );
   }
   return (
-    <section className="relative overflow-hidden rounded-[28px] bg-primary px-5 py-5 text-primary-foreground shadow-[0_18px_36px_rgba(41,32,20,0.18)] sm:px-7 sm:py-6">
+    <section className="relative overflow-hidden rounded-[12px] bg-primary px-4 py-4 text-primary-foreground sm:px-7 sm:py-6">
       {/* Decorative image mirrors the catering package banner. */}
       <img
         src={journey?.image || "/travel/makkah.jpg"}
@@ -81,10 +81,12 @@ export function TravelCountBanner({
         <h2 className="mt-3 font-display text-[30px] leading-tight sm:text-[38px]">
           {journey?.name || "Travel"} Packages
         </h2>
-        <div className="mt-3 rounded-[18px] border border-gold/40 bg-card p-4 text-foreground shadow-[0_8px_20px_rgba(0,0,0,0.16)] sm:px-5">
+        <div className="mt-3 rounded-[12px] border border-gold/40 bg-card p-3 text-foreground sm:p-4 sm:px-5">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <p className="eyebrow">Your traveller count</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                Your travellers
+              </p>
               <p className="mt-1 text-[15px] font-semibold">
                 {adults + children} {adults + children === 1 ? "traveller" : "travellers"}
               </p>
@@ -98,7 +100,7 @@ export function TravelCountBanner({
             <button
               onClick={onChange}
               aria-expanded={editing}
-              className="press shrink-0 rounded-full border border-gold/60 bg-champagne/45 px-3 py-2 text-[13px] font-bold text-foreground hover:border-gold sm:px-4"
+              className="press min-h-11 shrink-0 rounded-[12px] border border-gold/60 bg-champagne/45 px-3 py-2 text-xs font-bold text-foreground hover:border-gold sm:px-4 sm:text-[13px]"
             >
               {editing ? "Done" : "Edit travellers"}
             </button>

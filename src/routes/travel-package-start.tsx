@@ -1,5 +1,6 @@
 "use client";
-import { TravelNavigation } from "@/components/TravelNavigation";
+import { TravelFlowProgress } from "@/components/TravelFlowProgress";
+import { TravelStepFooter } from "@/components/TravelStepFooter";
 import { TravelSavedPackagesLink } from "@/components/TravelSavedPackages";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,11 +10,13 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { BrandLogo } from "@/components/Brand";
 import { Button, QuantitySelector } from "@/components/ui-kit";
 import { TravelSeniorCount } from "@/components/TravelSeniorCount";
+import { TravelChildAges } from "@/components/TravelChildAges";
 import { TravelJourneyCards } from "@/components/TravelJourneyCards";
 
 export default function TravelPackageStart() {
   const router = useRouter();
-  const { adults, children, seniors, setAdults, setChildren, setSeniors } = useTravelTravellers();
+  const { adults, children, seniors, childAges, setChildAge, setAdults, setChildren, setSeniors } =
+    useTravelTravellers();
   const seniorCount = Math.min(seniors, adults);
   const [choosingJourney, setChoosingJourney] = useState(false);
   useEffect(() => {
@@ -21,7 +24,7 @@ export default function TravelPackageStart() {
     if (params.get("step") === "journey") setChoosingJourney(true);
   }, []);
   return (
-    <div className="min-h-screen bg-background pb-32 lg:pb-12">
+    <div className="min-h-screen bg-background pb-48">
       <header className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between px-5 py-5">
           <Link href="/" className="min-w-0">
@@ -41,9 +44,9 @@ export default function TravelPackageStart() {
         </div>
       </header>
       <main className="mx-auto max-w-[1100px] px-5 py-4 sm:px-8 sm:py-6">
+        <TravelFlowProgress step={choosingJourney ? 1 : 0} />
         {!choosingJourney ? (
           <div className="mx-auto max-w-xl">
-            <p className="eyebrow">Find your package · Step 1 of 2</p>
             <h1 className="mt-3 font-display text-[38px] leading-tight">
               Who’s joining your journey?
             </h1>
@@ -71,9 +74,7 @@ export default function TravelPackageStart() {
                   suffix="Children"
                   onChange={(value) => setChildren(Math.max(0, Math.min(20, 100 - adults, value)))}
                 />
-                <p className="mt-3 text-xs text-muted-foreground">
-                  We’ll ask for each child’s age when you proceed to booking.
-                </p>
+                <TravelChildAges ages={childAges} onChange={setChildAge} />
               </div>
             </div>
             <div className="mt-4">
@@ -83,18 +84,6 @@ export default function TravelPackageStart() {
               Include senior citizens in adults. Assistance preferences are available during
               booking.
             </p>
-            <Button
-              full
-              size="lg"
-              className="mt-7"
-              onClick={() => {
-                setChoosingJourney(true);
-                window.scrollTo(0, 0);
-              }}
-            >
-              CHOOSE YOUR JOURNEY
-              <ArrowRight size={18} />
-            </Button>
           </div>
         ) : (
           <>
@@ -110,7 +99,12 @@ export default function TravelPackageStart() {
               </div>
               <button
                 className="min-h-11 rounded-full border border-gold/50 bg-surface px-4 text-sm font-semibold"
-                onClick={() => setChoosingJourney(false)}
+                onClick={() => {
+                  setChoosingJourney(false);
+                  const url = new URL(window.location.href);
+                  url.searchParams.delete("step");
+                  window.history.replaceState(window.history.state, "", url);
+                }}
               >
                 Change
               </button>
@@ -118,14 +112,35 @@ export default function TravelPackageStart() {
             <TravelJourneyCards
               onSelect={(category) =>
                 router.push(
-                  `/travel/packages/${category}?travellers=${adults}&children=${children}&seniors=${seniorCount}`,
+                  `/travel/packages/${category}?${new URLSearchParams(Object.fromEntries(["departure", "city", "date", "month", "flexible", "datesSelected"].map((key) => [key, new URLSearchParams(window.location.search).get(key) || ""])))}&travellers=${adults}&children=${children}&seniors=${seniorCount}`,
                 )
               }
             />
           </>
         )}
       </main>
-      <TravelNavigation />
+      {!choosingJourney && (
+        <TravelStepFooter travellers={adults + children}>
+          <Button
+            full
+            size="lg"
+            className="min-h-14"
+            disabled={childAges.some((age) => age < 0)}
+            onClick={() => {
+              setChoosingJourney(true);
+              window.history.replaceState(
+                window.history.state,
+                "",
+                `/travel/packages?step=journey&travellers=${adults}&children=${children}&seniors=${seniorCount}`,
+              );
+              window.scrollTo(0, 0);
+            }}
+          >
+            CHOOSE YOUR JOURNEY
+            <ArrowRight size={18} />
+          </Button>
+        </TravelStepFooter>
+      )}
     </div>
   );
 }

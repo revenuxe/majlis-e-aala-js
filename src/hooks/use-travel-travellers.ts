@@ -7,7 +7,6 @@ import {
   restoreTravellers,
   saveTravelTravellers,
   syncTravellerUrl,
-  type TravelTravellers,
 } from "@/lib/travel-travellers";
 
 export function useTravelTravellers() {
@@ -32,12 +31,22 @@ export function useTravelTravellers() {
     syncTravellerUrl(counts);
   }, [counts, ready]);
 
-  function update(key: keyof TravelTravellers, value: number) {
+  function update(key: "adults" | "children" | "seniors", value: number) {
     setCounts((current) => normalizeTravellers({ ...current, [key]: value }));
   }
 
   return {
     ...counts,
+    childAges: counts.childAges || [],
+    setChildAge: (index: number, age: number) =>
+      setCounts((current) =>
+        normalizeTravellers({
+          ...current,
+          childAges: Array.from({ length: current.children }, (_, i) =>
+            i === index ? age : (current.childAges?.[i] ?? -1),
+          ),
+        }),
+      ),
     setAdults: (value: number) => update("adults", value),
     setChildren: (value: number) => update("children", value),
     setSeniors: (value: number) => update("seniors", value),

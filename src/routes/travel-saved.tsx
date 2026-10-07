@@ -81,7 +81,7 @@ export default function TravelSaved({ initialPackages }: { initialPackages: Trav
                         selectLabel="Continue booking"
                         onSelect={(flightId) =>
                           router.push(
-                            `/travel/plan?category=${pkg.category}&package=${pkg.id}&flight=${encodeURIComponent(flightId || "")}&travellers=${item.adults}&children=${item.children}&seniors=${item.seniors}`,
+                            `/travel/dates?category=${pkg.category}&package=${pkg.id}&flight=${encodeURIComponent(flightId || "")}&travellers=${item.adults}&children=${item.children}&seniors=${item.seniors}`,
                           )
                         }
                       />

@@ -1,4 +1,6 @@
 "use client";
+import { TravelBatchSummary } from "@/components/TravelBatchSummary";
+import { TravelFlowProgress } from "@/components/TravelFlowProgress";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -36,21 +38,12 @@ import {
   type TravelDraft,
 } from "@/lib/travel-booking";
 
-const steps = [
-  "Your travellers",
-  "Your journey",
-  "Your package",
-  "Dates & departure",
-  "Your preferences",
-  "Sign in",
-  "Review & contact",
-];
-const TOTAL_STEPS = steps.length;
 const AUTH_STEP = 5;
 const REVIEW_STEP = 6;
 const inputClass =
   "mt-2 h-12 w-full rounded-xl border border-border bg-card px-4 text-[15px] outline-none focus:border-gold focus:ring-2 focus:ring-gold/20";
 const savedDraftSchema = z.object({
+  batchSelectionMade: z.boolean().default(false),
   category: z.enum(["", "umrah", "hajj", "international", "domestic"]),
   departureCity: z.string().max(80),
   datesFlexible: z.boolean(),
@@ -173,13 +166,59 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
   const chosenDeparture = catalog.departures.find((d) => d.id === draft.departureId);
   const matchingPackages = catalog.packages.filter((p) => p.category === draft.category);
   const filteredPackages = filterTravelPackages(matchingPackages, packageFilter);
-  const matchingDepartures = catalog.departures.filter(
-    (d) =>
-      d.package_id === draft.packageId &&
-      (!d.capacity || d.capacity >= draft.adults + draft.children),
-  );
   const today = new Date();
   const minimumDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const matchingDepartures = catalog.departures
+    .filter(
+      (d) =>
+        d.is_active &&
+        d.start_date >= minimumDate &&
+        (draft.packageId
+          ? d.package_id === draft.packageId
+          : catalog.packages.some(
+              (pkg) => pkg.id === d.package_id && pkg.category === draft.category,
+            )) &&
+        (!d.capacity || d.capacity >= draft.adults + draft.children),
+    )
+    .sort((a, b) => a.start_date.localeCompare(b.start_date) || a.id.localeCompare(b.id));
+  const nextBatch = matchingDepartures[0];
+  useEffect(() => {
+    if (
+      !ready ||
+      step !== 3 ||
+      catalog.loading ||
+      catalog.departuresError ||
+      !nextBatch ||
+      draft.departureId ||
+      draft.batchSelectionMade
+    )
+      return;
+    setDraft((current) => {
+      if (
+        current.departureId ||
+        current.batchSelectionMade ||
+        (current.packageId != null && current.packageId !== nextBatch.package_id)
+      )
+        return current;
+      return {
+        ...current,
+        packageId: current.packageId || nextBatch.package_id,
+        departureId: nextBatch.id,
+        date: nextBatch.start_date,
+        departureCity: nextBatch.departure_city,
+        datesFlexible: false,
+        batchSelectionMade: true,
+      };
+    });
+  }, [
+    ready,
+    step,
+    catalog.loading,
+    catalog.departuresError,
+    nextBatch,
+    draft.departureId,
+    draft.batchSelectionMade,
+  ]);
   const chosenFlight = chosenPackage?.flight_options?.find(
     (option) => option.id === draft.flightOptionId,
   );
@@ -201,9 +240,13 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
     setDraft((d) => {
       const next = { ...d, ...patch };
       if (patch.packageId !== undefined && patch.packageId !== d.packageId) {
+        next.batchSelectionMade = patch.batchSelectionMade ?? false;
         next.flightOptionId = patch.flightOptionId ?? null;
         next.room = "package";
         next.stay = "package";
+        if (patch.departureId === undefined) next.departureId = null;
+      } else if (patch.departureId !== undefined) {
+        next.batchSelectionMade = true;
       }
       return { ...next, seniors: Math.min(next.seniors, next.adults) };
     });
@@ -211,16 +254,26 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
   }
   useEffect(() => {
     let restored: TravelDraft = { ...initialTravelDraft, ...readTravelTravellers() };
+    let hasSavedDraft = false;
+    let savedFlowVersion = 4;
     try {
       const saved = JSON.parse(window.localStorage.getItem("ma-travel-draft-v1") || "null");
       const parsed = savedDraftSchema.safeParse(saved?.draft);
       if (parsed.success) {
+        savedFlowVersion = saved.flowVersion;
+        hasSavedDraft = true;
         restored = { ...restored, ...parsed.data };
         const storedStep = Number(saved.step);
         const oldStep = Number.isInteger(storedStep)
           ? Math.max(0, Math.min(REVIEW_STEP, storedStep))
           : 0;
-        setStep(saved.flowVersion === 2 ? oldStep : [1, 3, 0, 2, 4, 5, 6][oldStep]!);
+        setStep(
+          saved.flowVersion === 3
+            ? [0, 3, 1, 2, 4, 5, 6][oldStep]!
+            : saved.flowVersion === 2 || saved.flowVersion === 4
+              ? oldStep
+              : [1, 3, 0, 2, 4, 5, 6][oldStep]!,
+        );
       }
     } catch {
       /* Draft storage is optional. */
@@ -237,23 +290,37 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
       /* Optional, short-lived notes for an auth redirect. */
     }
     const params = new URLSearchParams(window.location.search);
-    if (params.get("step") === String(REVIEW_STEP)) setStep(AUTH_STEP);
     const requestedCategory = params.get("category");
-    if (travelCategories.some((c) => c.id === requestedCategory)) {
+    const requestedPackage = params.get("package");
+    const newSelection =
+      (travelCategories.some((c) => c.id === requestedCategory) &&
+        requestedCategory !== restored.category) ||
+      (!!requestedPackage &&
+        /^[0-9a-f-]{36}$/i.test(requestedPackage) &&
+        requestedPackage !== restored.packageId);
+    if (
+      travelCategories.some((c) => c.id === requestedCategory) &&
+      (!hasSavedDraft || newSelection)
+    ) {
       restored.category = requestedCategory as TravelDraft["category"];
       restored.packageId = null;
       restored.departureId = null;
       setStep(0);
     }
-    const requestedPackage = params.get("package");
-    if (requestedPackage && /^[0-9a-f-]{36}$/i.test(requestedPackage)) {
+    if (
+      requestedPackage &&
+      /^[0-9a-f-]{36}$/i.test(requestedPackage) &&
+      (!hasSavedDraft || newSelection)
+    ) {
       restored.packageId = requestedPackage;
+      restored.batchSelectionMade = false;
       restored.flightOptionId = params.get("flight")?.slice(0, 100) || null;
       restored.departureId = null;
       setStep(0);
     }
     const requestedTravellers = Number(params.get("travellers"));
     if (
+      (!hasSavedDraft || newSelection) &&
       requestedTravellers >= 1 &&
       requestedTravellers <= 100 &&
       Number.isInteger(requestedTravellers)
@@ -263,6 +330,7 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
     }
     const requestedChildren = Number(params.get("children"));
     if (
+      (!hasSavedDraft || newSelection) &&
       params.has("children") &&
       Number.isInteger(requestedChildren) &&
       requestedChildren >= 0 &&
@@ -281,13 +349,42 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
     );
     const requestedSeniors = Number(params.get("seniors"));
     if (
+      (!hasSavedDraft || newSelection) &&
       params.has("seniors") &&
       Number.isInteger(requestedSeniors) &&
       requestedSeniors >= 0 &&
       requestedSeniors <= restored.adults
     )
       restored.seniors = requestedSeniors;
+    const requestedStep = Number(params.get("step"));
+    if (
+      hasSavedDraft &&
+      !newSelection &&
+      params.has("step") &&
+      Number.isInteger(requestedStep) &&
+      requestedStep >= 0 &&
+      requestedStep <= REVIEW_STEP
+    )
+      setStep(savedFlowVersion === 3 ? [0, 3, 1, 2, 4, 5, 6][requestedStep]! : requestedStep);
+    if (params.has("childAges") && (!hasSavedDraft || newSelection)) {
+      const ages = (params.get("childAges") || "").split(",").map(Number);
+      restored.childAges = Array.from({ length: restored.children }, (_, i) =>
+        Number.isInteger(ages[i]) && ages[i]! >= 0 && ages[i]! <= 17 ? ages[i]! : -1,
+      );
+    }
     restored.seniors = Math.min(restored.seniors, restored.adults);
+    if (params.get("datesSelected") === "1") {
+      const requestedDate = params.get("date") || "";
+      const requestedMonth = params.get("month") || "";
+      if (!requestedDate || /^\d{4}-\d{2}-\d{2}$/.test(requestedDate))
+        restored.date = requestedDate;
+      if (!requestedMonth || /^\d{4}-\d{2}$/.test(requestedMonth)) restored.month = requestedMonth;
+      restored.departureCity = (params.get("city") || "Bengaluru").slice(0, 80);
+      restored.datesFlexible = params.get("flexible") !== "false";
+      restored.departureId = params.get("departure") || null;
+      restored.batchSelectionMade = true;
+      if (restored.packageId && params.get("step") === "4") setStep(4);
+    }
     setDraft(restored);
     let token = "";
     try {
@@ -308,8 +405,18 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
   useEffect(() => {
     if (!ready) return;
     const params = new URLSearchParams(window.location.search);
-    if (["category", "package"].some((key) => params.has(key))) {
-      ["category", "package"].forEach((key) => params.delete(key));
+    if (["category", "package", "datesSelected"].some((key) => params.has(key))) {
+      [
+        "category",
+        "package",
+        "flight",
+        "datesSelected",
+        "departure",
+        "city",
+        "date",
+        "month",
+        "flexible",
+      ].forEach((key) => params.delete(key));
       window.history.replaceState(
         window.history.state,
         "",
@@ -353,8 +460,21 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
       adults: draft.adults,
       children: draft.children,
       seniors: draft.seniors,
+      childAges: draft.childAges,
     });
-    syncTravellerUrl({ adults: draft.adults, children: draft.children, seniors: draft.seniors });
+    syncTravellerUrl({
+      adults: draft.adults,
+      children: draft.children,
+      seniors: draft.seniors,
+      childAges: draft.childAges,
+    });
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set("step", String(step));
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${currentUrl.pathname}${currentUrl.search}${currentUrl.hash}`,
+    );
     try {
       const {
         name: _name,
@@ -366,7 +486,7 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
       } = draft;
       window.localStorage.setItem(
         "ma-travel-draft-v1",
-        JSON.stringify({ draft: choices, step, flowVersion: 2 }),
+        JSON.stringify({ draft: choices, step, flowVersion: 4 }),
       );
       window.sessionStorage.setItem(
         "ma-travel-notes-session",
@@ -383,6 +503,13 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
   function stepError(index: number): string | null {
     if (index === 1 && !draft.category) return "Choose the kind of journey you’re planning.";
     if (index === 3) {
+      if (draft.departureId && (catalog.loading || catalog.departuresError))
+        return "Please refresh upcoming batches before continuing.";
+      if (
+        draft.departureId &&
+        (!chosenDeparture || !matchingDepartures.some((batch) => batch.id === draft.departureId))
+      )
+        return "This batch is no longer available for your package and group size. Choose another batch or preferred dates.";
       if (draft.departureCity.trim().length < 2)
         return "Tell us which city you’d like to depart from.";
       if (!draft.datesFlexible && (!draft.date || draft.date < minimumDate))
@@ -598,34 +725,22 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
         </div>
       </header>
       <main className="mx-auto max-w-[1000px] px-5 py-4 sm:py-6">
-        <div className="flex items-center justify-between gap-3 text-[12px]">
-          <p className="font-semibold">
-            Step {step + 1} of {TOTAL_STEPS}{" "}
-            <span className="ml-2 text-muted-foreground">{steps[step]}</span>
-          </p>
-          <span className="text-muted-foreground">Travel request</span>
-        </div>
-        <div
-          role="progressbar"
-          aria-label="Travel planning progress"
-          aria-valuemin={0}
-          aria-valuemax={TOTAL_STEPS}
-          aria-valuenow={step + 1}
-          className="mt-3 h-1.5 overflow-hidden rounded-full bg-border"
-        >
-          <div
-            className="h-full rounded-full bg-primary transition-all motion-reduce:transition-none"
-            style={{ width: `${((step + 1) / TOTAL_STEPS) * 100}%` }}
-          />
-        </div>
+        <TravelFlowProgress step={step} />
         <p className="eyebrow mt-5">{step === 1 ? "A journey that’s yours" : categoryName}</p>
-        <h1 className="mt-2 font-display text-[36px] leading-tight sm:text-[44px]">
+        <h1
+          className={cx(
+            "mt-2 font-display leading-tight",
+            step === 2 && chosenPackage && !changingPackage
+              ? "whitespace-nowrap text-[clamp(20px,5.5vw,32px)] sm:text-[36px]"
+              : "text-[36px] sm:text-[44px]",
+          )}
+        >
           {
             [
               "Who is joining your journey?",
               "Where would you like to go?",
               chosenPackage && !changingPackage ? "Your selected package." : "Choose your package.",
-              "When would you like to travel?",
+              "Choose your travel dates",
               "Any special requests?",
               "Keep your journeys together.",
               "One last look. Then let us begin.",
@@ -638,7 +753,7 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
               "Include adults, children and senior travellers. Your count sets the package estimates.",
               "Choose your journey, then compare packages for your group.",
               "Starting adult estimates use your traveller count. Children and extras are quoted separately.",
-              "An approximate month is enough if your plans are still taking shape.",
+              "Choose a batch or share your preferred dates.",
               "Keep your package arrangements, or tell us what would help. This step is optional.",
               "Sign in once to keep your journeys together, or continue as a guest.",
               "Review your choices and tell us how to reach you. No payment required.",
@@ -660,55 +775,118 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
           )}
           {step === 3 && (
             <>
-              <Field label="Departure city">
-                <input
-                  autoComplete="address-level2"
-                  maxLength={80}
-                  value={draft.departureCity}
-                  onChange={(e) => update({ departureCity: e.target.value, departureId: null })}
-                  placeholder="e.g. Bengaluru"
-                  className={inputClass}
-                />
-              </Field>
-              <div className="grid grid-cols-2 gap-3">
-                <Choice
-                  compact
-                  selected={draft.datesFlexible}
-                  onClick={() => update({ datesFlexible: true, departureId: null })}
-                  title="My dates are flexible"
-                  note="Choose a month, or decide with the team."
-                />
-                <Choice
-                  compact
-                  selected={!draft.datesFlexible}
-                  onClick={() => update({ datesFlexible: false, departureId: null })}
-                  title="I have a date in mind"
-                  note="We’ll check the options for your preferred date."
-                />
-              </div>
-              {draft.datesFlexible ? (
-                <Field
-                  label="Preferred month (optional)"
-                  note="Leave blank if you’d like help choosing."
-                >
-                  <input
-                    type="month"
-                    min={minimumDate.slice(0, 7)}
-                    value={draft.month}
-                    onChange={(e) => update({ month: e.target.value })}
+              {draft.category && (
+                <Field label="Select next batch">
+                  <select
                     className={inputClass}
-                  />
+                    value={chosenDeparture?.id || ""}
+                    disabled={catalog.loading || !!catalog.departuresError}
+                    onChange={(e) => {
+                      const batch = matchingDepartures.find((item) => item.id === e.target.value);
+                      update(
+                        batch
+                          ? {
+                              packageId: batch.package_id,
+                              departureId: batch.id,
+                              batchSelectionMade: true,
+                              date: batch.start_date,
+                              departureCity: batch.departure_city,
+                              datesFlexible: false,
+                            }
+                          : { departureId: null },
+                      );
+                    }}
+                  >
+                    <option value="">Keep my preferred dates</option>
+                    {matchingDepartures.map((batch) => (
+                      <option key={batch.id} value={batch.id}>
+                        {travelDate(batch.start_date)}
+                        {batch.end_date ? ` – ${travelDate(batch.end_date)}` : ""} ·{" "}
+                        {batch.departure_city} ·{" "}
+                        {catalog.packages.find((pkg) => pkg.id === batch.package_id)?.name}
+                      </option>
+                    ))}
+                  </select>
+                  {!catalog.loading && !catalog.departuresError && !matchingDepartures.length && (
+                    <p className="mt-2 text-xs font-normal text-muted-foreground">
+                      No upcoming batches for this package and group size. Share your preferred
+                      dates instead.
+                    </p>
+                  )}
+                  {catalog.departuresError && (
+                    <div role="alert" className="mt-2 text-sm font-normal">
+                      <p>We couldn’t load upcoming batches.</p>
+                      <button
+                        type="button"
+                        className="min-h-11 underline"
+                        onClick={() => void catalog.reload()}
+                      >
+                        Retry batches
+                      </button>
+                    </div>
+                  )}
+                  {chosenDeparture?.notes && (
+                    <p className="mt-2 text-xs font-normal text-muted-foreground">
+                      {chosenDeparture.notes}
+                    </p>
+                  )}
                 </Field>
+              )}
+              {chosenDeparture ? (
+                <TravelBatchSummary batch={chosenDeparture} />
               ) : (
-                <Field label="Preferred travel date">
-                  <input
-                    type="date"
-                    min={minimumDate}
-                    value={draft.date}
-                    onChange={(e) => update({ date: e.target.value })}
-                    className={inputClass}
-                  />
-                </Field>
+                <>
+                  <Field label="Departure city">
+                    <input
+                      autoComplete="address-level2"
+                      maxLength={80}
+                      value={draft.departureCity}
+                      onChange={(e) => update({ departureCity: e.target.value, departureId: null })}
+                      placeholder="e.g. Bengaluru"
+                      className={inputClass}
+                    />
+                  </Field>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Choice
+                      compact
+                      selected={draft.datesFlexible}
+                      onClick={() => update({ datesFlexible: true, departureId: null })}
+                      title="My dates are flexible"
+                      note="Choose a month, or decide with the team."
+                    />
+                    <Choice
+                      compact
+                      selected={!draft.datesFlexible}
+                      onClick={() => update({ datesFlexible: false, departureId: null })}
+                      title="I have a date in mind"
+                      note="We’ll check the options for your preferred date."
+                    />
+                  </div>
+                  {draft.datesFlexible ? (
+                    <Field
+                      label="Preferred month (optional)"
+                      note="Leave blank if you’d like help choosing."
+                    >
+                      <input
+                        type="month"
+                        min={minimumDate.slice(0, 7)}
+                        value={draft.month}
+                        onChange={(e) => update({ month: e.target.value })}
+                        className={inputClass}
+                      />
+                    </Field>
+                  ) : (
+                    <Field label="Preferred travel date">
+                      <input
+                        type="date"
+                        min={minimumDate}
+                        value={draft.date}
+                        onChange={(e) => update({ date: e.target.value })}
+                        className={inputClass}
+                      />
+                    </Field>
+                  )}{" "}
+                </>
               )}
             </>
           )}
@@ -949,28 +1127,6 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
                     note="Tell us your preferences. We’ll prepare a personal itinerary."
                   />
                 </>
-              )}
-              {draft.packageId && matchingDepartures.length > 0 && (
-                <div className="space-y-3">
-                  <h2 className="text-[15px] font-semibold">
-                    Would a scheduled departure suit you?
-                  </h2>
-                  <Choice
-                    selected={!draft.departureId}
-                    onClick={() => update({ departureId: null })}
-                    title="Keep my preferred dates"
-                    note="Ask for an itinerary around your dates."
-                  />
-                  {matchingDepartures.map((d) => (
-                    <Choice
-                      key={d.id}
-                      selected={draft.departureId === d.id}
-                      onClick={() => update({ departureId: d.id })}
-                      title={`${travelDate(d.start_date)} – ${travelDate(d.end_date)}`}
-                      note={`From ${d.departure_city}. Availability is confirmed by the team.`}
-                    />
-                  ))}
-                </div>
               )}
             </>
           )}
