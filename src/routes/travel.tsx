@@ -393,28 +393,13 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
             subtitle="Choose what brings you here. We’ll help you take the next step."
           />
           <TravelJourneyCards onSelect={selectCategory} />
-          <div className="mt-6 text-[13px]">
-            <p className="mb-3 text-muted-foreground">Something more personal?</p>
-            <div className="grid grid-cols-2 gap-3 sm:max-w-md">
-              {["Family holiday", "Custom journey"].map((item) => (
-                <button
-                  key={item}
-                  onClick={() => planJourney(item)}
-                  className="press flex min-h-12 items-center justify-between gap-2 rounded-xl border border-border bg-card px-3.5 text-left font-semibold transition-colors hover:border-gold hover:bg-champagne/30"
-                >
-                  <span>{item}</span>
-                  <ArrowUpRight size={15} className="shrink-0 text-gold" />
-                </button>
-              ))}
-            </div>
-          </div>
         </Section>
 
         <Section className="!py-6 sm:!py-8">
           {travellersReady && nextBatch && nextBatchPackage && !catalog.departuresError && (
             <section
               aria-labelledby="next-batch-heading"
-              className="mb-4 rounded-xl border border-gold/40 bg-champagne/30 p-5 sm:p-6"
+              className="rounded-xl border border-gold/40 bg-champagne/30 p-5 sm:p-6"
             >
               <div className="flex items-center gap-2 text-gold">
                 <CalendarDays size={18} aria-hidden="true" />
@@ -440,6 +425,16 @@ export default function TravelHome({ initialContent }: { initialContent?: Travel
                 our team.
               </p>
             </section>
+          )}
+          {travellersReady && nextBatch && nextBatchPackage && !catalog.departuresError && (
+            <div
+              aria-hidden="true"
+              className="mx-auto flex max-w-xs items-center gap-3 px-6 py-7 sm:py-8"
+            >
+              <span className="h-px flex-1 bg-gradient-to-r from-transparent to-gold/50" />
+              <span className="h-1.5 w-1.5 rotate-45 bg-gold/70" />
+              <span className="h-px flex-1 bg-gradient-to-l from-transparent to-gold/50" />
+            </div>
           )}
           <div className="relative overflow-hidden rounded-[24px] border border-gold/45 bg-card p-5 shadow-[0_16px_34px_rgba(55,42,25,0.12)] before:pointer-events-none before:absolute before:inset-x-7 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gold before:to-transparent sm:p-8">
             <div className="flex items-center gap-3">
