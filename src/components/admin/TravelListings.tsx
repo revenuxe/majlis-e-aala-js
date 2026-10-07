@@ -6,8 +6,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button, cx } from "@/components/ui-kit";
 import { Field, ImageField, Select, Sheet, TextArea, TextInput, Toggle } from "./AdminUI";
 import { travelCategories } from "@/lib/travel";
+import { travelSaveError } from "@/lib/travel-admin-errors";
 import { useAdminState } from "./AdminWorkspace";
 import {
+  packageAdultPrice,
   assistanceOptions,
   travelDate,
   travelMoney,
@@ -35,6 +37,7 @@ const statusColors: Record<TravelRequest["status"], string> = {
   cancelled: "bg-red-50 text-red-800 border-red-200",
 };
 const blankPackage: Omit<TravelPackage, "id"> = {
+  flight_options: [],
   slug: "",
   category: "umrah",
   name: "",
@@ -142,12 +145,33 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
       if (kind === "package" && pkg) {
         if (!pkg.name.trim() || !pkg.slug.trim() || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(pkg.slug))
           throw new Error("Enter a name and a slug using lowercase letters, numbers and hyphens.");
+        const flightOptions = (pkg.flight_options || []).map((option) => ({
+          ...option,
+          airline: option.airline.trim(),
+          notes: option.notes.trim(),
+        }));
+        if (
+          flightOptions.length > 10 ||
+          flightOptions.some(
+            (option) =>
+              !option.id ||
+              !option.airline ||
+              option.airline.length > 100 ||
+              option.notes.length > 500 ||
+              (option.price_per_adult != null &&
+                (!Number.isFinite(option.price_per_adult) || option.price_per_adult < 0)),
+          )
+        )
+          throw new Error(
+            "Enter a valid airline and package price for each flight option (maximum 10).",
+          );
+        const adultPrice = packageAdultPrice(pkg);
         if (
           pkg.price_per_adult !== null &&
           (!Number.isFinite(pkg.price_per_adult) || pkg.price_per_adult < 0)
         )
           throw new Error("Enter a valid adult price or leave it blank for a quotation.");
-        if (pkg.pricing_mode !== "on_request" && pkg.price_per_adult == null)
+        if (pkg.pricing_mode !== "on_request" && adultPrice == null)
           throw new Error("Add a starting price or choose price on request.");
         if (
           !pkg.price_basis.trim() ||
@@ -168,7 +192,8 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
         const { id, ...data } = pkg as TravelPackage;
         const payload = {
           ...data,
-          price_per_adult: data.pricing_mode === "on_request" ? null : data.price_per_adult,
+          flight_options: flightOptions,
+          price_per_adult: adultPrice,
           price_basis: data.price_basis.trim(),
           name: data.name.trim(),
           slug: data.slug.trim(),
@@ -178,8 +203,12 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
           exclusions: data.exclusions.map((v) => v.trim()).filter(Boolean),
         };
         result = id
-          ? await db.from("travel_packages").update(payload).eq("id", id)
-          : await db.from("travel_packages").insert(payload);
+          ? await db.from("travel_packages").update(payload).eq("id", id).select("id")
+          : await db.from("travel_packages").insert(payload).select("id");
+        if (!result.error && !result.data?.length)
+          throw new Error(
+            "This package was deleted or your account cannot update it. Refresh and check your administrator access.",
+          );
       } else if (kind === "departure" && dep) {
         if (
           !dep.package_id ||
@@ -223,12 +252,7 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
             "This booking changed or was deleted. Close it and refresh before updating.",
           );
       }
-      if (result?.error)
-        throw new Error(
-          result.error.code === "23505"
-            ? "That package slug already exists. Choose another."
-            : "Could not save changes. Please try again.",
-        );
+      if (result?.error) throw new Error(travelSaveError(result.error));
       toast.success("Travel listing saved");
       setPkg(null);
       setDep(null);
@@ -365,6 +389,14 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
                       : `${item.pricing_mode === "seasonal" ? "Seasonal guide from" : "From"} ${travelMoney(Number(item.price_per_adult))}`}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">{item.price_basis}</p>
+                  {item.flight_options?.map((option) => (
+                    <p key={option.id} className="mt-1 text-xs">
+                      {option.airline} ·{" "}
+                      {item.pricing_mode === "on_request" || option.price_per_adult == null
+                        ? "Quotation required"
+                        : travelMoney(option.price_per_adult)}
+                    </p>
+                  ))}
                   <p className="mt-3 text-xs text-gold">Edit package →</p>
                 </button>
               ))}
@@ -631,12 +663,119 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
             <Field label="Itinerary" hint="One stage per line: Title | description">
               <TextArea value={itinerary} onChange={(e) => setItinerary(e.target.value)} />
             </Field>
-            <Field label="Indicative adult price (INR)" hint="Blank = quotation required">
+            <div className="space-y-3 rounded-2xl border border-border p-4">
+              <p className="font-semibold">Flight options</p>
+              <p className="text-xs text-muted-foreground">
+                Enter the full package price per adult with each airline, including package
+                services. The lowest priced option becomes the starting price. Blank prices require
+                a quotation.
+              </p>
+              {(pkg.flight_options || []).map((option, index) => (
+                <div key={option.id} className="space-y-2 rounded-xl bg-surface p-3">
+                  <Field label={"Airline " + (index + 1)}>
+                    <TextInput
+                      maxLength={100}
+                      placeholder="Air India Express"
+                      value={option.airline}
+                      onChange={(e) =>
+                        setPkg({
+                          ...pkg,
+                          flight_options: pkg.flight_options!.map((item) =>
+                            item.id === option.id ? { ...item, airline: e.target.value } : item,
+                          ),
+                        })
+                      }
+                    />
+                  </Field>
+                  <Field label="Full package price per adult (INR)">
+                    <TextInput
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="100000"
+                      value={option.price_per_adult ?? ""}
+                      onChange={(e) =>
+                        setPkg({
+                          ...pkg,
+                          pricing_mode:
+                            e.target.value && pkg.pricing_mode === "on_request"
+                              ? "starting"
+                              : pkg.pricing_mode,
+                          flight_options: pkg.flight_options!.map((item) =>
+                            item.id === option.id
+                              ? {
+                                  ...item,
+                                  price_per_adult:
+                                    e.target.value === "" ? null : Number(e.target.value),
+                                }
+                              : item,
+                          ),
+                        })
+                      }
+                    />
+                  </Field>
+                  <Field label="Flight note (optional)">
+                    <TextInput
+                      maxLength={500}
+                      placeholder="Return economy flight; baggage confirmed in quotation"
+                      value={option.notes}
+                      onChange={(e) =>
+                        setPkg({
+                          ...pkg,
+                          flight_options: pkg.flight_options!.map((item) =>
+                            item.id === option.id ? { ...item, notes: e.target.value } : item,
+                          ),
+                        })
+                      }
+                    />
+                  </Field>
+                  <button
+                    type="button"
+                    className="min-h-11 text-sm text-destructive"
+                    onClick={() =>
+                      setPkg({
+                        ...pkg,
+                        flight_options: pkg.flight_options!.filter((item) => item.id !== option.id),
+                      })
+                    }
+                  >
+                    Remove flight option
+                  </button>
+                </div>
+              ))}
+              <Button
+                disabled={(pkg.flight_options || []).length >= 10}
+                onClick={() =>
+                  setPkg({
+                    ...pkg,
+                    flight_options: [
+                      ...(pkg.flight_options || []),
+                      { id: crypto.randomUUID(), airline: "", price_per_adult: null, notes: "" },
+                    ],
+                  })
+                }
+              >
+                Add flight option
+              </Button>
+            </div>
+            <Field
+              label="Indicative adult price (INR)"
+              hint={
+                pkg.flight_options?.length
+                  ? "Calculated from flight options when saved"
+                  : "Blank = quotation required"
+              }
+            >
               <TextInput
                 type="number"
                 min="0"
                 step="0.01"
-                value={pkg.price_per_adult ?? ""}
+                disabled={!!pkg.flight_options?.length}
+                value={
+                  pkg.flight_options?.length
+                    ? (packageAdultPrice(pkg) ?? "")
+                    : (pkg.price_per_adult ?? "")
+                }
                 onChange={(e) =>
                   setPkg({
                     ...pkg,
@@ -841,6 +980,9 @@ export function TravelListingsPanel({ mode = "listings" }: { mode?: "listings" |
                   .join(", ") || "No special assistance requested"}
               </p>
               <p className="whitespace-pre-wrap">{request.notes || "No additional notes"}</p>
+              {request.package_snapshot.flight_option && (
+                <p>Preferred flight: {request.package_snapshot.flight_option.airline}</p>
+              )}
               <p>Price basis: {request.package_snapshot.price_basis || "Confirmed in quotation"}</p>
               <p className="text-xs">{request.package_snapshot.pricing_note}</p>
               <p>

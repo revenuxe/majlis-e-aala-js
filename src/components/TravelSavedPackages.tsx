@@ -17,6 +17,7 @@ const storageKey = "ma-travel-saved-packages-v1";
 const savedPackageSchema = z
   .object({
     packageId: z.string().uuid(),
+    flightOptionId: z.string().max(100).nullable().optional(),
     adults: z.number().int().min(1).max(100),
     children: z.number().int().min(0).max(20),
     seniors: z.number().int().min(0).max(100),
@@ -83,6 +84,7 @@ export function TravelSavedPackagesProvider({ children }: { children: ReactNode 
       const existing = current.find((item) => item.packageId === selection.packageId);
       if (
         existing &&
+        existing.flightOptionId === selection.flightOptionId &&
         existing.adults === selection.adults &&
         existing.children === selection.children &&
         existing.seniors === selection.seniors

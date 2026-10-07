@@ -1,8 +1,8 @@
 ﻿"use client";
 import { useId, useState, type ReactNode } from "react";
-import { Check, ChevronDown, Heart } from "lucide-react";
+import { Check, ChevronDown, Heart, Plane } from "lucide-react";
 import { cx } from "@/components/ui-kit";
-import { travelMoney, type TravelPackage } from "@/lib/travel-booking";
+import { packageAdultPrice, travelMoney, type TravelPackage } from "@/lib/travel-booking";
 import { useSavedTravelPackages } from "@/components/TravelSavedPackages";
 import { travelWhatsApp } from "@/lib/travel";
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -28,20 +28,37 @@ export function TravelPackageChoice({
   seniors = 0,
   onSelect,
   selectLabel,
+  flightOptionId,
+  onFlightChange,
 }: {
   pkg: TravelPackage;
   selected?: boolean;
   adults: number;
   children?: number;
   seniors?: number;
-  onSelect: () => void;
+  onSelect: (flightOptionId: string | null) => void;
+  flightOptionId?: string | null;
+  onFlightChange?: (id: string) => void;
   selectLabel?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
   const { items, savePackage } = useSavedTravelPackages();
   const isSaved = items.some((item) => item.packageId === pkg.id);
   const detailsId = useId();
-  const price = pkg.pricing_mode === "on_request" ? null : pkg.price_per_adult;
+  const [localFlightId, setLocalFlightId] = useState<string | null>(null);
+  const flights = pkg.flight_options || [];
+  const cheapestFlight =
+    flights.find((option) => option.price_per_adult === packageAdultPrice(pkg)) || flights[0];
+  const savedFlightId = items.find((item) => item.packageId === pkg.id)?.flightOptionId;
+  const chosenFlight =
+    flights.find((option) => option.id === (flightOptionId ?? localFlightId ?? savedFlightId)) ||
+    cheapestFlight;
+  const price =
+    pkg.pricing_mode === "on_request"
+      ? null
+      : chosenFlight
+        ? chosenFlight.price_per_adult
+        : packageAdultPrice(pkg);
   const roomBasis = pkg.price_basis
     .replace(/\b(\d+)\s*\/\s*(\d+)\s+sharing\b/gi, "$1 to $2 people sharing one room")
     .replace(/\b(\d+)\s+sharing\b/gi, "$1 people sharing one room");
@@ -53,14 +70,18 @@ export function TravelPackageChoice({
       )}
     >
       <div className="p-4 pb-3 sm:p-5 sm:pb-3">
-        <h3 className="font-display text-[28px] leading-tight">{pkg.name}</h3>
-        {isSaved && (
-          <span className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-gold">
-            <Heart size={14} className="fill-gold/20" />
-            Saved
-          </span>
-        )}
-        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-border pb-3 text-sm leading-snug text-muted-foreground">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="min-w-0 break-words font-display text-[26px] leading-tight sm:text-[28px]">
+            {pkg.name}
+          </h3>
+          {isSaved && (
+            <span className="mt-1 inline-flex shrink-0 items-center gap-1 rounded-full bg-champagne/50 px-2 py-1 text-[11px] font-semibold text-gold">
+              <Heart size={13} className="fill-gold/20" aria-hidden="true" />
+              Saved
+            </span>
+          )}
+        </div>
+        <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-border pb-2.5 text-sm leading-snug text-muted-foreground">
           <p className="rounded-md bg-surface px-2.5 py-1.5 font-semibold text-foreground">
             {pkg.duration}
           </p>
@@ -72,79 +93,162 @@ export function TravelPackageChoice({
             className="mt-3 divide-y divide-border/60 rounded-xl border border-border bg-surface/30 px-3 text-[11px] leading-snug"
           >
             {pkg.inclusions.slice(0, 4).map((item, index) => (
-              <li key={index} className="flex min-w-0 items-start gap-2 py-2">
+              <li key={index} className="flex min-w-0 items-start gap-2 py-1.5 sm:py-2">
                 <Check size={12} className="mt-0.5 shrink-0 text-gold" aria-hidden="true" />
                 <span className="min-w-0 break-words">{item}</span>
               </li>
             ))}
           </ul>
         )}
-        <div className="relative mt-4">
-          <div className="w-full rounded-[16px] border border-gold/25 bg-surface px-4 py-3 text-left">
+        <div className="relative mt-3">
+          <div className="w-full rounded-[16px] border border-gold/25 bg-surface px-3 py-3 text-left sm:px-4">
             <div>
-              {price != null && (
-                <span className="mb-1 block text-sm font-semibold text-muted-foreground">
-                  Starting adult total
-                </span>
+              <div className="space-y-3">
+                <div className="min-w-0" aria-live="polite" aria-atomic="true">
+                  {price != null && (
+                    <span className="mb-1 block text-sm font-semibold text-muted-foreground">
+                      Estimated total for {adults} {adults === 1 ? "adult" : "adults"}
+                    </span>
+                  )}
+                  <span className="block text-[25px] font-bold leading-tight">
+                    {price == null
+                      ? "Price on request"
+                      : `From ${travelMoney(Number(price) * adults)}`}
+                  </span>
+                  {price != null && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {travelMoney(Number(price))} per adult × {adults}
+                    </p>
+                  )}
+                  <span className="mt-1 block text-sm font-medium leading-snug">
+                    {adults + children} {adults + children === 1 ? "traveller" : "travellers"} ·{" "}
+                    {adults} {adults === 1 ? "adult" : "adults"}
+                    {children > 0 ? ` + ${children} ${children === 1 ? "child" : "children"}` : ""}
+                  </span>
+                  {seniors > 0 && (
+                    <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
+                      Includes {Math.min(seniors, adults)} senior{" "}
+                      {Math.min(seniors, adults) === 1 ? "citizen" : "citizens"} in adults
+                    </span>
+                  )}
+                  {children > 0 && (
+                    <span className="mt-1 block text-sm text-muted-foreground">
+                      Children quoted separately
+                    </span>
+                  )}
+                </div>
+              </div>
+              {chosenFlight && (
+                <label
+                  htmlFor={detailsId + "-flight"}
+                  className="mb-1.5 mt-2.5 flex items-center gap-1.5 text-xs font-semibold"
+                >
+                  <Plane size={14} className="text-gold" aria-hidden="true" />
+                  {flights.length > 1 ? "Choose airline · price updates below" : "Package airline"}
+                </label>
               )}
-              <span className="block text-[25px] font-bold leading-tight">
-                {price == null ? "Price on request" : `From ${travelMoney(Number(price) * adults)}`}
-              </span>
-              <span className="mt-1 block text-sm font-medium leading-snug">
-                {adults + children} {adults + children === 1 ? "traveller" : "travellers"} ·{" "}
-                {adults} {adults === 1 ? "adult" : "adults"}
-                {children > 0 ? ` + ${children} ${children === 1 ? "child" : "children"}` : ""}
-              </span>
-              {seniors > 0 && (
-                <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
-                  Includes {Math.min(seniors, adults)} senior{" "}
-                  {Math.min(seniors, adults) === 1 ? "citizen" : "citizens"} in adults
-                </span>
-              )}
-              {children > 0 && (
-                <span className="mt-1 block text-sm text-muted-foreground">
-                  Children quoted separately
-                </span>
-              )}
-              <details className="group/pricing mt-2">
-                <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-lg border border-gold/40 bg-champagne/50 px-2.5 py-2 text-sm font-semibold leading-relaxed text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold [&::-webkit-details-marker]:hidden">
-                  {price == null
-                    ? "View pricing breakdown"
-                    : `From ${travelMoney(Number(price))} per adult`}
-                  <ChevronDown
-                    size={16}
-                    className="shrink-0 transition-transform group-open/pricing:rotate-180"
-                  />
-                </summary>
-                <dl className="mt-3 space-y-3 rounded-xl border border-gold/25 bg-card p-3 text-sm leading-relaxed">
-                  <div>
-                    <dt className="font-semibold">Adults · {adults}</dt>
-                    <dd className="text-muted-foreground">
-                      {price == null
-                        ? "Price on request"
-                        : `From ${travelMoney(Number(price))} per person`}
-                    </dd>
-                    {price != null && (
-                      <dd className="mt-1 font-medium">
-                        {adults} × {travelMoney(Number(price))} ={" "}
-                        {travelMoney(Number(price) * adults)}
-                      </dd>
+              <div
+                className={cx(
+                  "mt-2 grid items-start gap-2",
+                  chosenFlight ? "grid-cols-2" : "grid-cols-1",
+                )}
+              >
+                {chosenFlight && (
+                  <div className="min-w-0">
+                    <div className="relative">
+                      <select
+                        id={detailsId + "-flight"}
+                        value={chosenFlight?.id || ""}
+                        disabled={!chosenFlight}
+                        onChange={(event) => {
+                          setLocalFlightId(event.target.value);
+                          onFlightChange?.(event.target.value);
+                        }}
+                        className="h-12 w-full min-w-0 appearance-none rounded-xl border border-gold/35 bg-card py-2 pl-3 pr-7 text-xs font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold disabled:cursor-default disabled:text-muted-foreground"
+                      >
+                        {!chosenFlight && <option value="">Airline on request</option>}
+                        {flights.map((option) => (
+                          <option key={option.id} value={option.id}>
+                            {option.airline}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown
+                        size={14}
+                        className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                    </div>
+                  </div>
+                )}
+                <details className="group/pricing min-w-0">
+                  <summary
+                    aria-label={
+                      price == null
+                        ? "View pricing breakdown"
+                        : `${travelMoney(Number(price))} per adult. View pricing breakdown`
+                    }
+                    className="flex min-h-12 w-full cursor-pointer list-none items-center justify-between gap-1 rounded-xl border border-gold/40 bg-champagne/50 px-2 py-1.5 text-xs font-semibold leading-snug text-foreground sm:px-2.5 sm:text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold [&::-webkit-details-marker]:hidden"
+                  >
+                    {price == null ? (
+                      "View pricing breakdown"
+                    ) : (
+                      <span className="inline-flex items-baseline gap-1 whitespace-nowrap">
+                        <span className="text-[15px] font-bold leading-tight tracking-tight text-foreground sm:text-[17px]">
+                          {travelMoney(Number(price))}
+                        </span>
+                        <span className="text-[10px] font-normal leading-tight text-muted-foreground sm:text-[11px]">
+                          per adult
+                        </span>
+                      </span>
                     )}
-                  </div>
-                  <div className="border-t border-border pt-3">
-                    <dt className="font-semibold">Children · {children}</dt>
-                    <dd className="text-muted-foreground">
-                      Per-child fare quoted separately based on age.
-                    </dd>
-                  </div>
-                  <div className="border-t border-border pt-3">
-                    <dt className="font-semibold">Senior citizens · {Math.min(seniors, adults)}</dt>
-                    <dd className="text-muted-foreground">
-                      Already counted among your adults. Adult rate applies.
-                    </dd>
-                  </div>
-                </dl>
-              </details>
+                    <ChevronDown
+                      size={16}
+                      className="shrink-0 transition-transform group-open/pricing:rotate-180"
+                    />
+                  </summary>
+                  <dl
+                    className={cx(
+                      "mt-3 space-y-3 rounded-xl border border-gold/25 bg-card p-4 text-sm leading-relaxed",
+                      chosenFlight && "relative -left-[calc(100%+0.5rem)] w-[calc(200%+0.5rem)]",
+                    )}
+                  >
+                    <div>
+                      <dt className="font-semibold">Adults · {adults}</dt>
+                      <dd className="text-muted-foreground">
+                        {price == null
+                          ? "Price on request"
+                          : `From ${travelMoney(Number(price))} per person`}
+                      </dd>
+                      {price != null && (
+                        <dd className="mt-1 font-medium">
+                          {adults} × {travelMoney(Number(price))} ={" "}
+                          {travelMoney(Number(price) * adults)}
+                        </dd>
+                      )}
+                    </div>
+                    <div className="border-t border-border pt-3">
+                      <dt className="font-semibold">Children · {children}</dt>
+                      <dd className="text-muted-foreground">
+                        Per-child fare quoted separately based on age.
+                      </dd>
+                    </div>
+                    <div className="border-t border-border pt-3">
+                      <dt className="font-semibold">
+                        Senior citizens · {Math.min(seniors, adults)}
+                      </dt>
+                      <dd className="text-muted-foreground">
+                        Already counted among your adults. Adult rate applies.
+                      </dd>
+                    </div>
+                  </dl>
+                </details>
+              </div>
+              {chosenFlight?.notes && (
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  {chosenFlight.notes}
+                </p>
+              )}
               <span className="mt-2 block pr-5 text-sm leading-snug text-muted-foreground">
                 {roomBasis}
               </span>
@@ -157,7 +261,7 @@ export function TravelPackageChoice({
           </div>
           <a
             href={travelWhatsApp(
-              `Hello, I'd like to enquire about the ${pkg.name} package (${pkg.duration}, ${pkg.places}) for ${adults} ${adults === 1 ? "adult" : "adults"}${children > 0 ? ` and ${children} ${children === 1 ? "child" : "children"}` : ""}${seniors > 0 ? `, including ${Math.min(seniors, adults)} senior ${Math.min(seniors, adults) === 1 ? "citizen" : "citizens"}` : ""}. Please share availability and a quotation.`,
+              `Hello, I'd like to enquire about the ${pkg.name} package (${pkg.duration}, ${pkg.places}) for ${adults} ${adults === 1 ? "adult" : "adults"}${children > 0 ? ` and ${children} ${children === 1 ? "child" : "children"}` : ""}${seniors > 0 ? `, including ${Math.min(seniors, adults)} senior ${Math.min(seniors, adults) === 1 ? "citizen" : "citizens"}` : ""}.${chosenFlight ? ` Preferred airline: ${chosenFlight.airline}${price == null ? "" : ` (${travelMoney(price)} per adult)`}.` : ""} Please share availability and a quotation.`,
             )}
             target="_blank"
             rel="noopener noreferrer"
@@ -256,11 +360,12 @@ export function TravelPackageChoice({
           onClick={() => {
             savePackage({
               packageId: pkg.id,
+              flightOptionId: chosenFlight?.id ?? null,
               adults,
               children,
               seniors: Math.min(seniors, adults),
             });
-            onSelect();
+            onSelect(chosenFlight?.id ?? null);
           }}
           className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[14px] bg-primary px-4 py-3 text-[15px] font-semibold text-white"
         >

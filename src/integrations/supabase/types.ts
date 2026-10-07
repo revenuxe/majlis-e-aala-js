@@ -776,6 +776,7 @@ export type Database = {
           name: string;
           places: string;
           price_basis: string;
+          flight_options: Json;
           price_per_adult: number | null;
           pricing_mode: string;
           pricing_note: string;
@@ -801,6 +802,7 @@ export type Database = {
           name: string;
           places?: string;
           price_basis?: string;
+          flight_options?: Json;
           price_per_adult?: number | null;
           pricing_mode?: string;
           pricing_note?: string;
@@ -826,6 +828,7 @@ export type Database = {
           name?: string;
           places?: string;
           price_basis?: string;
+          flight_options?: Json;
           price_per_adult?: number | null;
           pricing_mode?: string;
           pricing_note?: string;

@@ -352,9 +352,9 @@ export default function TravelPackages({
               adults={adults}
               children={children}
               seniors={seniorCount}
-              onSelect={() =>
+              onSelect={(flightId) =>
                 router.push(
-                  `/travel/plan?category=${category}&package=${pkg.id}&travellers=${adults}&children=${children}&seniors=${seniorCount}`,
+                  `/travel/plan?category=${category}&package=${pkg.id}&flight=${encodeURIComponent(flightId || "")}&travellers=${adults}&children=${children}&seniors=${seniorCount}`,
                 )
               }
             />

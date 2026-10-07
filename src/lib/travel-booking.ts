@@ -1,7 +1,14 @@
 import type { Journey, TravelCategory } from "./travel";
 import { packageGroupKeys } from "./travel-package-groups";
 
+export type FlightOption = {
+  id: string;
+  airline: string;
+  price_per_adult: number | null;
+  notes: string;
+};
 export type TravelPackage = {
+  flight_options?: FlightOption[];
   id: string;
   slug: string;
   category: TravelCategory;
@@ -58,6 +65,7 @@ export type TravelRequest = {
     pace?: string;
   };
   package_snapshot: {
+    flight_option?: FlightOption | null;
     name?: string;
     inclusions?: string[];
     exclusions?: string[];
@@ -86,6 +94,7 @@ export type TravelDraft = {
   seniors: number;
   pace: "balanced" | "relaxed";
   packageId: string | null;
+  flightOptionId: string | null;
   departureId: string | null;
   room: "package" | "shared" | "twin" | "private";
   stay: "package" | "standard" | "comfort" | "premium";
@@ -108,6 +117,7 @@ export const initialTravelDraft: TravelDraft = {
   seniors: 0,
   pace: "balanced",
   packageId: null,
+  flightOptionId: null,
   departureId: null,
   room: "package",
   stay: "package",
@@ -147,6 +157,16 @@ export const travelMoney = (value: number) =>
     minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
     maximumFractionDigits: 2,
   }).format(value);
+export function packageAdultPrice(
+  pkg: Pick<TravelPackage, "pricing_mode" | "price_per_adult" | "flight_options">,
+): number | null {
+  if (pkg.pricing_mode === "on_request") return null;
+  if (!pkg.flight_options?.length) return pkg.price_per_adult;
+  const prices = pkg.flight_options.flatMap((option) =>
+    option.price_per_adult == null ? [] : [option.price_per_adult],
+  );
+  return prices.length ? Math.min(...prices) : null;
+}
 export const travelDate = (value: string) =>
   new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(
     new Date(`${value}T12:00:00`),
@@ -193,13 +213,14 @@ export function filterTravelPackages(packages: TravelPackage[], filter: TravelCa
       (filter.collection === "all" || pkg.collection === filter.collection) &&
       (group === "all" || packageGroupKeys(pkg).includes(group)) &&
       (!filter.budget ||
-        (pkg.price_per_adult != null && Number(pkg.price_per_adult) <= Number(filter.budget))),
+        (packageAdultPrice(pkg) != null &&
+          Number(packageAdultPrice(pkg)) <= Number(filter.budget))),
   );
   if (filter.sort !== "recommended")
     result.sort((a, b) => {
-      if (a.price_per_adult == null) return b.price_per_adult == null ? 0 : 1;
-      if (b.price_per_adult == null) return -1;
-      const difference = Number(a.price_per_adult) - Number(b.price_per_adult);
+      if (packageAdultPrice(a) == null) return packageAdultPrice(b) == null ? 0 : 1;
+      if (packageAdultPrice(b) == null) return -1;
+      const difference = Number(packageAdultPrice(a)) - Number(packageAdultPrice(b));
       return filter.sort === "price-low" ? difference : -difference;
     });
   return result;

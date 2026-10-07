@@ -25,6 +25,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { travelCategories, travelContact, travelWhatsApp } from "@/lib/travel";
 import {
+  packageAdultPrice,
   filterTravelPackages,
   initialCatalogueFilter,
   assistanceOptions,
@@ -61,6 +62,7 @@ const savedDraftSchema = z.object({
   seniors: z.number().int().min(0).max(100).default(0),
   pace: z.enum(["balanced", "relaxed"]).default("balanced"),
   packageId: z.string().nullable(),
+  flightOptionId: z.string().max(100).nullable().default(null),
   departureId: z.string().nullable(),
   room: z.enum(["package", "shared", "twin", "private"]),
   stay: z.enum(["package", "standard", "comfort", "premium"]),
@@ -178,10 +180,17 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
   );
   const today = new Date();
   const minimumDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-  const estimate =
-    chosenPackage?.price_per_adult == null
+  const chosenFlight = chosenPackage?.flight_options?.find(
+    (option) => option.id === draft.flightOptionId,
+  );
+  const adultPrice = chosenPackage
+    ? chosenPackage.pricing_mode === "on_request"
       ? null
-      : Number(chosenPackage.price_per_adult) * draft.adults;
+      : chosenFlight
+        ? chosenFlight.price_per_adult
+        : packageAdultPrice(chosenPackage)
+    : null;
+  const estimate = adultPrice == null ? null : adultPrice * draft.adults;
   const categoryName =
     travelCategories.find((c) => c.id === draft.category)?.name || "Your journey";
   function update(patch: Partial<TravelDraft>) {
@@ -192,6 +201,7 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
     setDraft((d) => {
       const next = { ...d, ...patch };
       if (patch.packageId !== undefined && patch.packageId !== d.packageId) {
+        next.flightOptionId = patch.flightOptionId ?? null;
         next.room = "package";
         next.stay = "package";
       }
@@ -238,6 +248,7 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
     const requestedPackage = params.get("package");
     if (requestedPackage && /^[0-9a-f-]{36}$/i.test(requestedPackage)) {
       restored.packageId = requestedPackage;
+      restored.flightOptionId = params.get("flight")?.slice(0, 100) || null;
       restored.departureId = null;
       setStep(0);
     }
@@ -483,6 +494,7 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
           adults: draft.adults,
           children: draft.children,
           child_ages: draft.childAges,
+          flight_option_id: chosenFlight?.id ?? null,
           package_id: draft.packageId,
           departure_id: draft.departureId,
           preferences: {
@@ -850,6 +862,8 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
                   </p>
                   <TravelPackageChoice
                     pkg={chosenPackage}
+                    flightOptionId={draft.flightOptionId}
+                    onFlightChange={(id) => update({ flightOptionId: id })}
                     selected
                     adults={draft.adults}
                     children={draft.children}
@@ -905,8 +919,12 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
                         adults={draft.adults}
                         children={draft.children}
                         seniors={draft.seniors}
-                        onSelect={() => {
-                          update({ packageId: pkg.id, departureId: null });
+                        onSelect={(flightId) => {
+                          update({
+                            packageId: pkg.id,
+                            flightOptionId: flightId,
+                            departureId: null,
+                          });
                           setChangingPackage(false);
                         }}
                       />
@@ -1035,6 +1053,29 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
                     </label>
                   ))}
               </div>
+              {!!chosenPackage?.flight_options?.length && (
+                <Field label="Preferred flight option">
+                  <select
+                    className="min-h-12 w-full rounded-xl border border-border bg-card px-3 text-sm"
+                    value={chosenFlight?.id || ""}
+                    onChange={(e) => update({ flightOptionId: e.target.value || null })}
+                  >
+                    <option value="">No preference — help me choose</option>
+                    {chosenPackage.flight_options.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.airline} ·{" "}
+                        {chosenPackage.pricing_mode === "on_request" ||
+                        option.price_per_adult == null
+                          ? "Price on request"
+                          : travelMoney(option.price_per_adult) + " per adult"}
+                      </option>
+                    ))}
+                  </select>
+                  {chosenFlight?.notes && (
+                    <p className="mt-2 text-xs text-muted-foreground">{chosenFlight.notes}</p>
+                  )}
+                </Field>
+              )}
               <details className="rounded-2xl border border-border bg-card">
                 <summary className="min-h-12 cursor-pointer px-4 py-3 text-[13px] font-semibold">
                   Request a package change{" "}
@@ -1171,7 +1212,15 @@ export default function TravelPlan({ initialPackages }: { initialPackages?: Trav
                 ))}
                 {chosenPackage && (
                   <div className="mt-4">
-                    <TravelPrice pkg={chosenPackage} adults={draft.adults} />
+                    {chosenFlight && (
+                      <p className="mb-2 text-sm font-semibold">
+                        Preferred flight: {chosenFlight.airline}
+                      </p>
+                    )}
+                    <TravelPrice
+                      pkg={{ ...chosenPackage, price_per_adult: adultPrice }}
+                      adults={draft.adults}
+                    />
                   </div>
                 )}
                 <p className="mt-4 text-[15px] font-semibold">
